@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ben3skxs5jxrq"]
+
+[node name="MineZone" type="Node2D" unique_id=1113268112]
+
+[node name="YSort" type="Node2D" parent="." unique_id=844471242]
+y_sort_enabled = true

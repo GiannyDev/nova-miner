@@ -1,0 +1,463 @@
+[gd_scene format=3 uid="uid://dvkowrqhi4chd"]
+
+[ext_resource type="Script" uid="uid://xco5eao12nrc" path="res://scenes/ui/upgrade_tree/upgrade_tree.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://nxf1kqkc2c2v" path="res://resources/fonts/04B_03__.TTF" id="2"]
+[ext_resource type="Texture2D" uid="uid://bv6jpettv5mpl" path="res://sprites/ui/mouse_right_click.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://b6om5jx1x555e" path="res://sprites/ui/mouse_middle_click.png" id="5"]
+[ext_resource type="PackedScene" uid="uid://d0nrrh8k2pww" path="res://scenes/ui/upgrade_tree/upgrade_node.tscn" id="6"]
+[ext_resource type="Script" uid="uid://75xwv0bxg78s" path="res://resources/data/upgrades/stat_upgrade.gd" id="7"]
+[ext_resource type="Script" uid="uid://g2iijacw8fd5" path="res://resources/data/upgrades/upgrade_stats.gd" id="8"]
+[ext_resource type="Texture2D" uid="uid://bdm0std00v3jj" path="res://sprites/skill_buttons/pickaxe.png" id="9"]
+[ext_resource type="Texture2D" uid="uid://j8ejj62g28x5" path="res://sprites/skill_buttons/co2.png" id="10"]
+[ext_resource type="Texture2D" uid="uid://bmjiv7p7132wk" path="res://sprites/movement_icon.png" id="11"]
+[ext_resource type="Texture2D" uid="uid://b27sb0fcqiwo5" path="res://sprites/skill_buttons/bot.png" id="12"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.08, 0.09, 0.14, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.35, 0.55, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="Resource" id="Stats_attack_1"]
+script = ExtResource("8")
+cost = 20
+stat_amount = 2.0
+
+[sub_resource type="Resource" id="Stats_attack_2"]
+script = ExtResource("8")
+cost = 30
+stat_amount = 2.0
+
+[sub_resource type="Resource" id="Upgrade_attack_root"]
+script = ExtResource("7")
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_attack_1"), SubResource("Stats_attack_2")])
+skill_id = "attack_root"
+stat_name = "attack"
+
+[sub_resource type="Resource" id="Stats_attack2_1"]
+script = ExtResource("8")
+cost = 40
+stat_amount = 3.0
+
+[sub_resource type="Resource" id="Stats_attack2_2"]
+script = ExtResource("8")
+cost = 50
+stat_amount = 3.0
+
+[sub_resource type="Resource" id="Upgrade_attack_2"]
+script = ExtResource("7")
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_attack2_1"), SubResource("Stats_attack2_2")])
+skill_id = "attack_2"
+stat_name = "attack"
+
+[sub_resource type="Resource" id="Stats_oxygen_1"]
+script = ExtResource("8")
+cost = 25
+stat_amount = 10.0
+
+[sub_resource type="Resource" id="Stats_oxygen_2"]
+script = ExtResource("8")
+cost = 35
+stat_amount = 10.0
+
+[sub_resource type="Resource" id="Stats_oxygen_3"]
+script = ExtResource("8")
+cost = 45
+stat_amount = 15.0
+
+[sub_resource type="Resource" id="Upgrade_max_oxygen"]
+script = ExtResource("7")
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_oxygen_1"), SubResource("Stats_oxygen_2"), SubResource("Stats_oxygen_3")])
+skill_id = "max_oxygen"
+stat_name = "oxygen"
+
+[sub_resource type="Resource" id="Stats_pickup_1"]
+script = ExtResource("8")
+cost = 25
+stat_amount = 10.0
+
+[sub_resource type="Resource" id="Stats_pickup_2"]
+script = ExtResource("8")
+cost = 35
+stat_amount = 10.0
+
+[sub_resource type="Resource" id="Upgrade_pickup"]
+script = ExtResource("7")
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_pickup_1"), SubResource("Stats_pickup_2")])
+skill_id = "pickup_radius"
+stat_name = "pickup_radius"
+
+[sub_resource type="Resource" id="Stats_helpers_1"]
+script = ExtResource("8")
+cost = 100
+stat_amount = 1.0
+
+[sub_resource type="Resource" id="Stats_helpers_2"]
+script = ExtResource("8")
+cost = 150
+stat_amount = 1.0
+
+[sub_resource type="Resource" id="Stats_helpers_3"]
+script = ExtResource("8")
+cost = 200
+stat_amount = 1.0
+
+[sub_resource type="Resource" id="Upgrade_helpers"]
+script = ExtResource("7")
+upgrade_type = 3
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_helpers_1"), SubResource("Stats_helpers_2"), SubResource("Stats_helpers_3")])
+skill_id = "helpers_unlocked"
+stat_name = "helpers_unlocked"
+
+[sub_resource type="Resource" id="Stats_speed_1"]
+script = ExtResource("8")
+cost = 30
+stat_amount = 20.0
+
+[sub_resource type="Resource" id="Stats_speed_2"]
+script = ExtResource("8")
+cost = 40
+stat_amount = 20.0
+
+[sub_resource type="Resource" id="Upgrade_speed"]
+script = ExtResource("7")
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_speed_1"), SubResource("Stats_speed_2")])
+skill_id = "speed"
+stat_name = "speed"
+
+[sub_resource type="Resource" id="Stats_laser_1"]
+script = ExtResource("8")
+cost = 35
+stat_amount = 50.0
+
+[sub_resource type="Resource" id="Stats_laser_2"]
+script = ExtResource("8")
+cost = 45
+stat_amount = 50.0
+
+[sub_resource type="Resource" id="Upgrade_laser_length"]
+script = ExtResource("7")
+upgrade_stats = Array[ExtResource("8")]([SubResource("Stats_laser_1"), SubResource("Stats_laser_2")])
+skill_id = "laser_length"
+stat_name = "laser_length"
+
+[node name="UpgradeTree" type="Control" unique_id=1365475181 node_paths=PackedStringArray("content", "lines_container")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+content = NodePath("TreeViewport/Content")
+lines_container = NodePath("TreeViewport/Content/Lines")
+
+[node name="Background" type="Panel" parent="." unique_id=1195350867]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="Header" type="HBoxContainer" parent="." unique_id=784446534]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = 56.0
+grow_horizontal = 2
+
+[node name="TitleLabel" type="Label" parent="Header" unique_id=1384983928]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 24
+text = "UPGRADE TREE"
+
+[node name="CurrencyLabel" type="RichTextLabel" parent="Header" unique_id=1624445577]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("2")
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "CREDITS: 0"
+horizontal_alignment = 2
+
+[node name="CloseButton" type="Button" parent="Header" unique_id=513142081]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2")
+text = "CLOSE"
+
+[node name="TreeViewport" type="Control" parent="." unique_id=1239101654]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 72.0
+offset_right = -32.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="Control" parent="TreeViewport" unique_id=1768616368]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -468.75
+offset_top = -468.75
+offset_right = 781.25
+offset_bottom = 781.25
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+
+[node name="Lines" type="Node2D" parent="TreeViewport/Content" unique_id=1256006653]
+
+[node name="Buttons" type="Control" parent="TreeViewport/Content" unique_id=837430198]
+clip_children = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="AttackRoot" parent="TreeViewport/Content/Buttons" unique_id=1983607134 instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+upgrade = SubResource("Upgrade_attack_root")
+icon_tex = ExtResource("9")
+popup_title = "+Mining Damage"
+popup_description = "+{stat_amount} {highlight_word}"
+highlight_word = "Mining Damage"
+
+[node name="Attack2" parent="TreeViewport/Content/Buttons" unique_id=1055316496 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 81.33331
+offset_top = -50.0
+offset_right = 181.33331
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+previous_skills = [NodePath("../AttackRoot")]
+upgrade = SubResource("Upgrade_attack_2")
+icon_tex = ExtResource("9")
+popup_title = "+Mining Damage"
+popup_description = "+{stat_amount} {highlight_word}"
+highlight_word = "Mining Damage"
+
+[node name="MaxOxygen" parent="TreeViewport/Content/Buttons" unique_id=953092028 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -186.66669
+offset_right = 50.0
+offset_bottom = -86.66669
+grow_horizontal = 2
+grow_vertical = 2
+previous_skills = [NodePath("../AttackRoot")]
+upgrade = SubResource("Upgrade_max_oxygen")
+icon_tex = ExtResource("10")
+popup_title = "+Max Oxygen"
+popup_description = "+{stat_amount} {highlight_word}"
+highlight_word = "Max Oxygen"
+
+[node name="PickupRadius" parent="TreeViewport/Content/Buttons" unique_id=1902982692 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -214.66669
+offset_top = -50.0
+offset_right = -114.66669
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+previous_skills = [NodePath("../AttackRoot")]
+upgrade = SubResource("Upgrade_pickup")
+icon_tex = ExtResource("9")
+popup_title = "+Pickup Radius"
+popup_description = "+{stat_amount} {highlight_word}"
+highlight_word = "Pickup Radius"
+
+[node name="Helpers" parent="TreeViewport/Content/Buttons" unique_id=966684524 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -376.0
+offset_top = -50.0
+offset_right = -276.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+previous_skills = [NodePath("../PickupRadius")]
+upgrade = SubResource("Upgrade_helpers")
+icon_tex = ExtResource("12")
+popup_title = "Helper Amount"
+popup_description = "Spawns {stat_amount} {highlight_word}"
+highlight_word = "Helper"
+
+[node name="Speed" parent="TreeViewport/Content/Buttons" unique_id=336169886 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 86.66669
+offset_top = 100.0
+offset_right = 186.66669
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+previous_skills = [NodePath("../Attack2")]
+upgrade = SubResource("Upgrade_speed")
+icon_tex = ExtResource("11")
+popup_title = "+Movement Speed"
+popup_description = "+{stat_amount} {highlight_word}"
+highlight_word = "Movement Speed"
+
+[node name="LaserLength" parent="TreeViewport/Content/Buttons" unique_id=1573437614 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = 140.0
+offset_right = 10.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+previous_skills = [NodePath("../Speed")]
+upgrade = SubResource("Upgrade_laser_length")
+icon_tex = ExtResource("9")
+popup_title = "+Laser Length"
+popup_description = "+{stat_amount} {highlight_word}"
+highlight_word = "Laser Length"
+
+[node name="Hints" type="HBoxContainer" parent="." unique_id=638364553]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -56.0
+offset_right = -32.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+
+[node name="ZoomHint" type="Label" parent="Hints" unique_id=868412011]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 12
+text = "SCROLL: ZOOM"
+
+[node name="Spacer" type="Control" parent="Hints" unique_id=351376499]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+
+[node name="DragHint" type="HBoxContainer" parent="Hints" unique_id=1351813954]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Hints/DragHint" unique_id=706952750]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Hints/DragHint" unique_id=162832142]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 12
+text = "DRAG"
+
+[node name="Spacer2" type="Control" parent="Hints" unique_id=262586110]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+
+[node name="PanHint" type="HBoxContainer" parent="Hints" unique_id=658039526]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Hints/PanHint" unique_id=266477017]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Hints/PanHint" unique_id=1446329726]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 12
+text = "ZOOM AT CURSOR"
+
+[node name="MaxedMessage" type="PanelContainer" parent="." unique_id=2005736288]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -30.0
+offset_right = 180.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="MaxedMessage" unique_id=37067513]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2")
+theme_override_font_sizes/font_size = 18
+text = "ALL UPGRADES MAXED!"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Header/CloseButton" to="." method="_on_close_button_pressed"]

@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://b2g6jlt83l52k"]
+
+[ext_resource type="Script" uid="uid://cils10bt75cmh" path="res://scenes/player/player.gd" id="1_fmv3f"]
+[ext_resource type="SpineAtlasResource" uid="uid://cvnmy2cf6xvfw" path="res://spine/Hero_1.skel.atlas" id="2_vh40f"]
+[ext_resource type="SpineSkeletonFileResource" uid="uid://br5cdou7odk7g" path="res://spine/Hero_1.skel.skel" id="3_bhlit"]
+[ext_resource type="Script" uid="uid://dtoupnroybw1g" path="res://scenes/player/movement_component.gd" id="4_movement"]
+
+[sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_ad6r8"]
+atlas_res = ExtResource("2_vh40f")
+skeleton_file_res = ExtResource("3_bhlit")
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmlin"]
+radius = 49.0
+height = 220.0
+
+[node name="Player" type="CharacterBody2D" unique_id=1596606917]
+y_sort_enabled = true
+script = ExtResource("1_fmv3f")
+
+[node name="MovementComponent" type="Node" parent="." unique_id=1452342139]
+script = ExtResource("4_movement")
+acceleration = 36.0
+
+[node name="SpineSprite" type="SpineSprite" parent="." unique_id=1147398709]
+skeleton_data_res = SubResource("SpineSkeletonDataResource_ad6r8")
+preview_skin = "Weapons/Pistol_1"
+preview_animation = "run_forward"
+preview_frame = false
+preview_time = 0.0
+scale = Vector2(0.5, 0.5)
+
+[node name="LaserFirePos" type="Marker2D" parent="SpineSprite" unique_id=724001300]
+show_behind_parent = true
+position = Vector2(296, -218)
+scale = Vector2(2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856122160]
+position = Vector2(0, -109)
+shape = SubResource("CapsuleShape2D_gmlin")

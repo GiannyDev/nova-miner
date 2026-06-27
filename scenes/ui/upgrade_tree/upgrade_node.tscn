@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://d0nrrh8k2pww"]
+
+[ext_resource type="Texture2D" uid="uid://dw5seubmtxxkk" path="res://sprites/ui/skill_button_blue.png" id="1"]
+[ext_resource type="Script" uid="uid://nw8dyfw836ag" path="res://scenes/ui/upgrade_tree/upgrade_node.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://bdm0std00v3jj" path="res://sprites/skill_buttons/pickaxe.png" id="3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_normal"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pressed"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hover"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hover_pressed"]
+
+[node name="UpgradeNode" type="Button" unique_id=1970078329]
+custom_minimum_size = Vector2(100, 100)
+offset_right = 20.0
+offset_bottom = 20.0
+pivot_offset = Vector2(10, 10)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_normal")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_pressed")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_hover")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_hover_pressed")
+toggle_mode = true
+icon = ExtResource("1")
+icon_alignment = 1
+expand_icon = true
+script = ExtResource("2")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=369956107]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3")
+
+[node name="WhiteRect" type="ColorRect" parent="." unique_id=928849657]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="pressed" from="." to="." method="_on_pressed"]

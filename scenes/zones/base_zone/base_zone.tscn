@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://cuf1grbhut8we"]
+
+[ext_resource type="PackedScene" uid="uid://b2g6jlt83l52k" path="res://scenes/player/player.tscn" id="1_0xwva"]
+[ext_resource type="Script" uid="uid://dmbt68v0i6g4b" path="res://scenes/zones/base_zone/base_zone.gd" id="1_wrtbe"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_2e3ff"]
+[ext_resource type="PackedScene" uid="uid://dvkowrqhi4chd" path="res://scenes/ui/upgrade_tree/upgrade_tree.tscn" id="2_m1t7q"]
+[ext_resource type="PackedScene" uid="uid://cfyfnd1x504br" path="res://scenes/ui/weapon_shop/weapon_shop.tscn" id="3_2e3ff"]
+[ext_resource type="Script" uid="uid://dgkgkuwla3cgp" path="res://scenes/zones/base_zone/gui.gd" id="4_2dcdp"]
+[ext_resource type="PackedScene" uid="uid://c7hedoowdcef7" path="res://scenes/ui/ore_refinery/ore_refinery.tscn" id="4_wrtbe"]
+[ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/options_menu/options_menu.tscn" id="5_2dcdp"]
+[ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2dcdp"]
+shader = ExtResource("9_4vgyc")
+shader_parameter/outerRadius = 5.0
+shader_parameter/MainAlpha = 1.0
+
+[node name="BaseZone" type="Node2D" unique_id=1296669802 node_paths=PackedStringArray("player")]
+script = ExtResource("1_wrtbe")
+player = NodePath("YSort/Player")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=354706872]
+position = Vector2(960, 540)
+
+[node name="YSort" type="Node2D" parent="." unique_id=889396918]
+y_sort_enabled = true
+
+[node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_0xwva")]
+y_sort_enabled = false
+position = Vector2(960, 540)
+
+[node name="UpgradeBench" type="Node2D" parent="YSort" unique_id=908875353]
+position = Vector2(1428, 69)
+
+[node name="Sprite2D" type="Sprite2D" parent="YSort/UpgradeBench" unique_id=1636830182]
+position = Vector2(178.99998, 0)
+scale = Vector2(4.7968745, 1)
+texture = ExtResource("2_2e3ff")
+
+[node name="Sprite2D2" type="Sprite2D" parent="YSort/UpgradeBench" unique_id=220019196]
+position = Vector2(382.49997, 282.5)
+scale = Vector2(1.617187, 3.3984375)
+texture = ExtResource("2_2e3ff")
+
+[node name="PlayerDetector" type="Area2D" parent="YSort/UpgradeBench" unique_id=290448663]
+position = Vector2(386, 62)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="YSort/UpgradeBench/PlayerDetector" unique_id=1621575319]
+polygon = PackedVector2Array(-515, 8, -515, -131, 106, -130, 106, 438, -206, 438, -206, 87, -515, 87)
+
+[node name="GUI" type="CanvasLayer" parent="." unique_id=879557558]
+script = ExtResource("4_2dcdp")
+
+[node name="UpgradeTree" parent="GUI" unique_id=357573059 instance=ExtResource("2_m1t7q")]
+visible = false
+
+[node name="WeaponShop" parent="GUI" unique_id=432418539 instance=ExtResource("3_2e3ff")]
+visible = false
+
+[node name="OreRefinery" parent="GUI" unique_id=1220079855 instance=ExtResource("4_wrtbe")]
+visible = false
+
+[node name="OptionsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("5_2dcdp")]
+visible = false
+
+[node name="Vignette" type="ColorRect" parent="GUI" unique_id=1631264448]
+material = SubResource("ShaderMaterial_2dcdp")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.78431374)

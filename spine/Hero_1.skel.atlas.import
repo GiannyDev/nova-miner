@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://cvnmy2cf6xvfw"
+path="res://.godot/imported/Hero_1.skel.atlas-8f2a1a83c9d18c94515790c72f53f72e.spatlas"
+
+[deps]
+
+source_file="res://spine/Hero_1.skel.atlas"
+dest_files=["res://.godot/imported/Hero_1.skel.atlas-8f2a1a83c9d18c94515790c72f53f72e.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

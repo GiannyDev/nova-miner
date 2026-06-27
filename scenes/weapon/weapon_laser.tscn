@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c1yx7nj01x5r3"]
+
+[ext_resource type="Script" uid="uid://cyxrc6hvrsfoy" path="res://scenes/weapon/weapon_laser.gd" id="1_7234b"]
+
+[node name="WeaponLaser" type="Node2D" unique_id=864947174]
+script = ExtResource("1_7234b")
