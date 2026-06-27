@@ -10,6 +10,21 @@
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/options_menu/options_menu.tscn" id="5_2dcdp"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
+size = Vector2(517, 132)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4vgyc"]
+size = Vector2(211, 436)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m156b"]
+size = Vector2(950, 181)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n4fd8"]
+size = Vector2(192, 628)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mngwo"]
+size = Vector2(950, 180)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2dcdp"]
 shader = ExtResource("9_4vgyc")
 shader_parameter/outerRadius = 5.0
@@ -21,6 +36,7 @@ player = NodePath("YSort/Player")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=354706872]
 position = Vector2(960, 540)
+zoom = Vector2(0.9, 0.9)
 
 [node name="YSort" type="Node2D" parent="." unique_id=889396918]
 y_sort_enabled = true
@@ -48,6 +64,72 @@ position = Vector2(386, 62)
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="YSort/UpgradeBench/PlayerDetector" unique_id=1621575319]
 polygon = PackedVector2Array(-515, 8, -515, -131, 106, -130, 106, 438, -206, 438, -206, 87, -515, 87)
 
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/UpgradeBench" unique_id=858045957]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/UpgradeBench/StaticBody2D" unique_id=1764356667]
+position = Vector2(129.5, -3)
+shape = SubResource("RectangleShape2D_ad6r8")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="YSort/UpgradeBench/StaticBody2D" unique_id=1309579255]
+position = Vector2(385.5, 282)
+shape = SubResource("RectangleShape2D_4vgyc")
+
+[node name="WeaponBench" type="Node2D" parent="YSort" unique_id=590695781]
+position = Vector2(1443, 1007)
+
+[node name="Sprite2D3" type="Sprite2D" parent="YSort/WeaponBench" unique_id=1316815810]
+position = Vector2(1.5, -38.5)
+scale = Vector2(7.367187, 1.6015625)
+texture = ExtResource("2_2e3ff")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/WeaponBench" unique_id=1287060134]
+position = Vector2(-487, -33)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/WeaponBench/StaticBody2D" unique_id=1961639226]
+position = Vector2(488, 13.5)
+shape = SubResource("RectangleShape2D_m156b")
+
+[node name="RobotBench" type="Node2D" parent="YSort" unique_id=452727901]
+position = Vector2(73, 304)
+
+[node name="Sprite2D4" type="Sprite2D" parent="YSort/RobotBench" unique_id=1172763750]
+position = Vector2(24.74997, 11.500017)
+scale = Vector2(1.4882817, 4.914063)
+texture = ExtResource("2_2e3ff")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/RobotBench" unique_id=1058681054]
+position = Vector2(24, 29)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/RobotBench/StaticBody2D" unique_id=1634218109]
+position = Vector2(0, -18)
+shape = SubResource("RectangleShape2D_n4fd8")
+
+[node name="RefineryBench" type="Node2D" parent="YSort" unique_id=1231799727]
+position = Vector2(-6, 972)
+
+[node name="Sprite2D4" type="Sprite2D" parent="YSort/RefineryBench" unique_id=881878358]
+position = Vector2(488, 0)
+scale = Vector2(7.367187, 1.6015625)
+texture = ExtResource("2_2e3ff")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="YSort/RefineryBench" unique_id=646681309]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/RefineryBench/StaticBody2D2" unique_id=1759887669]
+position = Vector2(488, 14)
+shape = SubResource("RectangleShape2D_mngwo")
+
+[node name="MineDoor" type="Node2D" parent="YSort" unique_id=39020944]
+position = Vector2(960, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="YSort/MineDoor" unique_id=1571891542]
+position = Vector2(0, -128)
+scale = Vector2(2, 2)
+texture = ExtResource("2_2e3ff")
+
 [node name="GUI" type="CanvasLayer" parent="." unique_id=879557558]
 script = ExtResource("4_2dcdp")
 
@@ -64,6 +146,7 @@ visible = false
 visible = false
 
 [node name="Vignette" type="ColorRect" parent="GUI" unique_id=1631264448]
+visible = false
 material = SubResource("ShaderMaterial_2dcdp")
 anchors_preset = 15
 anchor_right = 1.0

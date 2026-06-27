@@ -27,13 +27,15 @@ EventBus="*uid://dm4oogck3kpga"
 Springer="*uid://cgvoftk4lxtlf"
 GameManager="*uid://bg855kyegeovl"
 UpgradeManager="*uid://ddyacel4ea8kx"
-Sound="*uid://btlxf25o60chy"
 CurrencyManager="*res://autoloads/currency_manager.gd"
+Sound="*uid://btlxf25o60chy"
+Transition="*uid://ws1o8hxgjvso"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/mode=3
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
@@ -73,6 +75,7 @@ right_click={
 
 2d_physics/layer_1="Player"
 2d_physics/layer_2="Ore"
+2d_physics/layer_3="World"
 
 [physics]
 

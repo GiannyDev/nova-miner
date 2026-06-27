@@ -1,6 +1,15 @@
 [gd_scene format=3 uid="uid://ben3skxs5jxrq"]
 
+[ext_resource type="PackedScene" uid="uid://b2g6jlt83l52k" path="res://scenes/player/player.tscn" id="1_mdgi6"]
+[ext_resource type="Script" uid="uid://b1djdot42y4vt" path="res://scenes/zones/mine_zone/mine_zone.gd" id="1_r8hjc"]
+
 [node name="MineZone" type="Node2D" unique_id=1113268112]
+script = ExtResource("1_r8hjc")
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true
+
+[node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_mdgi6")]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=324192786]
+zoom = Vector2(0.3, 0.3)

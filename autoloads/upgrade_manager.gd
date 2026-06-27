@@ -1,4 +1,4 @@
-## Aplica upgrades permanentes del arbol al StatBlock del jugador.
+## Aplica upgrades permanentes del arbol al StatsData del jugador.
 
 extends Node
 
@@ -19,7 +19,7 @@ func apply_stats_to_player() -> void:
 	apply_stats_to_new_object(UpgradeData.UpgradeType.HELPERS, GameManager.player_stats)
 
 
-func apply_stats_to_new_object(upgrade_type: UpgradeData.UpgradeType, stats: StatBlock) -> void:
+func apply_stats_to_new_object(upgrade_type: UpgradeData.UpgradeType, stats: StatsData) -> void:
 	for upgrade in upgrade_data.permanent_upgrades[upgrade_type]:
 		if upgrade is StatUpgrade:
 			upgrade.apply_upgrade(stats)

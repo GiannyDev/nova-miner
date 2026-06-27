@@ -15,6 +15,7 @@ height = 220.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1596606917]
 y_sort_enabled = true
+collision_mask = 6
 script = ExtResource("1_fmv3f")
 
 [node name="MovementComponent" type="Node" parent="." unique_id=1452342139]
@@ -23,8 +24,8 @@ acceleration = 36.0
 
 [node name="SpineSprite" type="SpineSprite" parent="." unique_id=1147398709]
 skeleton_data_res = SubResource("SpineSkeletonDataResource_ad6r8")
-preview_skin = "Weapons/Pistol_1"
-preview_animation = "run_forward"
+preview_skin = "Weapons/Empty"
+preview_animation = "idle_Empty_2"
 preview_frame = false
 preview_time = 0.0
 scale = Vector2(0.5, 0.5)

@@ -18,31 +18,11 @@ enum OperationType { ADD, SUBTRACT, SET_TRUE, SET_FALSE, ADD_TO_LIST }
 @export var cost: int
 
 
-func apply_upgrade(stats: StatBlock) -> void:
+func apply_upgrade(stats: StatsData) -> void:
 	if stats == null:
 		return
 
-	match operation_type:
-		OperationType.ADD:
-			if operation_mode == OperationMode.FLAT:
-				stats.add_flat(stat_name, amount)
-			elif operation_mode == OperationMode.PERCENT:
-				stats.add_percent(stat_name, amount)
-			elif operation_mode == OperationMode.MULTIPLIER:
-				stats.add_multiplier(stat_name, amount)
-		OperationType.SUBTRACT:
-			if operation_mode == OperationMode.FLAT:
-				stats.add_flat(stat_name, -amount)
-			elif operation_mode == OperationMode.PERCENT:
-				stats.add_percent(stat_name, -amount)
-			elif operation_mode == OperationMode.MULTIPLIER:
-				stats.add_multiplier(stat_name, 1.0 / amount)
-		OperationType.SET_TRUE:
-			stats.set_flag(stat_name, true)
-		OperationType.SET_FALSE:
-			stats.set_flag(stat_name, false)
-		OperationType.ADD_TO_LIST:
-			stats.add_to_list(list_name, stat_name)
+	stats.modify_stat(stat_name, amount, operation_mode, operation_type)
 
 
 func _set_skill_id(value: String) -> void:

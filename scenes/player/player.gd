@@ -3,8 +3,8 @@ class_name Player
 
 @export var fallback_speed: float = 200.0
 @export var run_speed_threshold: float = 20.0
-@export var run_animation: String = "run_forward"
-@export var idle_animation: String = "idle"
+@export var run_animation: String = "run_forward_Empty"
+@export var idle_animation: String = "idle_Empty"
 
 @onready var movement_component: MovementComponent = $MovementComponent
 @onready var spine_sprite: SpineSprite = $SpineSprite
@@ -60,7 +60,7 @@ func update_animation() -> void:
 
 func get_move_speed() -> float:
 	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat("speed")
+		return GameManager.player_stats.speed
 	return fallback_speed
 
 
@@ -82,8 +82,8 @@ func sync_animation_speed(is_moving: bool) -> void:
 		return
 
 	var base_speed := fallback_speed
-	if GameManager.player_stats != null:
-		base_speed = maxf(GameManager.player_stats.base_stats.get("speed", fallback_speed), 1.0)
+	if GameManager.player_stats_base != null:
+		base_speed = maxf(GameManager.player_stats_base.speed, 1.0)
 
 	var speed_ratio := clampf(get_move_speed() / base_speed, 0.75, 1.5)
 	var velocity_ratio := clampf(velocity.length() / maxf(get_move_speed(), 1.0), 0.5, 1.0)

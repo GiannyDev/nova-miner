@@ -17,6 +17,7 @@ custom_minimum_size = Vector2(100, 100)
 offset_right = 20.0
 offset_bottom = 20.0
 pivot_offset = Vector2(10, 10)
+pivot_offset_ratio = Vector2(0.5, 0.5)
 theme_override_styles/normal = SubResource("StyleBoxEmpty_normal")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_pressed")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_hover")
