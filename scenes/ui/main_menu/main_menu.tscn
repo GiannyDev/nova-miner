@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://n5gmi3qq1g4k"]
+
+[ext_resource type="Shader" uid="uid://bl5laquforg1k" path="res://resources/shaders/crt.gdshader" id="1_1ch07"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="1_e8t4i"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 64
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
+shader = ExtResource("1_1ch07")
+shader_parameter/wobble_speed = 0.1
+shader_parameter/wobble_frequency = 0.30000001425
+shader_parameter/wobble_strength = 0.5
+shader_parameter/fisheye = 0.250000011875
+shader_parameter/brighten = 0.650000030875
+shader_parameter/scanline_count = 240.0000114
+shader_parameter/scanline_movespeed = 0.50000002375
+shader_parameter/horizontal_scanline_strength = 0.4
+shader_parameter/vertical_scanline_strength = 0.02000000095
+shader_parameter/chromatic = 2.0
+shader_parameter/ghosting = 0.05
+shader_parameter/vignette = 0.050000002375
+shader_parameter/edge_color = Color(0.03137255, 0.03137255, 0.03137255, 1)
+shader_parameter/bloomRadius = 1.0
+shader_parameter/bloomThreshold = 1.0
+shader_parameter/bloomIntensity = 1.0
+
+[node name="MainMenu" type="Control" unique_id=1414841993]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameLogo" type="TextureRect" parent="." unique_id=1391234557]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -444.0
+offset_right = 250.0
+offset_bottom = -316.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_e8t4i")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=954540570]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -190.0
+offset_right = 300.0
+offset_bottom = 470.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Button" type="Button" parent="VBoxContainer" unique_id=1200776544]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "WISHLIST"
+
+[node name="Space" type="Control" parent="VBoxContainer" unique_id=90785249]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="Button5" type="Button" parent="VBoxContainer" unique_id=815529290]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "PLAY"
+
+[node name="Button2" type="Button" parent="VBoxContainer" unique_id=2093004496]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "COLLECTION"
+
+[node name="Button3" type="Button" parent="VBoxContainer" unique_id=1729110838]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "OPTIONS"
+
+[node name="Button4" type="Button" parent="VBoxContainer" unique_id=850937766]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "	QUIT"
+
+[node name="ScreenCanvas" type="CanvasLayer" parent="." unique_id=48220416]
+
+[node name="GameVersion" type="Label" parent="ScreenCanvas" unique_id=471905414]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -108.0
+offset_right = 145.0
+offset_bottom = -20.0
+grow_vertical = 0
+text = "v0.1"
+label_settings = SubResource("LabelSettings_ad6r8")
+vertical_alignment = 1
+
+[node name="CRT" type="ColorRect" parent="ScreenCanvas" unique_id=1885181578]
+material = SubResource("ShaderMaterial_ad6r8")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

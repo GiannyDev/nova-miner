@@ -5,10 +5,13 @@
 [ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_2e3ff"]
 [ext_resource type="PackedScene" uid="uid://dvkowrqhi4chd" path="res://scenes/ui/upgrade_tree/upgrade_tree.tscn" id="2_m1t7q"]
 [ext_resource type="PackedScene" uid="uid://cfyfnd1x504br" path="res://scenes/ui/weapon_shop/weapon_shop.tscn" id="3_2e3ff"]
+[ext_resource type="Script" uid="uid://q5ew6j4wae2h" path="res://scenes/zones/base_zone/bench.gd" id="3_mngwo"]
 [ext_resource type="Script" uid="uid://dgkgkuwla3cgp" path="res://scenes/zones/base_zone/gui.gd" id="4_2dcdp"]
 [ext_resource type="PackedScene" uid="uid://c7hedoowdcef7" path="res://scenes/ui/ore_refinery/ore_refinery.tscn" id="4_wrtbe"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/options_menu/options_menu.tscn" id="5_2dcdp"]
+[ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://resources/data/weapons/weapon_data.gd" id="8_o6jf1"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
+[ext_resource type="Material" uid="uid://cbpjar43wpa2" path="res://resources/crt_01.tres" id="12_o6jf1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
 size = Vector2(517, 132)
@@ -18,6 +21,9 @@ size = Vector2(211, 436)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m156b"]
 size = Vector2(950, 181)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fqte1"]
+size = Vector2(951, 280)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n4fd8"]
 size = Vector2(192, 628)
@@ -38,6 +44,8 @@ player = NodePath("YSort/Player")
 position = Vector2(960, 540)
 zoom = Vector2(0.9, 0.9)
 
+[node name="Border" type="Node2D" parent="." unique_id=1510669431]
+
 [node name="YSort" type="Node2D" parent="." unique_id=889396918]
 y_sort_enabled = true
 
@@ -45,8 +53,11 @@ y_sort_enabled = true
 y_sort_enabled = false
 position = Vector2(960, 540)
 
-[node name="UpgradeBench" type="Node2D" parent="YSort" unique_id=908875353]
+[node name="UpgradeBench" type="Node2D" parent="YSort" unique_id=908875353 node_paths=PackedStringArray("player_area", "panel_to_open")]
 position = Vector2(1428, 69)
+script = ExtResource("3_mngwo")
+player_area = NodePath("PlayerDetector")
+panel_to_open = NodePath("../../GUI/UpgradeTree")
 
 [node name="Sprite2D" type="Sprite2D" parent="YSort/UpgradeBench" unique_id=1636830182]
 position = Vector2(178.99998, 0)
@@ -60,6 +71,7 @@ texture = ExtResource("2_2e3ff")
 
 [node name="PlayerDetector" type="Area2D" parent="YSort/UpgradeBench" unique_id=290448663]
 position = Vector2(386, 62)
+collision_layer = 0
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="YSort/UpgradeBench/PlayerDetector" unique_id=1621575319]
 polygon = PackedVector2Array(-515, 8, -515, -131, 106, -130, 106, 438, -206, 438, -206, 87, -515, 87)
@@ -75,8 +87,11 @@ shape = SubResource("RectangleShape2D_ad6r8")
 position = Vector2(385.5, 282)
 shape = SubResource("RectangleShape2D_4vgyc")
 
-[node name="WeaponBench" type="Node2D" parent="YSort" unique_id=590695781]
+[node name="WeaponBench" type="Node2D" parent="YSort" unique_id=590695781 node_paths=PackedStringArray("player_area", "panel_to_open")]
 position = Vector2(1443, 1007)
+script = ExtResource("3_mngwo")
+player_area = NodePath("PlayerDetector")
+panel_to_open = NodePath("../../GUI/WeaponShop")
 
 [node name="Sprite2D3" type="Sprite2D" parent="YSort/WeaponBench" unique_id=1316815810]
 position = Vector2(1.5, -38.5)
@@ -91,8 +106,17 @@ collision_layer = 4
 position = Vector2(488, 13.5)
 shape = SubResource("RectangleShape2D_m156b")
 
+[node name="PlayerDetector" type="Area2D" parent="YSort/WeaponBench" unique_id=861302675]
+position = Vector2(1, -19)
+collision_layer = 0
+
+[node name="CollisionPolygon2D" type="CollisionShape2D" parent="YSort/WeaponBench/PlayerDetector" unique_id=417116071]
+position = Vector2(-0.5, -49)
+shape = SubResource("RectangleShape2D_fqte1")
+
 [node name="RobotBench" type="Node2D" parent="YSort" unique_id=452727901]
 position = Vector2(73, 304)
+script = ExtResource("3_mngwo")
 
 [node name="Sprite2D4" type="Sprite2D" parent="YSort/RobotBench" unique_id=1172763750]
 position = Vector2(24.74997, 11.500017)
@@ -109,6 +133,7 @@ shape = SubResource("RectangleShape2D_n4fd8")
 
 [node name="RefineryBench" type="Node2D" parent="YSort" unique_id=1231799727]
 position = Vector2(-6, 972)
+script = ExtResource("3_mngwo")
 
 [node name="Sprite2D4" type="Sprite2D" parent="YSort/RefineryBench" unique_id=881878358]
 position = Vector2(488, 0)
@@ -137,7 +162,7 @@ script = ExtResource("4_2dcdp")
 visible = false
 
 [node name="WeaponShop" parent="GUI" unique_id=432418539 instance=ExtResource("3_2e3ff")]
-visible = false
+weapons = Array[ExtResource("8_o6jf1")]([])
 
 [node name="OreRefinery" parent="GUI" unique_id=1220079855 instance=ExtResource("4_wrtbe")]
 visible = false
@@ -155,3 +180,12 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.78431374)
+
+[node name="CRT" type="ColorRect" parent="GUI" unique_id=1077753099]
+material = ExtResource("12_o6jf1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

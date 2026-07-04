@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://cbpjar43wpa2"]
+
+[ext_resource type="Shader" uid="uid://b6k0usbh6vtbr" path="res://resources/shaders/crt_new.gdshader" id="1_ushjd"]
+
+[resource]
+shader = ExtResource("1_ushjd")
+shader_parameter/wobble_speed = 0.0
+shader_parameter/wobble_frequency = 0.0
+shader_parameter/wobble_strength = 0.0
+shader_parameter/fisheye = 0.250000011875
+shader_parameter/brighten = 0.70000003325
+shader_parameter/scanline_count = 180.00000855
+shader_parameter/scanline_movespeed = 0.50000002375
+shader_parameter/horizontal_scanline_strength = 0.30000001425
+shader_parameter/vertical_scanline_strength = 0.050000002375
+shader_parameter/chromatic = 2.0
+shader_parameter/ghosting = 0.02000000095
+shader_parameter/vignette = 0.10000000475
+shader_parameter/edge_color = Color(0.03137255, 0.03137255, 0.03137255, 1)
+shader_parameter/bloomRadius = 1.0
+shader_parameter/bloomThreshold = 1.0
+shader_parameter/bloomIntensity = 1.0

@@ -1,6 +1,14 @@
 [gd_scene format=3 uid="uid://ws1o8hxgjvso"]
 
 [ext_resource type="Script" uid="uid://uv2mok7j8334" path="res://autoloads/transition/transition.gd" id="1_71g5q"]
+[ext_resource type="Shader" uid="uid://c4pqrhhbwv6pg" path="res://resources/shaders/transition.gdshader" id="2_78yyn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o6jf1"]
+shader = ExtResource("2_78yyn")
+shader_parameter/_CirclePosition = Vector2(0.5, 0.5)
+shader_parameter/_Progress = 0.0
+shader_parameter/_Smoothness = 0.00999999977648
+shader_parameter/_Background = Color(0.09239707, 0.09239706, 0.09239706, 1)
 
 [node name="Transition" type="Node" unique_id=669941553]
 script = ExtResource("1_71g5q")
@@ -8,7 +16,7 @@ script = ExtResource("1_71g5q")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1328239675]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=79753025]
-visible = false
+material = SubResource("ShaderMaterial_o6jf1")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

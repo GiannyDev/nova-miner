@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/data/weapons/weapon_data.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2"]
+
+[resource]
+script = ExtResource("1")
+weapon_id = "laser_split"
+weapon_name = "Split Laser"
+sprite = ExtResource("2")
+description = "Splits into multiple targets at once."

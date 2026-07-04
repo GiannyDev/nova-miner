@@ -1,9 +1,332 @@
 [gd_scene format=3 uid="uid://cfyfnd1x504br"]
 
-[node name="WeaponShop" type="Control" unique_id=432418539]
+[ext_resource type="Script" uid="uid://b05tl8ouiejqv" path="res://scenes/ui/weapon_shop/weapon_shop.gd" id="1_jhov4"]
+[ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="1_rn4b7"]
+[ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://resources/data/weapons/weapon_data.gd" id="2_wdata"]
+[ext_resource type="Resource" path="res://resources/data/weapons/laser_basic.tres" id="3_basic"]
+[ext_resource type="Resource" path="res://resources/data/weapons/laser_pulse.tres" id="4_pulse"]
+[ext_resource type="Resource" path="res://resources/data/weapons/laser_beam.tres" id="5_beam"]
+[ext_resource type="Resource" path="res://resources/data/weapons/laser_split.tres" id="6_split"]
+[ext_resource type="Resource" path="res://resources/data/weapons/laser_chaos.tres" id="7_chaos"]
+[ext_resource type="Shader" uid="uid://lmdjjpft2tv" path="res://resources/shaders/dithering.gdshader" id="9_n50vb"]
+[ext_resource type="Texture2D" uid="uid://bcj5m18kmm5xx" path="res://dithering_pattern.png" id="10_n50vb"]
+
+[sub_resource type="Curve" id="Curve_rn4b7"]
+_data = [Vector2(0, 0), 0.0, 1.4, 0, 0, Vector2(0.49838188, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_jtrl4"]
+curve = SubResource("Curve_rn4b7")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_02q7b"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(800, 450, 1)
+gravity = Vector3(0, 0, 0)
+scale_min = 0.02
+scale_max = 0.07
+scale_curve = SubResource("CurveTexture_jtrl4")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jhov4"]
+bg_color = Color(0.18039216, 0.18039216, 0.18039216, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_frame"]
+bg_color = Color(0.25, 0.35, 0.55, 0.25)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.4, 0.65, 0.95, 0.8)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
+shader = ExtResource("9_n50vb")
+shader_parameter/scroll_speed = Vector2(0.5, 0.5)
+shader_parameter/brightness = 0.10000000475
+
+[node name="WeaponShop" type="Control" unique_id=432418539 node_paths=PackedStringArray("anim_sequence")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_jhov4")
+weapons = Array[ExtResource("2_wdata")]([ExtResource("3_basic"), ExtResource("4_pulse"), ExtResource("5_beam"), ExtResource("6_split"), ExtResource("7_chaos")])
+anim_sequence = [NodePath("Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade1Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade2Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade3Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade4Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/CloseButton")]
+
+[node name="BG" type="ColorRect" parent="." unique_id=1288448497]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12156863, 0.12156863, 0.12156863, 0.5882353)
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=663204005]
+self_modulate = Color(0.16862746, 0.16862746, 0.16862746, 0.5882353)
+position = Vector2(960, 540)
+amount = 96
+texture = ExtResource("1_rn4b7")
+lifetime = 10.0
+preprocess = 10.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_02q7b")
+
+[node name="Panel" type="Panel" parent="." unique_id=721420061]
+custom_minimum_size = Vector2(1600, 900)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -800.0
+offset_top = -450.0
+offset_right = 800.0
+offset_bottom = 450.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jhov4")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=284651287]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer" unique_id=2038835641]
+layout_mode = 2
+theme_override_constants/separation = 64
+
+[node name="WeaponSelection" type="Control" parent="Panel/MarginContainer/HBoxContainer" unique_id=599156453]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection" unique_id=53439331]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 32
+
+[node name="WeaponSelection" type="Panel" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer" unique_id=797701266]
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="WeaponScrollContainer" type="ScrollContainer" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection" unique_id=1436251506]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(840, 280)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = -140.0
+offset_right = 420.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="WeaponImageContainer" type="HBoxContainer" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection/WeaponScrollContainer" unique_id=1917564906]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="SelectionFrame" type="Panel" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection" unique_id=592642973]
+unique_name_in_owner = true
+z_index = 1
+custom_minimum_size = Vector2(350, 350)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -126.0
+offset_top = -126.0
+offset_right = 126.0
+offset_bottom = 126.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="TextureRect" type="TextureRect" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection" unique_id=2109475382]
+self_modulate = Color(1, 1, 1, 0.47058824)
+texture_filter = 1
+texture_repeat = 2
+material = SubResource("ShaderMaterial_ad6r8")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("10_n50vb")
+stretch_mode = 1
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer" unique_id=404620570]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PrevWeaponButton" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer" unique_id=1329057995]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 32
+text = "<"
+
+[node name="SelectWeaponButton" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer" unique_id=2055917758]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 32
+text = "EQUIP"
+
+[node name="NextWeaponButton" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer" unique_id=631501721]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 32
+text = ">"
+
+[node name="WeaponUpgrades" type="Control" parent="Panel/MarginContainer/HBoxContainer" unique_id=256672837]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades" unique_id=342051447]
+custom_minimum_size = Vector2(160, 100)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -100.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 48
+text = "BACK"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades" unique_id=1158916571]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 639.0
+grow_horizontal = 2
+theme_override_constants/separation = 8
+
+[node name="Upgrade1Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=631181984]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade1Button" unique_id=1627124934]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "UPGRADE 1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Upgrade2Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=1206100018]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade2Button" unique_id=381707416]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "UPGRADE 1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Upgrade3Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=2069023607]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade3Button" unique_id=692670182]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "UPGRADE 1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Upgrade4Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=673903018]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade4Button" unique_id=2076585014]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 48
+bbcode_enabled = true
+text = "UPGRADE 1"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer/PrevWeaponButton" to="." method="_on_prev_weapon_button_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer/SelectWeaponButton" to="." method="_on_select_weapon_button_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer/NextWeaponButton" to="." method="_on_next_weapon_button_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/CloseButton" to="." method="_on_close_button_pressed"]

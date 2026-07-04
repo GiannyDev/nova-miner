@@ -10,8 +10,8 @@ atlas_res = ExtResource("2_vh40f")
 skeleton_file_res = ExtResource("3_bhlit")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmlin"]
-radius = 49.0
-height = 220.0
+radius = 48.0
+height = 208.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1596606917]
 y_sort_enabled = true
@@ -24,8 +24,8 @@ acceleration = 36.0
 
 [node name="SpineSprite" type="SpineSprite" parent="." unique_id=1147398709]
 skeleton_data_res = SubResource("SpineSkeletonDataResource_ad6r8")
-preview_skin = "Weapons/Empty"
-preview_animation = "idle_Empty_2"
+preview_skin = "Weapons/Pistol_1"
+preview_animation = "attack_Pistol"
 preview_frame = false
 preview_time = 0.0
 scale = Vector2(0.5, 0.5)
@@ -36,5 +36,6 @@ position = Vector2(296, -218)
 scale = Vector2(2, 2)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856122160]
-position = Vector2(0, -109)
+show_behind_parent = true
+position = Vector2(0, -104)
 shape = SubResource("CapsuleShape2D_gmlin")
