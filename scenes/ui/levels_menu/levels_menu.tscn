@@ -1,0 +1,266 @@
+[gd_scene format=3 uid="uid://b4dkak2dxobwa"]
+
+[ext_resource type="Script" uid="uid://btril3plfwqn0" path="res://scenes/ui/levels_menu/levels_menu.gd" id="1_t0er7"]
+[ext_resource type="Script" uid="uid://doo84wqhoahuw" path="res://scenes/ui/levels_menu/level_card.gd" id="2_j3bhq"]
+[ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://resources/data/levels/level_01_name.tres" id="3_s5ev8"]
+[ext_resource type="Texture2D" uid="uid://cesirwjp1rny6" path="res://sprites/Selector.png" id="4_bd5to"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 48
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
+bg_color = Color(0.4045111, 0.40451118, 0.40451103, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m156b"]
+bg_color = Color(0.2665752, 0.26657522, 0.26657507, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="LevelsMenu" type="Control" unique_id=1902323767]
+custom_minimum_size = Vector2(1100, 840)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -550.0
+offset_top = -410.0
+offset_right = 550.0
+offset_bottom = 410.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t0er7")
+
+[node name="Panel" type="Panel" parent="." unique_id=1688598168]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=494316469]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin" unique_id=1143199779]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/VBoxContainer" unique_id=748917389]
+layout_mode = 2
+text = "Mines"
+label_settings = SubResource("LabelSettings_ad6r8")
+horizontal_alignment = 1
+
+[node name="Levels" type="VBoxContainer" parent="Margin/VBoxContainer" unique_id=747250195]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Level1" type="HBoxContainer" parent="Margin/VBoxContainer/Levels" unique_id=390340579 node_paths=PackedStringArray("floor_1_button", "floor_2_button", "floor_3_button", "completion_next_level")]
+layout_mode = 2
+theme_override_constants/separation = 24
+script = ExtResource("2_j3bhq")
+floor_1_button = NodePath("Floor1Button")
+floor_2_button = NodePath("Floor2Button")
+floor_3_button = NodePath("Floor3Button")
+completion_next_level = NodePath("../Level2")
+level_data = ExtResource("3_s5ev8")
+
+[node name="Panel" type="Panel" parent="Margin/VBoxContainer/Levels/Level1" unique_id=898938355]
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
+
+[node name="Floor1Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=2061901643]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Selector" type="TextureRect" parent="Margin/VBoxContainer/Levels/Level1/Floor1Button" unique_id=678825578]
+visible = false
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -11.0
+offset_top = -12.0
+offset_right = 11.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_bd5to")
+expand_mode = 1
+
+[node name="Floor2Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=424240464]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Selector" type="TextureRect" parent="Margin/VBoxContainer/Levels/Level1/Floor2Button" unique_id=1959076907]
+visible = false
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -11.0
+offset_top = -12.0
+offset_right = 11.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_bd5to")
+expand_mode = 1
+
+[node name="Floor3Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=1558074109]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Selector" type="TextureRect" parent="Margin/VBoxContainer/Levels/Level1/Floor3Button" unique_id=1301027108]
+visible = false
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -11.0
+offset_top = -12.0
+offset_right = 11.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_bd5to")
+expand_mode = 1
+
+[node name="Level2" type="HBoxContainer" parent="Margin/VBoxContainer/Levels" unique_id=270750450 node_paths=PackedStringArray("floor_1_button", "floor_2_button", "floor_3_button", "completion_next_level")]
+layout_mode = 2
+theme_override_constants/separation = 24
+script = ExtResource("2_j3bhq")
+floor_1_button = NodePath("Floor1Button")
+floor_2_button = NodePath("Floor2Button")
+floor_3_button = NodePath("Floor3Button")
+completion_next_level = NodePath("../Level3")
+
+[node name="Panel" type="Panel" parent="Margin/VBoxContainer/Levels/Level2" unique_id=1932437425]
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
+
+[node name="Floor1Button" type="Button" parent="Margin/VBoxContainer/Levels/Level2" unique_id=1823102464]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Floor2Button" type="Button" parent="Margin/VBoxContainer/Levels/Level2" unique_id=1863803962]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Floor3Button" type="Button" parent="Margin/VBoxContainer/Levels/Level2" unique_id=1565128180]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Level3" type="HBoxContainer" parent="Margin/VBoxContainer/Levels" unique_id=179556604 node_paths=PackedStringArray("floor_1_button", "floor_2_button", "floor_3_button", "completion_next_level")]
+layout_mode = 2
+theme_override_constants/separation = 24
+script = ExtResource("2_j3bhq")
+floor_1_button = NodePath("Floor1Button")
+floor_2_button = NodePath("Floor2Button")
+floor_3_button = NodePath("Floor3Button")
+completion_next_level = NodePath("../Level4")
+
+[node name="Panel" type="Panel" parent="Margin/VBoxContainer/Levels/Level3" unique_id=1484049588]
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
+
+[node name="Floor1Button" type="Button" parent="Margin/VBoxContainer/Levels/Level3" unique_id=955775769]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Floor2Button" type="Button" parent="Margin/VBoxContainer/Levels/Level3" unique_id=1072618574]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Floor3Button" type="Button" parent="Margin/VBoxContainer/Levels/Level3" unique_id=664265730]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Level4" type="HBoxContainer" parent="Margin/VBoxContainer/Levels" unique_id=610577816 node_paths=PackedStringArray("floor_1_button", "floor_2_button", "floor_3_button")]
+layout_mode = 2
+theme_override_constants/separation = 24
+script = ExtResource("2_j3bhq")
+floor_1_button = NodePath("Floor1Button")
+floor_2_button = NodePath("Floor2Button")
+floor_3_button = NodePath("Floor3Button")
+
+[node name="Panel" type="Panel" parent="Margin/VBoxContainer/Levels/Level4" unique_id=997748623]
+custom_minimum_size = Vector2(420, 170)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
+
+[node name="Floor1Button" type="Button" parent="Margin/VBoxContainer/Levels/Level4" unique_id=1935403272]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Floor2Button" type="Button" parent="Margin/VBoxContainer/Levels/Level4" unique_id=1407605471]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+
+[node name="Floor3Button" type="Button" parent="Margin/VBoxContainer/Levels/Level4" unique_id=86007127]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")

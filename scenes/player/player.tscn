@@ -4,14 +4,15 @@
 [ext_resource type="SpineAtlasResource" uid="uid://cvnmy2cf6xvfw" path="res://spine/Hero_1.skel.atlas" id="2_vh40f"]
 [ext_resource type="SpineSkeletonFileResource" uid="uid://br5cdou7odk7g" path="res://spine/Hero_1.skel.skel" id="3_bhlit"]
 [ext_resource type="Script" uid="uid://dtoupnroybw1g" path="res://scenes/player/movement_component.gd" id="4_movement"]
+[ext_resource type="Script" uid="uid://xgqtvlytiak7" path="res://scenes/player/laser_weapon.gd" id="5_p47bc"]
 
 [sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_ad6r8"]
 atlas_res = ExtResource("2_vh40f")
 skeleton_file_res = ExtResource("3_bhlit")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmlin"]
-radius = 48.0
-height = 208.0
+radius = 41.0
+height = 198.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1596606917]
 y_sort_enabled = true
@@ -25,17 +26,31 @@ acceleration = 36.0
 [node name="SpineSprite" type="SpineSprite" parent="." unique_id=1147398709]
 skeleton_data_res = SubResource("SpineSkeletonDataResource_ad6r8")
 preview_skin = "Weapons/Pistol_1"
-preview_animation = "attack_Pistol"
+preview_animation = "idle"
 preview_frame = false
 preview_time = 0.0
 scale = Vector2(0.5, 0.5)
 
-[node name="LaserFirePos" type="Marker2D" parent="SpineSprite" unique_id=724001300]
+[node name="LaserMount" type="Node2D" parent="." unique_id=724001299]
+position = Vector2(0, -80)
+
+[node name="LaserFirePos" type="Marker2D" parent="LaserMount" unique_id=724001300]
+position = Vector2(48, 0)
+
+[node name="LaserWeapon" type="RayCast2D" parent="LaserMount" unique_id=1017692447]
 show_behind_parent = true
-position = Vector2(296, -218)
-scale = Vector2(2, 2)
+position = Vector2(48, 0)
+target_position = Vector2(0, 0)
+collision_mask = 2
+script = ExtResource("5_p47bc")
+color = Color(2.454, 0.8, 0.2, 1)
+
+[node name="Line2D" type="Line2D" parent="LaserMount/LaserWeapon" unique_id=1401024637]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 4.0
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856122160]
-show_behind_parent = true
 position = Vector2(0, -104)
 shape = SubResource("CapsuleShape2D_gmlin")

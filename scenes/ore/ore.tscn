@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dcuuf1m1b62jv"]
+
+[ext_resource type="Script" uid="uid://b7vv5tefc8fhj" path="res://scenes/ore/ore.gd" id="1_kfe1t"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_0isyo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
+size = Vector2(256, 256)
+
+[node name="Ore" type="Node2D" unique_id=413829101]
+script = ExtResource("1_kfe1t")
+
+[node name="Visuals" type="Node2D" parent="." unique_id=807427659]
+position = Vector2(0, 128)
+
+[node name="Sprite" type="Sprite2D" parent="Visuals" unique_id=1416804201]
+position = Vector2(0, -128)
+scale = Vector2(2, 2)
+texture = ExtResource("2_0isyo")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=470038999]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=603542384]
+shape = SubResource("RectangleShape2D_ad6r8")

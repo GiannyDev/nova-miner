@@ -8,22 +8,22 @@ font_size = 64
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
 shader = ExtResource("1_1ch07")
-shader_parameter/wobble_speed = 0.1
-shader_parameter/wobble_frequency = 0.30000001425
-shader_parameter/wobble_strength = 0.5
-shader_parameter/fisheye = 0.250000011875
-shader_parameter/brighten = 0.650000030875
-shader_parameter/scanline_count = 240.0000114
-shader_parameter/scanline_movespeed = 0.50000002375
-shader_parameter/horizontal_scanline_strength = 0.4
-shader_parameter/vertical_scanline_strength = 0.02000000095
-shader_parameter/chromatic = 2.0
-shader_parameter/ghosting = 0.05
-shader_parameter/vignette = 0.050000002375
-shader_parameter/edge_color = Color(0.03137255, 0.03137255, 0.03137255, 1)
-shader_parameter/bloomRadius = 1.0
-shader_parameter/bloomThreshold = 1.0
-shader_parameter/bloomIntensity = 1.0
+shader_parameter/enable_slotmask = true
+shader_parameter/enable_gridmask = true
+shader_parameter/mask_strength = 0.45
+shader_parameter/pixel_size = 3.0
+shader_parameter/enable_grain = true
+shader_parameter/grain_strength = 0.25
+shader_parameter/enable_curving = false
+shader_parameter/curve_power = 1.02
+shader_parameter/enable_scanlines = true
+shader_parameter/scanlines_interval = 3.0
+shader_parameter/scanlines_opacity = 0.45
+shader_parameter/scanlines_thickness = 1.0
+shader_parameter/enable_smearing = true
+shader_parameter/smearing_strength = 0.2
+shader_parameter/enable_wiggle = true
+shader_parameter/wiggle = 0.04
 
 [node name="MainMenu" type="Control" unique_id=1414841993]
 layout_mode = 3

@@ -17,7 +17,6 @@ enum OperationType { ADD, SUBTRACT, SET_TRUE, SET_FALSE, ADD_TO_LIST }
 @export var amount: float
 @export var cost: int
 
-
 func apply_upgrade(stats: StatsData) -> void:
 	if stats == null:
 		return

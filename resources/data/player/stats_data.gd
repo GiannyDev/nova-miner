@@ -8,6 +8,7 @@ class_name StatsData
 @export var laser_length: float = 400.0
 @export var pickup_radius: float = 50.0
 @export var helpers_unlocked: int = 0
+@export var starting_ore_amount: float = 15.0
 
 
 func get_stat(stat_name: String) -> float:
@@ -26,6 +27,8 @@ func get_stat(stat_name: String) -> float:
 			return pickup_radius
 		"helpers_unlocked":
 			return float(helpers_unlocked)
+		"starting_ore_amount":
+			return starting_ore_amount
 		_:
 			push_warning("Unknown stat: %s" % stat_name)
 			return 0.0
@@ -47,6 +50,8 @@ func set_stat(stat_name: String, value: float) -> void:
 			pickup_radius = value
 		"helpers_unlocked":
 			helpers_unlocked = int(value)
+		"starting_ore_amount":
+			starting_ore_amount = value
 		_:
 			push_warning("Unknown stat: %s" % stat_name)
 

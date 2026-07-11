@@ -1,0 +1,163 @@
+[gd_scene format=3 uid="uid://dcfiugihmklr0"]
+
+[ext_resource type="Script" uid="uid://bjot56x4obgvs" path="res://scenes/ui/recap_menu/recap_menu.gd" id="1_p7xga"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_33wub"]
+bg_color = Color(0.12591082, 0.12591085, 0.12591076, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 64
+
+[sub_resource type="LabelSettings" id="LabelSettings_m156b"]
+font_size = 64
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
+bg_color = Color(0.32350525, 0.6500297, 0.75642514, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p7xga"]
+bg_color = Color(0.32350525, 0.6500297, 0.75642514, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0x840"]
+bg_color = Color(0.32350525, 0.6500297, 0.75642514, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m156b"]
+bg_color = Color(0.07419718, 0.7109662, 0.4450093, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fwwwh"]
+bg_color = Color(0.07419718, 0.7109662, 0.4450093, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nlugd"]
+bg_color = Color(0.07419718, 0.7109662, 0.4450093, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="RecapMenu" type="Control" unique_id=591442525]
+custom_minimum_size = Vector2(1200, 600)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_p7xga")
+
+[node name="BG" type="ColorRect" parent="." unique_id=286164995]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.3137255)
+
+[node name="Panel" type="Panel" parent="." unique_id=1033034209]
+custom_minimum_size = Vector2(800, 800)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_33wub")
+
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=553288619]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/Margin" unique_id=2060832253]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="Panel/Margin/VBoxContainer" unique_id=493211438]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Recap"
+label_settings = SubResource("LabelSettings_ad6r8")
+horizontal_alignment = 1
+
+[node name="RecapStats" type="Control" parent="Panel/Margin/VBoxContainer" unique_id=883615037]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=391604427]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "STATS"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/Margin/VBoxContainer" unique_id=587644991]
+layout_mode = 2
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="HomeButton" type="Button" parent="Panel/Margin/VBoxContainer/Buttons" unique_id=1809297739]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_ad6r8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_p7xga")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0x840")
+text = "Home"
+
+[node name="PlayButton" type="Button" parent="Panel/Margin/VBoxContainer/Buttons" unique_id=105330427]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_fwwwh")
+theme_override_styles/hover = SubResource("StyleBoxFlat_nlugd")
+text = "Play"
+
+[connection signal="mouse_entered" from="Panel/Margin/VBoxContainer/Buttons/HomeButton" to="." method="_on_home_button_mouse_entered"]
+[connection signal="pressed" from="Panel/Margin/VBoxContainer/Buttons/HomeButton" to="." method="_on_home_button_pressed"]
+[connection signal="mouse_entered" from="Panel/Margin/VBoxContainer/Buttons/PlayButton" to="." method="_on_play_button_mouse_entered"]
+[connection signal="pressed" from="Panel/Margin/VBoxContainer/Buttons/PlayButton" to="." method="_on_play_button_pressed"]

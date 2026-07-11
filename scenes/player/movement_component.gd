@@ -4,7 +4,6 @@ class_name MovementComponent
 @export var acceleration: float = 12.0
 @export var stop_threshold: float = 4.0
 
-
 ## Aplica movimiento suave con aceleracion y frenado gradual.
 func move(entity: CharacterBody2D, direction: Vector2, delta: float, movement_speed: float) -> void:
 	var target_velocity := direction * movement_speed

@@ -280,7 +280,7 @@ func _on_pressed() -> void:
 	GameManager.skill_levels[upgrade.skill_id] = level
 	CurrencyManager.remove_currency(upgrade.upgrade_material, upgrade_cost)
 	GameManager.refresh_player_stats()
-	EventBus.emit_upgrade_purchased()
+	EventBus.upgrade_purchased.emit()
 
 	_set_upgrade_stats(level)
 	_update_skill_info()

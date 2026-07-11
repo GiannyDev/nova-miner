@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://c3cv87vswpk7l"]
+
+[ext_resource type="Script" uid="uid://cfs2iw8mjgg7y" path="res://scenes/ui/settings_menu/settings_menu.gd" id="1_7iv5r"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
+bg_color = Color(0.15847227, 0.15847233, 0.15847221, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="SettingsMenu" type="Control" unique_id=1541801447]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7iv5r")
+
+[node name="BG" type="ColorRect" parent="." unique_id=419255079]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.27450982)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=628042831]
+custom_minimum_size = Vector2(1000, 800)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer" unique_id=1225146940]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer/Buttons" unique_id=272083991]
+custom_minimum_size = Vector2(210, 80)
+layout_mode = 2
+text = "Juego"
+
+[node name="Button2" type="Button" parent="VBoxContainer/Buttons" unique_id=109615136]
+custom_minimum_size = Vector2(210, 80)
+layout_mode = 2
+text = "Video"
+
+[node name="Button3" type="Button" parent="VBoxContainer/Buttons" unique_id=2041337972]
+custom_minimum_size = Vector2(210, 80)
+layout_mode = 2
+text = "Audio"
+
+[node name="Button4" type="Button" parent="VBoxContainer/Buttons" unique_id=594297456]
+custom_minimum_size = Vector2(210, 80)
+layout_mode = 2
+text = "Controles"
+
+[node name="Panel" type="Panel" parent="VBoxContainer" unique_id=1071930916]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
+
+[node name="Margin" type="MarginContainer" parent="VBoxContainer/Panel" unique_id=874843460]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="GamePanel" type="Control" parent="VBoxContainer/Panel/Margin" unique_id=1576948370]
+layout_mode = 2
+
+[node name="VideoPanel" type="Control" parent="VBoxContainer/Panel/Margin" unique_id=458444461]
+layout_mode = 2
+
+[node name="AudioPanel" type="Control" parent="VBoxContainer/Panel/Margin" unique_id=1269169589]
+layout_mode = 2
+
+[node name="ControlsPanel" type="Control" parent="VBoxContainer/Panel/Margin" unique_id=447675223]
+layout_mode = 2

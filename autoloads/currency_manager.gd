@@ -11,12 +11,12 @@ func _ready() -> void:
 
 func add_currency(currency_type: CurrencyData.CurrencyType, amount: int) -> void:
 	currency_data.currency_amount[currency_type] += amount
-	EventBus.emit_currency_ui_update()
+	EventBus.currency_ui_update.emit()
 
 
 func remove_currency(currency_type: CurrencyData.CurrencyType, amount: int) -> void:
 	currency_data.currency_amount[currency_type] -= amount
-	EventBus.emit_currency_ui_update()
+	EventBus.currency_ui_update.emit()
 
 
 func can_afford(currency_type: CurrencyData.CurrencyType, amount: int) -> bool:

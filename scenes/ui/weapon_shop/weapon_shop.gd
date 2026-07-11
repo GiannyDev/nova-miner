@@ -31,7 +31,6 @@ func show_panel() -> void:
 	if not weapons_built:
 		setup_weapons()
 		weapons_built = true
-	GameManager.animate_panel_open(anim_sequence)
 	call_deferred("scroll_to_weapon", find_equipped_index(), false)
 
 

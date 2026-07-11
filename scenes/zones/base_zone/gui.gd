@@ -3,9 +3,17 @@ class_name GUI
 
 @onready var upgrade_tree: UpgradeTree = $UpgradeTree
 @onready var weapon_shop: WeaponShop = $WeaponShop
-@onready var ore_refinery: Control = $OreRefinery
-@onready var options_menu: Control = $OptionsMenu
+@onready var settings_menu: SettingsMenu = $SettingsMenu
+@onready var levels_menu: LevelMenu = $LevelsMenu
 
+func _ready() -> void:
+	pass
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("escape"):
+		if levels_menu.visible:
+			levels_menu.hide_panel()
 
 func open_upgrade_tree() -> void:
 	upgrade_tree.open()

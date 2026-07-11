@@ -33,12 +33,10 @@ func _ready() -> void:
 	setup_buttons.call_deferred()
 	_update_currency_label.call_deferred()
 
-
-func open() -> void:
-	visible = true
+func show_panel() -> void:
+	show()
 	setup_buttons()
 	_update_currency_label()
-
 
 func close() -> void:
 	if skill_info != null:

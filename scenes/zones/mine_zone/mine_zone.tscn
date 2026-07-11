@@ -2,9 +2,28 @@
 
 [ext_resource type="PackedScene" uid="uid://b2g6jlt83l52k" path="res://scenes/player/player.tscn" id="1_mdgi6"]
 [ext_resource type="Script" uid="uid://b1djdot42y4vt" path="res://scenes/zones/mine_zone/mine_zone.gd" id="1_r8hjc"]
+[ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="3_yy5d6"]
+[ext_resource type="Script" uid="uid://dqvaq2wpkd12e" path="res://scenes/zones/mine_zone/mine_grid.gd" id="4_grid"]
+[ext_resource type="Script" uid="uid://besp4muqiv5ox" path="res://scenes/zones/mine_zone/ore_spawner.gd" id="5_spwn"]
+[ext_resource type="PackedScene" uid="uid://dcfiugihmklr0" path="res://scenes/ui/recap_menu/recap_menu.tscn" id="6_7yl0r"]
 
 [node name="MineZone" type="Node2D" unique_id=1113268112]
 script = ExtResource("1_r8hjc")
+use_debug_count = true
+debug_ore_count = 120
+
+[node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
+script = ExtResource("4_grid")
+cell_size = 256
+safe_zone_radius_cells = 1
+grid_line_width = null
+major_grid_interval = null
+min_cell_pixels = null
+major_grid_color = null
+border_color = null
+
+[node name="OreSpawner" type="Node" parent="." unique_id=1113268201]
+script = ExtResource("5_spwn")
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true
@@ -12,4 +31,18 @@ y_sort_enabled = true
 [node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_mdgi6")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=324192786]
-zoom = Vector2(0.3, 0.3)
+zoom = Vector2(0.45, 0.45)
+
+[node name="GUI" type="CanvasLayer" parent="." unique_id=1755441572]
+
+[node name="SettingsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("3_yy5d6")]
+unique_name_in_owner = true
+visible = false
+
+[node name="RecapMenu" parent="GUI" unique_id=591442525 instance=ExtResource("6_7yl0r")]
+unique_name_in_owner = true
+
+[node name="RunTimer" type="Timer" parent="." unique_id=734289188]
+one_shot = true
+
+[connection signal="timeout" from="RunTimer" to="." method="_on_run_timer_timeout"]
