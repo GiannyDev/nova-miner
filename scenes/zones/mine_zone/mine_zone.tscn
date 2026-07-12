@@ -10,7 +10,6 @@
 [node name="MineZone" type="Node2D" unique_id=1113268112]
 script = ExtResource("1_r8hjc")
 use_debug_count = true
-debug_ore_count = 120
 
 [node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
 script = ExtResource("4_grid")

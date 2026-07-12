@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://behv72lanuvpp"]
+
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="1_2ow0y"]
+
+[node name="OreDrop" type="Node2D" unique_id=1017437798]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=520262739]
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("1_2ow0y")

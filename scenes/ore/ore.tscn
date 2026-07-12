@@ -6,7 +6,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
 size = Vector2(256, 256)
 
-[node name="Ore" type="Node2D" unique_id=413829101]
+[node name="OreBlock" type="Node2D" unique_id=413829101]
 script = ExtResource("1_kfe1t")
 
 [node name="Visuals" type="Node2D" parent="." unique_id=807427659]

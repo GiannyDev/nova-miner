@@ -8,6 +8,8 @@
 [ext_resource type="Script" uid="uid://q5ew6j4wae2h" path="res://scenes/zones/base_zone/bench.gd" id="3_mngwo"]
 [ext_resource type="Script" uid="uid://dgkgkuwla3cgp" path="res://scenes/zones/base_zone/gui.gd" id="4_2dcdp"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="5_2dcdp"]
+[ext_resource type="Script" uid="uid://1r7rqkf01cc3" path="res://scenes/zones/base_zone/refinery_bench.gd" id="5_la2ei"]
+[ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://resources/data/ores/ore_gold.tres" id="6_oredata"]
 [ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://resources/data/weapons/weapon_data.gd" id="8_o6jf1"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
 [ext_resource type="PackedScene" uid="uid://b4dkak2dxobwa" path="res://scenes/ui/levels_menu/levels_menu.tscn" id="9_o6jf1"]
@@ -30,6 +32,9 @@ size = Vector2(192, 628)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mngwo"]
 size = Vector2(950, 180)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_18tml"]
+size = Vector2(942, 280)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_etp80"]
 size = Vector2(256, 137)
@@ -146,9 +151,12 @@ shape = SubResource("RectangleShape2D_n4fd8")
 
 [node name="RefineryBench" type="Node2D" parent="YSort" unique_id=1231799727]
 position = Vector2(-6, 972)
-script = ExtResource("3_mngwo")
+script = ExtResource("5_la2ei")
+deposit_stagger = 0.1
+collect_stagger = 0.2
+ore_data = ExtResource("6_oredata")
 
-[node name="Sprite2D4" type="Sprite2D" parent="YSort/RefineryBench" unique_id=881878358]
+[node name="BenchSprite" type="Sprite2D" parent="YSort/RefineryBench" unique_id=881878358]
 position = Vector2(488, 0)
 scale = Vector2(7.367187, 1.6015625)
 texture = ExtResource("2_2e3ff")
@@ -159,6 +167,24 @@ collision_layer = 4
 [node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/RefineryBench/StaticBody2D2" unique_id=1759887669]
 position = Vector2(488, 14)
 shape = SubResource("RectangleShape2D_mngwo")
+
+[node name="PlayerDetector" type="Area2D" parent="YSort/RefineryBench" unique_id=1205876979]
+position = Vector2(488, 14)
+collision_layer = 0
+
+[node name="CollisionPolygon2D" type="CollisionShape2D" parent="YSort/RefineryBench/PlayerDetector" unique_id=580784683]
+position = Vector2(0, -49)
+shape = SubResource("RectangleShape2D_18tml")
+debug_color = Color(0.78039217, 0.5529412, 0.46666667, 0.23529412)
+
+[node name="RefineryMachinePos" type="Marker2D" parent="YSort/RefineryBench" unique_id=556422245]
+position = Vector2(182, 0)
+
+[node name="RefineOrePos" type="Marker2D" parent="YSort/RefineryBench" unique_id=972569111]
+position = Vector2(640, 2)
+
+[node name="RefinedContainer" type="Node2D" parent="YSort/RefineryBench" unique_id=1172859660]
+position = Vector2(488, 14)
 
 [node name="MineDoor" type="Node2D" parent="YSort" unique_id=39020944 node_paths=PackedStringArray("player_area", "panel_to_open")]
 position = Vector2(960, 132)
@@ -414,3 +440,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[connection signal="body_entered" from="YSort/RefineryBench/PlayerDetector" to="YSort/RefineryBench" method="_on_player_detector_body_entered"]
+[connection signal="body_exited" from="YSort/RefineryBench/PlayerDetector" to="YSort/RefineryBench" method="_on_player_detector_body_exited"]

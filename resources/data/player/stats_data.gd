@@ -8,8 +8,9 @@ class_name StatsData
 @export var laser_length: float = 400.0
 @export var pickup_radius: float = 50.0
 @export var helpers_unlocked: int = 0
-@export var starting_ore_amount: float = 15.0
 
+## Ores
+@export var starting_ore_amount: float = 15.0
 
 func get_stat(stat_name: String) -> float:
 	match stat_name:
