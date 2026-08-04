@@ -6,33 +6,127 @@
 [ext_resource type="Script" uid="uid://dqvaq2wpkd12e" path="res://scenes/zones/mine_zone/mine_grid.gd" id="4_grid"]
 [ext_resource type="Script" uid="uid://besp4muqiv5ox" path="res://scenes/zones/mine_zone/ore_spawner.gd" id="5_spwn"]
 [ext_resource type="PackedScene" uid="uid://dcfiugihmklr0" path="res://scenes/ui/recap_menu/recap_menu.tscn" id="6_7yl0r"]
+[ext_resource type="Resource" uid="uid://b6om4ui0righ0" path="res://data/mines/default_block_layout.tres" id="8_layout"]
+[ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_1xuby"]
+[ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="9_3eek8"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3eek8"]
+font_size = 40
+shadow_color = Color(0.18039216, 0.18039216, 0.18039216, 0.5882353)
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1xuby"]
+bg_color = Color(0.49354547, 0.49354553, 0.49354535, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f6bms"]
+bg_color = Color(1.0642196, 0.502401, 0.11275268, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 29
+shadow_color = Color(0.18039216, 0.18039216, 0.18039216, 0.5882353)
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="LabelSettings" id="LabelSettings_1xuby"]
+font_size = 28
+shadow_color = Color(0.18039216, 0.18039216, 0.18039216, 0.5882353)
+shadow_offset = Vector2(1.5, 1.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
+shader = ExtResource("9_1xuby")
+shader_parameter/outerRadius = 4.00000019
+shader_parameter/MainAlpha = 0.50000002375
 
 [node name="MineZone" type="Node2D" unique_id=1113268112]
 script = ExtResource("1_r8hjc")
-use_debug_count = true
-
-[node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
-script = ExtResource("4_grid")
-cell_size = 256
-safe_zone_radius_cells = 1
-grid_line_width = null
-major_grid_interval = null
-min_cell_pixels = null
-major_grid_color = null
-border_color = null
 
 [node name="OreSpawner" type="Node" parent="." unique_id=1113268201]
 script = ExtResource("5_spwn")
+block_layout = ExtResource("8_layout")
+debug_stack_height = 25
+
+[node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
+script = ExtResource("4_grid")
+cell_size = Vector2i(256, 158)
+safe_zone_radius_cells = 1
+block_layout = ExtResource("8_layout")
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true
 
 [node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_mdgi6")]
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=324192786]
-zoom = Vector2(0.45, 0.45)
+[node name="Camera2D" type="Camera2D" parent="YSort/Player" unique_id=324192786]
+zoom = Vector2(0.5, 0.5)
 
 [node name="GUI" type="CanvasLayer" parent="." unique_id=1755441572]
+
+[node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("9_3eek8")]
+
+[node name="Time" type="Label" parent="GUI" unique_id=130832460]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 36)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 30.0
+offset_right = 100.0
+offset_bottom = 66.0
+grow_horizontal = 2
+text = "00:23"
+label_settings = SubResource("LabelSettings_3eek8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="QuotaProgressBar" type="ProgressBar" parent="GUI" unique_id=1428977027]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -500.0
+offset_top = -66.0
+offset_right = 500.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 28
+theme_override_styles/background = SubResource("StyleBoxFlat_1xuby")
+theme_override_styles/fill = SubResource("StyleBoxFlat_f6bms")
+max_value = 1.0
+step = 0.001
+value = 0.5
+show_percentage = false
+
+[node name="QuotaExtraction" type="Label" parent="GUI/QuotaProgressBar" unique_id=1793530715]
+layout_mode = 0
+offset_top = -40.0
+offset_right = 284.0
+text = "Quota Extraction"
+label_settings = SubResource("LabelSettings_ad6r8")
+vertical_alignment = 2
+
+[node name="QuotaProgressLabel" type="Label" parent="GUI/QuotaProgressBar" unique_id=1140248880]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "56%"
+label_settings = SubResource("LabelSettings_1xuby")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SettingsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("3_yy5d6")]
 unique_name_in_owner = true
@@ -40,6 +134,16 @@ visible = false
 
 [node name="RecapMenu" parent="GUI" unique_id=591442525 instance=ExtResource("6_7yl0r")]
 unique_name_in_owner = true
+visible = false
+
+[node name="Vignette" type="ColorRect" parent="GUI" unique_id=702872282]
+material = SubResource("ShaderMaterial_ad6r8")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="RunTimer" type="Timer" parent="." unique_id=734289188]
 one_shot = true

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MineBlockLayout" format=3 uid="uid://b6om4ui0righ0"]
+
+[ext_resource type="Script" uid="uid://c6t4qbafmeub2" path="res://data/mines/mine_block_layout.gd" id="1_layout"]
+
+[resource]
+script = ExtResource("1_layout")
+block_width = 256
+block_height = 384
+cell_size = Vector2i(256, 158)
+cell_center_offset_y = 79.0

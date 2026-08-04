@@ -1,39 +1,33 @@
 [gd_scene format=3 uid="uid://n5gmi3qq1g4k"]
 
-[ext_resource type="Shader" uid="uid://bl5laquforg1k" path="res://resources/shaders/crt.gdshader" id="1_1ch07"]
-[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="1_e8t4i"]
+[ext_resource type="Script" uid="uid://ctebvuyqxdb4o" path="res://scenes/ui/main_menu/main_menu.gd" id="1_1ch07"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m156b"]
+font_size = 80
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
 font_size = 64
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
-shader = ExtResource("1_1ch07")
-shader_parameter/enable_slotmask = true
-shader_parameter/enable_gridmask = true
-shader_parameter/mask_strength = 0.45
-shader_parameter/pixel_size = 3.0
-shader_parameter/enable_grain = true
-shader_parameter/grain_strength = 0.25
-shader_parameter/enable_curving = false
-shader_parameter/curve_power = 1.02
-shader_parameter/enable_scanlines = true
-shader_parameter/scanlines_interval = 3.0
-shader_parameter/scanlines_opacity = 0.45
-shader_parameter/scanlines_thickness = 1.0
-shader_parameter/enable_smearing = true
-shader_parameter/smearing_strength = 0.2
-shader_parameter/enable_wiggle = true
-shader_parameter/wiggle = 0.04
-
-[node name="MainMenu" type="Control" unique_id=1414841993]
+[node name="MainMenu" type="Control" unique_id=1414841993 node_paths=PackedStringArray("buttons")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_1ch07")
+buttons = [NodePath("Buttons/WishlistButton"), NodePath("Buttons/PlayButton"), NodePath("Buttons/CollectionButton"), NodePath("Buttons/SettingsOption"), NodePath("Buttons/QuitButton")]
 
-[node name="GameLogo" type="TextureRect" parent="." unique_id=1391234557]
+[node name="BG" type="ColorRect" parent="." unique_id=1547943217]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25565878, 0.25565878, 0.25565878, 1)
+
+[node name="GameLogo" type="Label" parent="." unique_id=885661217]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -46,9 +40,12 @@ offset_right = 250.0
 offset_bottom = -316.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_e8t4i")
+text = "NOVA
+MINER"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=954540570]
+[node name="Buttons" type="VBoxContainer" parent="." unique_id=954540570]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -63,59 +60,83 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="Button" type="Button" parent="VBoxContainer" unique_id=1200776544]
+[node name="WishlistButton" type="Button" parent="Buttons" unique_id=1200776544]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "WISHLIST"
 
-[node name="Space" type="Control" parent="VBoxContainer" unique_id=90785249]
+[node name="Space" type="Control" parent="Buttons" unique_id=90785249]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="Button5" type="Button" parent="VBoxContainer" unique_id=815529290]
+[node name="PlayButton" type="Button" parent="Buttons" unique_id=815529290]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "PLAY"
 
-[node name="Button2" type="Button" parent="VBoxContainer" unique_id=2093004496]
+[node name="CollectionButton" type="Button" parent="Buttons" unique_id=2093004496]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "COLLECTION"
 
-[node name="Button3" type="Button" parent="VBoxContainer" unique_id=1729110838]
+[node name="SettingsOption" type="Button" parent="Buttons" unique_id=1729110838]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
-text = "OPTIONS"
+text = "SETTINGS"
 
-[node name="Button4" type="Button" parent="VBoxContainer" unique_id=850937766]
+[node name="QuitButton" type="Button" parent="Buttons" unique_id=850937766]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 120)
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "	QUIT"
 
-[node name="ScreenCanvas" type="CanvasLayer" parent="." unique_id=48220416]
-
-[node name="GameVersion" type="Label" parent="ScreenCanvas" unique_id=471905414]
+[node name="GameVersion" type="Label" parent="." unique_id=471905414]
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -108.0
-offset_right = 145.0
-offset_bottom = -20.0
+offset_left = 30.0
+offset_top = -100.0
+offset_right = 330.0
+offset_bottom = -21.333008
 grow_vertical = 0
 text = "v0.1"
 label_settings = SubResource("LabelSettings_ad6r8")
 vertical_alignment = 1
 
-[node name="CRT" type="ColorRect" parent="ScreenCanvas" unique_id=1885181578]
-material = SubResource("ShaderMaterial_ad6r8")
-anchors_preset = 15
-anchor_right = 1.0
+[node name="DiscordButton" type="Button" parent="." unique_id=887376601]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = 30.0
+offset_top = -260.0
+offset_right = 160.0
+offset_bottom = -130.0
+grow_vertical = 0
+
+[node name="UpdatesButton" type="Button" parent="." unique_id=796095102]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = -427.0
+offset_right = 160.0
+offset_bottom = -297.0
+grow_vertical = 0
+
+[connection signal="pressed" from="Buttons/WishlistButton" to="." method="_on_wishlist_button_pressed"]
+[connection signal="pressed" from="Buttons/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="Buttons/CollectionButton" to="." method="_on_collection_button_pressed"]
+[connection signal="pressed" from="Buttons/SettingsOption" to="." method="_on_settings_option_pressed"]
+[connection signal="pressed" from="Buttons/QuitButton" to="." method="_on_quit_button_pressed"]

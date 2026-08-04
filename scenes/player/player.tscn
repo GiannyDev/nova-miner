@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cils10bt75cmh" path="res://scenes/player/player.gd" id="1_fmv3f"]
 [ext_resource type="SpineAtlasResource" uid="uid://cvnmy2cf6xvfw" path="res://spine/Hero_1.skel.atlas" id="2_vh40f"]
+[ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="3_75vfm"]
 [ext_resource type="SpineSkeletonFileResource" uid="uid://br5cdou7odk7g" path="res://spine/Hero_1.skel.skel" id="3_bhlit"]
 [ext_resource type="Script" uid="uid://dtoupnroybw1g" path="res://scenes/player/movement_component.gd" id="4_movement"]
 [ext_resource type="Script" uid="uid://xgqtvlytiak7" path="res://scenes/player/laser_weapon.gd" id="5_p47bc"]
@@ -10,9 +11,8 @@
 atlas_res = ExtResource("2_vh40f")
 skeleton_file_res = ExtResource("3_bhlit")
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmlin"]
-radius = 41.0
-height = 198.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_1xuby"]
+radius = 38.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1596606917]
 y_sort_enabled = true
@@ -23,13 +23,25 @@ script = ExtResource("1_fmv3f")
 script = ExtResource("4_movement")
 acceleration = 36.0
 
+[node name="Shadow" type="Sprite2D" parent="." unique_id=573872449]
+self_modulate = Color(0, 0, 0, 0.23529412)
+position = Vector2(0, -2.9999998)
+scale = Vector2(0.25, 0.1)
+texture = ExtResource("3_75vfm")
+
 [node name="SpineSprite" type="SpineSprite" parent="." unique_id=1147398709]
 skeleton_data_res = SubResource("SpineSkeletonDataResource_ad6r8")
 preview_skin = "Weapons/Pistol_1"
 preview_animation = "idle"
 preview_frame = false
 preview_time = 0.0
+position = Vector2(0, -3)
 scale = Vector2(0.5, 0.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856122160]
+z_index = 1
+position = Vector2(0, -38)
+shape = SubResource("CircleShape2D_1xuby")
 
 [node name="LaserMount" type="Node2D" parent="." unique_id=724001299]
 position = Vector2(0, -80)
@@ -50,7 +62,3 @@ points = PackedVector2Array(0, 0, 0, 0)
 width = 4.0
 begin_cap_mode = 2
 end_cap_mode = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856122160]
-position = Vector2(0, -104)
-shape = SubResource("CapsuleShape2D_gmlin")

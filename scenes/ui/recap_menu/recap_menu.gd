@@ -1,15 +1,15 @@
 extends Control
 class_name RecapMenu
 
+const STAGGER_DELAY: float = 0.1
+const SHELLDIVER_SLIDE_OFFSET: float = 48.0
+const SHELLDIVER_ROTATION: float = -10.0
+
 @onready var bg: ColorRect = $BG
 @onready var title: Label = %Title
 @onready var stats: Label = %Stats
 @onready var home_button: Button = %HomeButton
 @onready var play_button: Button = %PlayButton
-
-const STAGGER_DELAY: float = 0.1
-const SHELLDIVER_SLIDE_OFFSET: float = 48.0
-const SHELLDIVER_ROTATION: float = -10.0
 
 var title_rest_position: Vector2
 var stats_rest_position: Vector2

@@ -9,10 +9,9 @@
 [ext_resource type="Script" uid="uid://dgkgkuwla3cgp" path="res://scenes/zones/base_zone/gui.gd" id="4_2dcdp"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="5_2dcdp"]
 [ext_resource type="Script" uid="uid://1r7rqkf01cc3" path="res://scenes/zones/base_zone/refinery_bench.gd" id="5_la2ei"]
-[ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://resources/data/ores/ore_gold.tres" id="6_oredata"]
-[ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://resources/data/weapons/weapon_data.gd" id="8_o6jf1"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
 [ext_resource type="PackedScene" uid="uid://b4dkak2dxobwa" path="res://scenes/ui/levels_menu/levels_menu.tscn" id="9_o6jf1"]
+[ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="12_dpy17"]
 [ext_resource type="Material" uid="uid://cbpjar43wpa2" path="res://resources/crt_01.tres" id="12_o6jf1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
@@ -154,7 +153,6 @@ position = Vector2(-6, 972)
 script = ExtResource("5_la2ei")
 deposit_stagger = 0.1
 collect_stagger = 0.2
-ore_data = ExtResource("6_oredata")
 
 [node name="BenchSprite" type="Sprite2D" parent="YSort/RefineryBench" unique_id=881878358]
 position = Vector2(488, 0)
@@ -220,7 +218,6 @@ visible = false
 
 [node name="WeaponShop" parent="GUI" unique_id=432418539 instance=ExtResource("3_2e3ff")]
 visible = false
-weapons = Array[ExtResource("8_o6jf1")]([])
 
 [node name="CompMenu" type="Control" parent="GUI" unique_id=1975018279]
 visible = false
@@ -419,6 +416,8 @@ visible = false
 
 [node name="SettingsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("5_2dcdp")]
 visible = false
+
+[node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("12_dpy17")]
 
 [node name="Vignette" type="ColorRect" parent="GUI" unique_id=1631264448]
 visible = false

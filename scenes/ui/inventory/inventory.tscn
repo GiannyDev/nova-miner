@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://dtxutr3tlt43j"]
+
+[ext_resource type="Script" uid="uid://cgr6whpkuuivg" path="res://scenes/ui/inventory/inventory.gd" id="1_xce7s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_la2ei"]
+bg_color = Color(0.0142752165, 0.014275218, 0.014275218, 0.50980395)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="Inventory" type="PanelContainer" unique_id=1580823554]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 152.0
+offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_la2ei")
+script = ExtResource("1_xce7s")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=826050632]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="Container" type="VBoxContainer" parent="MarginContainer" unique_id=559642726]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8

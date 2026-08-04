@@ -1,19 +1,27 @@
 @tool
 extends Node2D
 class_name MineGrid
+## Grid de la mina: celdas rectangulares (XY), ocupacion, safe zone y layout de bloques.
 
-@export var cell_size: int = 64 : set = set_cell_size
+# --- Exports ---
+@export_group("Grid")
+## Tamano de cada celda en pixeles (X = ancho, Y = alto / paso de stack).
+@export var cell_size: Vector2i = Vector2i(128, 62) : set = set_cell_size
 @export var grid_world_size: Vector2 = Vector2(5486, 3086) : set = set_grid_world_size
-## Radio Chebyshev (en celdas) que se mantiene vacio alrededor del centro para el player.
+## Radio Chebyshev (en celdas) vacio alrededor del centro para el player.
 @export var safe_zone_radius_cells: int = 3 : set = set_safe_zone_radius_cells
+
+@export_group("Block Layout")
+## Sprite + cell_size + offset de asiento. Compartido con OreSpawner via grid.
+@export var block_layout: MineBlockLayout : set = set_block_layout
 
 @export_group("Debug")
 @export var show_grid: bool = true : set = set_show_grid
-## Ancho en píxeles de pantalla. En Godot 4, valores negativos no escalan con el zoom.
+## Ancho en pixeles de pantalla. Negativo = no escala con el zoom.
 @export var grid_line_width: float = -1.0 : set = set_grid_line_width
 ## Cada cuantas celdas se dibuja una linea mayor cuando el zoom esta alejado.
 @export var major_grid_interval: int = 8 : set = set_major_grid_interval
-## Si una celda ocupa menos que esto en pantalla, se salta lineas intermedias (LOD).
+## Si el lado menor de la celda ocupa menos que esto en pantalla, se salta lineas (LOD).
 @export var min_cell_pixels: float = 10.0
 @export var grid_color: Color = Color(1, 1, 1, 0.08) : set = set_grid_color
 @export var major_grid_color: Color = Color(1, 1, 1, 0.2) : set = set_major_grid_color
@@ -21,24 +29,28 @@ class_name MineGrid
 @export var safe_zone_color: Color = Color(0.3, 0.9, 0.4, 0.15)
 @export var occupied_color: Color = Color(0.9, 0.4, 0.3, 0.35)
 
+# --- Runtime ---
 var occupied: Dictionary = {}
-var _last_view_zoom: float = -1.0
+var last_view_zoom: float = -1.0
 
 
+# --- Built-ins ---
 func _ready() -> void:
+	ensure_block_layout()
+	sync_cell_size_from_layout()
 	set_process(show_grid)
 	queue_redraw()
 
 
-func _unhandled_process(_delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not show_grid:
 		return
 
 	var zoom := get_view_zoom()
-	if is_equal_approx(zoom, _last_view_zoom):
+	if is_equal_approx(zoom, last_view_zoom):
 		return
 
-	_last_view_zoom = zoom
+	last_view_zoom = zoom
 	queue_redraw()
 
 
@@ -51,9 +63,211 @@ func _draw() -> void:
 	draw_occupied_cells()
 
 
+# --- Public API ---
+## Posicion mundo del OreBlock: centro de celda + offset Y (+31) + rise por stack_index.
+func get_ore_world_position(cell: Vector2i, stack_index: int = 0) -> Vector2:
+	ensure_block_layout()
+	return cell_to_world(cell) + block_layout.get_stack_offset(stack_index)
+
+
+func get_block_size() -> Vector2i:
+	ensure_block_layout()
+	return block_layout.get_block_size()
+
+
+func get_stack_rise_y() -> float:
+	ensure_block_layout()
+	return block_layout.get_stack_rise_y()
+
+
+func get_cell_center_offset_y() -> float:
+	ensure_block_layout()
+	return block_layout.cell_center_offset_y
+
+
+func get_cell_width() -> int:
+	return cell_size.x
+
+
+func get_cell_height() -> int:
+	return cell_size.y
+
+
+## Zoom efectivo del viewport (editor o Camera2D en runtime).
+func get_view_zoom() -> float:
+	var viewport := get_viewport()
+	if viewport == null:
+		return 1.0
+
+	if Engine.is_editor_hint():
+		return viewport.global_canvas_transform.get_scale().x
+
+	var camera := viewport.get_camera_2d()
+	if camera != null:
+		return camera.zoom.x
+
+	return viewport.global_canvas_transform.get_scale().x
+
+
+## Cuantas celdas saltar entre lineas segun el lado menor visible en pantalla.
+func get_line_step() -> int:
+	var min_side := float(mini(cell_size.x, cell_size.y))
+	var cell_pixels := min_side * get_view_zoom()
+	if cell_pixels >= min_cell_pixels:
+		return 1
+	if cell_pixels >= min_cell_pixels * 0.5:
+		return 2
+	if cell_pixels >= min_cell_pixels * 0.25:
+		return 4
+	return maxi(major_grid_interval, 8)
+
+
+func get_draw_line_width() -> float:
+	return grid_line_width if grid_line_width < 0.0 else maxf(grid_line_width, 1.001)
+
+
+## Devuelve el numero de celdas del grid en X e Y.
+func get_grid_dimensions() -> Vector2i:
+	return Vector2i(
+		int(grid_world_size.x) / cell_size.x,
+		int(grid_world_size.y) / cell_size.y
+	)
+
+
+## Extension total del grid en pixeles.
+func get_grid_pixel_size() -> Vector2:
+	var dims := get_grid_dimensions()
+	return Vector2(dims.x * cell_size.x, dims.y * cell_size.y)
+
+
+## Posicion mundo del centro de una celda (grid centrado en el origen).
+func cell_to_world(cell: Vector2i) -> Vector2:
+	var total := get_grid_pixel_size()
+	var origin := -total * 0.5
+	return origin + Vector2(
+		(cell.x + 0.5) * float(cell_size.x),
+		(cell.y + 0.5) * float(cell_size.y)
+	)
+
+
+## Celda que contiene una posicion mundo.
+func world_to_cell(pos: Vector2) -> Vector2i:
+	var total := get_grid_pixel_size()
+	var local := pos + total * 0.5
+	return Vector2i(
+		int(local.x / float(cell_size.x)),
+		int(local.y / float(cell_size.y))
+	)
+
+
+func get_center_cell() -> Vector2i:
+	return world_to_cell(Vector2.ZERO)
+
+
+func get_cell_rect(cell: Vector2i) -> Rect2:
+	var world := cell_to_world(cell)
+	var size := Vector2(cell_size)
+	return Rect2(world - size * 0.5, size)
+
+
+## Marca celda ocupada. Con stacks, usa add_stack_occupation / remove_stack_occupation.
+func set_occupied(cell: Vector2i, value: bool) -> void:
+	if value:
+		occupied[cell] = maxi(int(occupied.get(cell, 0)), 1)
+	else:
+		occupied.erase(cell)
+	if show_grid:
+		queue_redraw()
+
+
+## Suma un bloque al stack de la celda (varios ores, una sola footprint).
+func add_stack_occupation(cell: Vector2i) -> void:
+	occupied[cell] = int(occupied.get(cell, 0)) + 1
+	if show_grid:
+		queue_redraw()
+
+
+## Quita un bloque del stack; libera la celda solo cuando llega a 0.
+func remove_stack_occupation(cell: Vector2i) -> void:
+	if not occupied.has(cell):
+		return
+	var remaining := int(occupied[cell]) - 1
+	if remaining <= 0:
+		occupied.erase(cell)
+	else:
+		occupied[cell] = remaining
+	if show_grid:
+		queue_redraw()
+
+
+func clear_occupied() -> void:
+	occupied.clear()
+	if show_grid:
+		queue_redraw()
+
+
+# --- Bool queries ---
+func is_in_bounds(cell: Vector2i) -> bool:
+	var dims := get_grid_dimensions()
+	return cell.x >= 0 and cell.y >= 0 and cell.x < dims.x and cell.y < dims.y
+
+
+func is_occupied(cell: Vector2i) -> bool:
+	return occupied.has(cell)
+
+
+func is_safe_cell(cell: Vector2i) -> bool:
+	var center := get_center_cell()
+	return maxi(absi(cell.x - center.x), absi(cell.y - center.y)) <= safe_zone_radius_cells
+
+
+## Una celda es valida para spawnear ore si esta dentro, no es zona segura y esta libre.
+func is_free_for_spawn(cell: Vector2i) -> bool:
+	return is_in_bounds(cell) and not is_safe_cell(cell) and not is_occupied(cell)
+
+
+## Comprueba que TODAS las celdas libres siguen conectadas al centro (player nunca queda atrapado).
+func is_fully_accessible() -> bool:
+	var dims := get_grid_dimensions()
+	var expected_open := dims.x * dims.y - occupied.size()
+	var start := get_center_cell()
+	if is_occupied(start):
+		return false
+
+	var visited: Dictionary = {start: true}
+	var flood: Array[Vector2i] = [start]
+	var reached := 0
+	var neighbors := [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+
+	while not flood.is_empty():
+		var cell: Vector2i = flood.pop_back()
+		reached += 1
+		for offset in neighbors:
+			var next: Vector2i = cell + offset
+			if not is_in_bounds(next) or visited.has(next) or is_occupied(next):
+				continue
+			visited[next] = true
+			flood.append(next)
+
+	return reached == expected_open
+
+
+# --- Private helpers (no leading _) ---
+func ensure_block_layout() -> void:
+	if block_layout == null:
+		block_layout = MineBlockLayout.new()
+
+
+## Copia cell_size XY desde el layout (fuente de verdad del diseno).
+func sync_cell_size_from_layout() -> void:
+	ensure_block_layout()
+	if cell_size != block_layout.cell_size:
+		cell_size = block_layout.cell_size
+
+
 func draw_grid_lines() -> void:
 	var dims := get_grid_dimensions()
-	var total := Vector2(dims.x * cell_size, dims.y * cell_size)
+	var total := get_grid_pixel_size()
 	var origin := -total * 0.5
 	var step := get_line_step()
 	var line_width := get_draw_line_width()
@@ -77,12 +291,12 @@ func draw_axis_lines(
 	var points := PackedVector2Array()
 
 	for x in range(0, dims.x + 1, step):
-		var px := origin.x + x * cell_size
+		var px := origin.x + x * cell_size.x
 		points.append(Vector2(px, origin.y))
 		points.append(Vector2(px, origin.y + total.y))
 
 	for y in range(0, dims.y + 1, step):
-		var py := origin.y + y * cell_size
+		var py := origin.y + y * cell_size.y
 		points.append(Vector2(origin.x, py))
 		points.append(Vector2(origin.x + total.x, py))
 
@@ -119,85 +333,8 @@ func draw_occupied_cells() -> void:
 		draw_rect(get_cell_rect(cell), occupied_color)
 
 
-## Zoom efectivo del viewport (editor o Camera2D en runtime).
-func get_view_zoom() -> float:
-	var viewport := get_viewport()
-	if viewport == null:
-		return 1.0
-
-	if Engine.is_editor_hint():
-		return viewport.global_canvas_transform.get_scale().x
-
-	var camera := viewport.get_camera_2d()
-	if camera != null:
-		return camera.zoom.x
-
-	return viewport.global_canvas_transform.get_scale().x
-
-
-## Cuantas celdas saltar entre lineas segun el tamaño visible en pantalla.
-func get_line_step() -> int:
-	var cell_pixels := float(cell_size) * get_view_zoom()
-	if cell_pixels >= min_cell_pixels:
-		return 1
-	if cell_pixels >= min_cell_pixels * 0.5:
-		return 2
-	if cell_pixels >= min_cell_pixels * 0.25:
-		return 4
-	return maxi(major_grid_interval, 8)
-
-
-func get_draw_line_width() -> float:
-	return grid_line_width if grid_line_width < 0.0 else maxf(grid_line_width, 1.001)
-
-
-## Devuelve el numero de celdas del grid en X e Y.
-func get_grid_dimensions() -> Vector2i:
-	return Vector2i(int(grid_world_size.x) / cell_size, int(grid_world_size.y) / cell_size)
-
-
-## Posicion mundo del centro de una celda (grid centrado en el origen).
-func cell_to_world(cell: Vector2i) -> Vector2:
-	var dims := get_grid_dimensions()
-	var total := Vector2(dims.x * cell_size, dims.y * cell_size)
-	var origin := -total * 0.5
-	return origin + Vector2(cell.x + 0.5, cell.y + 0.5) * float(cell_size)
-
-
-## Celda que contiene una posicion mundo.
-func world_to_cell(pos: Vector2) -> Vector2i:
-	var dims := get_grid_dimensions()
-	var total := Vector2(dims.x * cell_size, dims.y * cell_size)
-	var local := pos + total * 0.5
-	return Vector2i(int(local.x / cell_size), int(local.y / cell_size))
-
-
-func get_center_cell() -> Vector2i:
-	return world_to_cell(Vector2.ZERO)
-
-
-func get_cell_rect(cell: Vector2i) -> Rect2:
-	var world := cell_to_world(cell)
-	return Rect2(world - Vector2(cell_size, cell_size) * 0.5, Vector2(cell_size, cell_size))
-
-
-func set_occupied(cell: Vector2i, value: bool) -> void:
-	if value:
-		occupied[cell] = true
-	else:
-		occupied.erase(cell)
-	if show_grid:
-		queue_redraw()
-
-
-func clear_occupied() -> void:
-	occupied.clear()
-	if show_grid:
-		queue_redraw()
-
-
-func set_cell_size(value: int) -> void:
-	cell_size = maxi(value, 1)
+func set_cell_size(value: Vector2i) -> void:
+	cell_size = Vector2i(maxi(value.x, 1), maxi(value.y, 1))
 	queue_redraw()
 
 
@@ -208,6 +345,13 @@ func set_grid_world_size(value: Vector2) -> void:
 
 func set_safe_zone_radius_cells(value: int) -> void:
 	safe_zone_radius_cells = maxi(value, 0)
+	queue_redraw()
+
+
+func set_block_layout(value: MineBlockLayout) -> void:
+	block_layout = value
+	if block_layout != null and cell_size != block_layout.cell_size:
+		cell_size = block_layout.cell_size
 	queue_redraw()
 
 
@@ -240,48 +384,3 @@ func set_major_grid_color(value: Color) -> void:
 func set_border_color(value: Color) -> void:
 	border_color = value
 	queue_redraw()
-
-
-func is_in_bounds(cell: Vector2i) -> bool:
-	var dims := get_grid_dimensions()
-	return cell.x >= 0 and cell.y >= 0 and cell.x < dims.x and cell.y < dims.y
-
-
-func is_occupied(cell: Vector2i) -> bool:
-	return occupied.has(cell)
-
-
-func is_safe_cell(cell: Vector2i) -> bool:
-	var center := get_center_cell()
-	return maxi(absi(cell.x - center.x), absi(cell.y - center.y)) <= safe_zone_radius_cells
-
-
-## Una celda es valida para spawnear ore si esta dentro, no es zona segura y esta libre.
-func is_free_for_spawn(cell: Vector2i) -> bool:
-	return is_in_bounds(cell) and not is_safe_cell(cell) and not is_occupied(cell)
-
-
-## Comprueba que TODAS las celdas libres siguen conectadas al centro (player nunca queda atrapado).
-func is_fully_accessible() -> bool:
-	var dims := get_grid_dimensions()
-	var expected_open := dims.x * dims.y - occupied.size()
-	var start := get_center_cell()
-	if is_occupied(start):
-		return false
-
-	var visited: Dictionary = {start: true}
-	var stack: Array[Vector2i] = [start]
-	var reached := 0
-	var neighbors := [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
-
-	while not stack.is_empty():
-		var cell: Vector2i = stack.pop_back()
-		reached += 1
-		for offset in neighbors:
-			var next: Vector2i = cell + offset
-			if not is_in_bounds(next) or visited.has(next) or is_occupied(next):
-				continue
-			visited[next] = true
-			stack.append(next)
-
-	return reached == expected_open

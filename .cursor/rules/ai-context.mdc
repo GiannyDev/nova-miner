@@ -1,0 +1,42 @@
+---
+description: Nova Miner — cargar contexto del juego y reglas GDScript desde AI_CONTEXT en cada chat
+alwaysApply: true
+---
+
+# Nova Miner — Godot Project Context
+
+At the start of every chat in this project, read **every** markdown file under `AI_CONTEXT/` (or `res://AI_CONTEXT/`) before proposing or writing code. Those docs are the source of truth; do not invent pillars, loops, or systems that contradict them.
+
+Current docs:
+- `AI_CONTEXT/00_Vision.md` — visión, scope MVP (30 Agosto 2026)
+- `AI_CONTEXT/01_Game_Pillars.md` — pilares (performance, minas infinitas, game feel, clean code, Resources)
+- `AI_CONTEXT/02_Game_Loop.md` — loop de minería, mapas, UpgradeTree, tiendas
+- `AI_CONTEXT/03_Performance_Rules.md` — loading, pooling, hot paths
+- `AI_CONTEXT/04_Configuraciones.md` — Resources configurables, Godot MCP
+- `AI_CONTEXT/Godot_Main_Guideline.md` — orden de scripts, signals, composition, checklist
+
+## Non-negotiable rules
+
+- **Performance is pillar #1** — see `03_Performance_Rules.md`. Scene changes go through Autoload `Transition.change_scene_async` (threaded, path-based).
+- Prefer composition over monolithic scripts (child nodes, managers, Resources, scenes).
+- Never hardcode tunable values. Expose them with `@export` / custom Resources (Ores, SubMine, Maps, items, upgrades).
+- Follow `Godot_Main_Guideline.md`. GDScript only for gameplay unless the user asks otherwise.
+- Avoid tree scans and work every frame. Use registries, cached `@onready` refs, ticks, and signals.
+- Profile before optimizing; pool when useful (`on_spawned` / `on_despawned`) — especially ore spawning while moving.
+- Prefer small contracts (`take_damage`, poolable, target helpers) over fat base classes.
+- Cross-cutting feedback via Autoload EventBus + node signals; UI must not be hardwired into gameplay logic.
+- Briefly explain architecture and why before implementing a feature.
+- Ask when requirements are unclear.
+- Ship `@tool` / EditorPlugin helpers when wiring is multi-step.
+- Comment new work on functions, signals, and non-obvious lines inside functions — never on `@export` or private/runtime vars (`Godot_Main_Guideline.md`).
+- Never prefix custom private helpers with `_`. Leading `_` on funcs is only for signal callbacks (`_on_*`) and Godot virtuals (`_ready`, …).
+- Diagnose before patching: identify the real failing layer before adding code.
+- Godot-only stack: use `addons/godot_mcp_toolkit` / `godot-mcp-toolkit` MCP for editor/runtime verification when applying important changes.
+
+## Nova Miner specifically
+
+- Incremental mining loop: enter mine → mine ores for X seconds → return to base → transform/spend ores → upgrade → repeat.
+- 4 maps × 3 sub-mines; unlock next sub-mine by completing extraction quota.
+- Infinite mine generation: ores spawn in a radius near the player while moving — optimize for this hot path.
+- UpgradeTree, WeaponShop, CompanionWorkshop — upgrades configurable via Resources (speed, dash, ore count, spawn-on-destroy, etc.).
+- Use Godot MCP to verify functionality or failures after significant changes (`04_Configuraciones.md`).

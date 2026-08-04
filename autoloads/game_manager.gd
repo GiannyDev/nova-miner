@@ -11,7 +11,7 @@ enum GameStates {
 
 const RAW_ORE_ID := "gold"
 const REFINED_ORE_SUFFIX := "_refined"
-const TEST_STARTING_ORES := 50
+const TEST_STARTING_ORES := 0
 
 var curr_state: GameStates = GameStates.NONE
 var skill_levels: Dictionary = {}
@@ -19,23 +19,25 @@ var player_stats: StatsData
 var unlocked_weapon_ids: Array[String] = ["laser_basic"]
 var equipped_weapon_id: String = "laser_basic"
 
-## Inventario unificado: key = ore id ("gold", "gold_refined"), value = cantidad.
-var ore_inventory: Dictionary = {}
-
 @export var player_stats_base: StatsData
 
 
 func _ready() -> void:
-	_init_player_stats()
-	add_ore(RAW_ORE_ID, TEST_STARTING_ORES)
+	init_player_stats()
+	# CurrencyManager ya indexo ores (autoload antes que este).
+	seed_starting_ores()
 
 
-func _init_player_stats() -> void:
+func init_player_stats() -> void:
 	if player_stats_base == null:
-		player_stats_base = load("res://resources/data/player/player_stats_base.tres")
+		player_stats_base = load("res://data/player/player_stats_base.tres")
 
 	player_stats = player_stats_base.duplicate(true)
 	UpgradeManager.apply_stats_to_player()
+
+
+func seed_starting_ores() -> void:
+	add_ore(RAW_ORE_ID, TEST_STARTING_ORES)
 
 
 func refresh_player_stats() -> void:
@@ -43,25 +45,17 @@ func refresh_player_stats() -> void:
 	UpgradeManager.apply_stats_to_player()
 
 
+## Proxy al CurrencyManager (fuente de verdad del inventario de ores).
 func add_ore(ore_id: String, amount: int = 1) -> void:
-	ore_inventory[ore_id] = get_ore_count(ore_id) + amount
+	CurrencyManager.add_ore_by_id(ore_id, amount)
 
 
 func remove_ore(ore_id: String, amount: int = 1) -> int:
-	var current := get_ore_count(ore_id)
-	var removed := mini(current, amount)
-	var remaining := current - removed
-
-	if remaining <= 0:
-		ore_inventory.erase(ore_id)
-	else:
-		ore_inventory[ore_id] = remaining
-
-	return removed
+	return CurrencyManager.remove_ore(ore_id, amount)
 
 
 func get_ore_count(ore_id: String) -> int:
-	return int(ore_inventory.get(ore_id, 0))
+	return CurrencyManager.get_ore_amount(ore_id)
 
 
 func get_refined_id(raw_ore_id: String) -> String:
@@ -74,7 +68,7 @@ func is_refined_id(ore_id: String) -> bool:
 
 func get_raw_ore_total() -> int:
 	var total := 0
-	for ore_id in ore_inventory.keys():
+	for ore_id in CurrencyManager.get_ore_amounts_snapshot().keys():
 		if not is_refined_id(ore_id):
 			total += get_ore_count(ore_id)
 	return total
@@ -86,7 +80,7 @@ func has_raw_ores() -> bool:
 
 ## Extrae un ore crudo del inventario. Devuelve su id.
 func take_next_raw_ore() -> String:
-	for ore_id in ore_inventory.keys():
+	for ore_id in CurrencyManager.get_ore_amounts_snapshot().keys():
 		if is_refined_id(ore_id):
 			continue
 		if get_ore_count(ore_id) <= 0:

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CurrencyData" format=3 uid="uid://cu30ntt27tc6k"]
+
+[ext_resource type="Script" uid="uid://b252iw7cblwlw" path="res://data/ores/ore_data.gd" id="1_r8h8l"]
+[ext_resource type="Script" uid="uid://du7d2gh4ccwce" path="res://data/currency/currency_data.gd" id="2_de10g"]
+[ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://data/ores/ore_gold.tres" id="2_prveu"]
+
+[resource]
+script = ExtResource("2_de10g")
+currencies = Array[ExtResource("1_r8h8l")]([ExtResource("2_prveu")])
+metadata/_custom_type_script = "uid://du7d2gh4ccwce"

@@ -12,8 +12,23 @@ corner_radius_bottom_left = 8
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
 font_size = 64
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fqte1"]
+bg_color = Color(0.19434926, 0.19434929, 0.19434917, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="LabelSettings" id="LabelSettings_m156b"]
-font_size = 64
+font_size = 40
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7siug"]
+bg_color = Color(0.19434926, 0.19434929, 0.19434917, 1)
+draw_center = false
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
 bg_color = Color(0.32350525, 0.6500297, 0.75642514, 1)
@@ -106,7 +121,6 @@ theme_override_constants/margin_bottom = 24
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/Margin" unique_id=2060832253]
 layout_mode = 2
-theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="Panel/Margin/VBoxContainer" unique_id=493211438]
 unique_name_in_owner = true
@@ -115,19 +129,178 @@ text = "Recap"
 label_settings = SubResource("LabelSettings_ad6r8")
 horizontal_alignment = 1
 
-[node name="RecapStats" type="Control" parent="Panel/Margin/VBoxContainer" unique_id=883615037]
+[node name="RecapStats" type="VBoxContainer" parent="Panel/Margin/VBoxContainer" unique_id=804562817]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 6
+alignment = 1
 
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=391604427]
-unique_name_in_owner = true
+[node name="StatDisplay" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=2031519584]
+custom_minimum_size = Vector2(600, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay" unique_id=344025194]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "STATS"
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay/Margin" unique_id=391604427]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Gold : 345K"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatDisplay2" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=1500416263]
+custom_minimum_size = Vector2(600, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay2" unique_id=873835448]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay2/Margin" unique_id=1631701479]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Silver : 345K"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatDisplay3" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=2004625290]
+custom_minimum_size = Vector2(600, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay3" unique_id=1126144876]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay3/Margin" unique_id=1213107790]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Platinum : 345K"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatDisplay7" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=545515498]
+custom_minimum_size = Vector2(600, 30)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_7siug")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay7" unique_id=1684108757]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay7/Margin" unique_id=1236360318]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Gold : 345K"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatDisplay4" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=1446021473]
+custom_minimum_size = Vector2(600, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay4" unique_id=179775742]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay4/Margin" unique_id=854238650]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Ore Mined : 23K"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatDisplay6" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=517635040]
+custom_minimum_size = Vector2(600, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay6" unique_id=1275288517]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay6/Margin" unique_id=558553684]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Damaged Dealt: 345K"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatDisplay5" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=846367623]
+custom_minimum_size = Vector2(600, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+
+[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay5" unique_id=525841729]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay5/Margin" unique_id=2081428707]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Distance Traveled : 2345m"
 label_settings = SubResource("LabelSettings_m156b")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -141,17 +314,17 @@ alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 80)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 36
 theme_override_styles/normal = SubResource("StyleBoxFlat_ad6r8")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_p7xga")
 theme_override_styles/hover = SubResource("StyleBoxFlat_0x840")
-text = "Home"
+text = "Base"
 
 [node name="PlayButton" type="Button" parent="Panel/Margin/VBoxContainer/Buttons" unique_id=105330427]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(260, 80)
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 36
 theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_fwwwh")
 theme_override_styles/hover = SubResource("StyleBoxFlat_nlugd")

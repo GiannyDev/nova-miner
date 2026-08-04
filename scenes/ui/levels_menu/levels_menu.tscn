@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://btril3plfwqn0" path="res://scenes/ui/levels_menu/levels_menu.gd" id="1_t0er7"]
 [ext_resource type="Script" uid="uid://doo84wqhoahuw" path="res://scenes/ui/levels_menu/level_card.gd" id="2_j3bhq"]
-[ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://resources/data/levels/level_01_name.tres" id="3_s5ev8"]
+[ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://data/levels/level_01_name.tres" id="3_s5ev8"]
 [ext_resource type="Texture2D" uid="uid://cesirwjp1rny6" path="res://sprites/Selector.png" id="4_bd5to"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]

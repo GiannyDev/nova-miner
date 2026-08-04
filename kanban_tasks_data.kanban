@@ -1,0 +1,140 @@
+{
+	"categories": [
+		{
+			"uuid": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"title": "Task",
+			"color": "569eff"
+		}
+	],
+	"stages": [
+		{
+			"uuid": "5b43021f-a0da-4ef7-bd66-30f358f62a89",
+			"title": "Todo",
+			"tasks": [
+				"21d85722-85d5-4d51-a139-b65bed879dd0",
+				"f19dc196-7d6d-4425-ac81-103be0ef6ff3",
+				"4582c387-d51f-454c-a733-67cd0d681f32",
+				"6cc19602-2860-4707-a332-2c6668e08210",
+				"ae0a3d65-b163-43f8-a578-869fb2556c6b",
+				"dc958fb3-2cc1-46dd-b4ff-03d105a3001d",
+				"1bd93972-0248-471f-8bbe-d1e7994d9e0f",
+				"ffc0c436-702e-48be-989e-8d9d368188f7",
+				"adc3642f-82d7-4b37-a9d7-ce274a508131"
+			]
+		},
+		{
+			"uuid": "340c1644-7e07-49ee-9705-d2ea81711e9f",
+			"title": "Doing",
+			"tasks": [
+				"64170275-2f12-4459-b608-6833d468b2e4",
+				"cba8dab0-f5d1-4940-8ffc-abe02db62a69"
+			]
+		},
+		{
+			"uuid": "abd85776-6a27-4e7a-8995-6ab711bedb19",
+			"title": "Done",
+			"tasks": [
+				"7898c728-b1d3-4f9b-910f-0c8a1904d4ff"
+			]
+		}
+	],
+	"tasks": [
+		{
+			"uuid": "21d85722-85d5-4d51-a139-b65bed879dd0",
+			"title": "Arreglar UpgradeTree",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "f19dc196-7d6d-4425-ac81-103be0ef6ff3",
+			"title": "Crear Primeros TreeCards Resources",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "4582c387-d51f-454c-a733-67cd0d681f32",
+			"title": "Configurar Sistema demo facil de configurar",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "ae0a3d65-b163-43f8-a578-869fb2556c6b",
+			"title": "Modificar ItemDescription",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "7898c728-b1d3-4f9b-910f-0c8a1904d4ff",
+			"title": "Sistema Grid Modular",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "6cc19602-2860-4707-a332-2c6668e08210",
+			"title": "Probar el skill de rayos",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "64170275-2f12-4459-b608-6833d468b2e4",
+			"title": "Asignar quota a cada submine ",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "cba8dab0-f5d1-4940-8ffc-abe02db62a69",
+			"title": "Actualizar quota por submine",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "dc958fb3-2cc1-46dd-b4ff-03d105a3001d",
+			"title": "Vincular SettingsPanel y guardado de settings",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "1bd93972-0248-471f-8bbe-d1e7994d9e0f",
+			"title": "Vincular Translations con Labels",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "ffc0c436-702e-48be-989e-8d9d368188f7",
+			"title": "Sistema de Chunks para Ores creados alrededor del Player",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "adc3642f-82d7-4b37-a9d7-ce274a508131",
+			"title": "Cambiar GridWorldSize por XY cells aldedor del Player, usado para crunks",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		}
+	],
+	"layout": {
+		"columns": [
+			[
+				"5b43021f-a0da-4ef7-bd66-30f358f62a89"
+			],
+			[
+				"340c1644-7e07-49ee-9705-d2ea81711e9f"
+			],
+			[
+				"abd85776-6a27-4e7a-8995-6ab711bedb19"
+			]
+		]
+	}
+}

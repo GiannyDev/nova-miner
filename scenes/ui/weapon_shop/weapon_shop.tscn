@@ -2,12 +2,6 @@
 
 [ext_resource type="Script" uid="uid://b05tl8ouiejqv" path="res://scenes/ui/weapon_shop/weapon_shop.gd" id="1_jhov4"]
 [ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="1_rn4b7"]
-[ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://resources/data/weapons/weapon_data.gd" id="2_wdata"]
-[ext_resource type="Resource" path="res://resources/data/weapons/laser_basic.tres" id="3_basic"]
-[ext_resource type="Resource" path="res://resources/data/weapons/laser_pulse.tres" id="4_pulse"]
-[ext_resource type="Resource" path="res://resources/data/weapons/laser_beam.tres" id="5_beam"]
-[ext_resource type="Resource" path="res://resources/data/weapons/laser_split.tres" id="6_split"]
-[ext_resource type="Resource" path="res://resources/data/weapons/laser_chaos.tres" id="7_chaos"]
 [ext_resource type="Shader" uid="uid://lmdjjpft2tv" path="res://resources/shaders/dithering.gdshader" id="9_n50vb"]
 [ext_resource type="Texture2D" uid="uid://bcj5m18kmm5xx" path="res://dithering_pattern.png" id="10_n50vb"]
 
@@ -59,7 +53,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jhov4")
-weapons = Array[ExtResource("2_wdata")]([ExtResource("3_basic"), ExtResource("4_pulse"), ExtResource("5_beam"), ExtResource("6_split"), ExtResource("7_chaos")])
 anim_sequence = [NodePath("Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade1Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade2Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade3Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade4Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/CloseButton")]
 
 [node name="BG" type="ColorRect" parent="." unique_id=1288448497]
@@ -251,6 +244,7 @@ grow_horizontal = 2
 theme_override_constants/separation = 8
 
 [node name="Upgrade1Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=631181984]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 
@@ -270,6 +264,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Upgrade2Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=1206100018]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 
@@ -289,6 +284,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Upgrade3Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=2069023607]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 
@@ -308,6 +304,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Upgrade4Button" type="Button" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer" unique_id=673903018]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 

@@ -11,6 +11,11 @@ class_name WeaponShop
 @onready var select_weapon_button: Button = %SelectWeaponButton
 @onready var next_weapon_button: Button = %NextWeaponButton
 
+@onready var upgrade_1_button: Button = %Upgrade1Button
+@onready var upgrade_2_button: Button = %Upgrade2Button
+@onready var upgrade_3_button: Button = %Upgrade3Button
+@onready var upgrade_4_button: Button = %Upgrade4Button
+
 const SLOT_WIDTH := 280.0
 const VISIBLE_SLOT_COUNT := 3
 const SCROLL_DURATION := 0.3
@@ -22,6 +27,14 @@ var weapons_built: bool = false
 
 func _ready() -> void:
 	visible = false
+	upgrade_1_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_1_button))
+	upgrade_2_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_2_button))
+	upgrade_3_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_3_button))
+	upgrade_4_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_4_button))
+	upgrade_1_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_1_button))
+	upgrade_2_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_2_button))
+	upgrade_3_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_3_button))
+	upgrade_4_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_4_button))
 
 
 func show_panel() -> void:
@@ -43,13 +56,12 @@ func ensure_weapons() -> void:
 	if not weapons.is_empty():
 		return
 	weapons = [
-		load("res://resources/data/weapons/laser_basic.tres") as WeaponData,
-		load("res://resources/data/weapons/laser_pulse.tres") as WeaponData,
-		load("res://resources/data/weapons/laser_beam.tres") as WeaponData,
-		load("res://resources/data/weapons/laser_split.tres") as WeaponData,
-		load("res://resources/data/weapons/laser_chaos.tres") as WeaponData,
+		load("res://data/weapons/laser_basic.tres") as WeaponData,
+		load("res://data/weapons/laser_pulse.tres") as WeaponData,
+		load("res://data/weapons/laser_beam.tres") as WeaponData,
+		load("res://data/weapons/laser_split.tres") as WeaponData,
+		load("res://data/weapons/laser_chaos.tres") as WeaponData,
 	]
-
 
 func setup_weapons() -> void:
 	add_spacer()
@@ -182,6 +194,7 @@ func equip_current_weapon() -> void:
 	GameManager.equipped_weapon_id = weapon.weapon_id
 	update_select_button()
 
+#region Callbacks
 
 func _on_prev_weapon_button_pressed() -> void:
 	if weapons.is_empty():
@@ -203,9 +216,21 @@ func _on_select_weapon_button_pressed() -> void:
 	equip_current_weapon()
 
 
+func _on_upgrade_btn_pressed(btn: Button) -> void:
+	#Springer.scale(btn, -0.1)
+	Springer.scale(btn, -0.05)
+
+
+func _on_upgrade_btn_mouse_entered(btn: Button) -> void:
+	btn.pivot_offset = btn.size / 2
+	Springer.rotate(btn, 3.0)
+
+
 func _on_close_button_pressed() -> void:
 	var parent_gui := get_parent()
 	if parent_gui is GUI:
 		parent_gui.close_weapon_shop()
 	else:
 		hide_panel()
+
+#endregion

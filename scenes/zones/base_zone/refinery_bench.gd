@@ -1,14 +1,13 @@
 extends Node2D
 class_name RefineryBench
 
-@export var refined_ore_stack_y_gap: float = 12.0
 @export var max_visible_refined: int = 10
+@export var refined_ore_stack_y_gap: float = 12.0
 @export var deposit_stagger: float = 0.05
 @export var collect_stagger: float = 0.05
 @export var fly_duration: float = 0.45
 @export var arc_height: float = 90.0
 @export var player_spawn_offset: Vector2 = Vector2(0, -48)
-@export var ore_data: OreData
 
 @onready var refine_ore_pos: Marker2D = $RefineOrePos
 @onready var refinery_machine_pos: Marker2D = $RefineryMachinePos
@@ -103,7 +102,7 @@ func process_refine_queue() -> void:
 	is_refining = true
 	while not refine_queue.is_empty():
 		var ore_id: String = refine_queue.pop_front()
-		await get_tree().create_timer(ore_data.refine_wait_time).timeout
+		await get_tree().create_timer(6.0).timeout #TODO Remplazar time con el ore
 		deposit_refined_ore_to_bench(ore_id)
 	is_refining = false
 

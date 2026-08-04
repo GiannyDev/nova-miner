@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://2pwbkmfd12eg"]
+
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="1_vu6qj"]
+[ext_resource type="Script" uid="uid://bfccq8igadu0t" path="res://scenes/ui/inventory/ore_inventory_display.gd" id="1_ydjfw"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_la2ei"]
+font_size = 36
+
+[node name="OreInventoryDisplay" type="HBoxContainer" unique_id=1136786209]
+theme_override_constants/separation = 8
+script = ExtResource("1_ydjfw")
+
+[node name="OreIcon" type="TextureRect" parent="." unique_id=107512407]
+custom_minimum_size = Vector2(45, 45)
+layout_mode = 2
+texture = ExtResource("1_vu6qj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="OreAmountLabel" type="Label" parent="." unique_id=981699042]
+layout_mode = 2
+text = "234"
+label_settings = SubResource("LabelSettings_la2ei")
