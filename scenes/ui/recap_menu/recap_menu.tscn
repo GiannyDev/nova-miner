@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dcfiugihmklr0"]
 
 [ext_resource type="Script" uid="uid://bjot56x4obgvs" path="res://scenes/ui/recap_menu/recap_menu.gd" id="1_p7xga"]
+[ext_resource type="PackedScene" uid="uid://cpsqtk66lgftn" path="res://scenes/ui/recap_menu/stat_display.tscn" id="2_0x840"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_33wub"]
 bg_color = Color(0.12591082, 0.12591085, 0.12591076, 1)
@@ -11,24 +12,6 @@ corner_radius_bottom_left = 8
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
 font_size = 64
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fqte1"]
-bg_color = Color(0.19434926, 0.19434929, 0.19434917, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="LabelSettings" id="LabelSettings_m156b"]
-font_size = 40
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7siug"]
-bg_color = Color(0.19434926, 0.19434929, 0.19434917, 1)
-draw_center = false
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
 bg_color = Color(0.32350525, 0.6500297, 0.75642514, 1)
@@ -81,6 +64,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_p7xga")
+shell_stagger_delay = 0.05
+shell_fade_duration = 0.1
+shell_slide_duration = 0.1
+shell_rotation_duration = 0.15
+forager_stagger_delay = 0.05
+forager_pop_duration = 0.1
+forager_fade_duration = 0.1
+count_up_duration = 0.2
 
 [node name="BG" type="ColorRect" parent="." unique_id=286164995]
 layout_mode = 1
@@ -99,10 +90,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -400.0
+offset_top = -400.0
+offset_right = 400.0
+offset_bottom = 400.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_33wub")
@@ -121,6 +112,7 @@ theme_override_constants/margin_bottom = 24
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/Margin" unique_id=2060832253]
 layout_mode = 2
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Panel/Margin/VBoxContainer" unique_id=493211438]
 unique_name_in_owner = true
@@ -129,181 +121,44 @@ text = "Recap"
 label_settings = SubResource("LabelSettings_ad6r8")
 horizontal_alignment = 1
 
-[node name="RecapStats" type="VBoxContainer" parent="Panel/Margin/VBoxContainer" unique_id=804562817]
+[node name="Minerals" type="VBoxContainer" parent="Panel/Margin/VBoxContainer" unique_id=804562817]
+custom_minimum_size = Vector2(0, 270)
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="StatDisplay" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=2031519584]
-custom_minimum_size = Vector2(600, 60)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
-
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay" unique_id=344025194]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay/Margin" unique_id=391604427]
+[node name="MineralGold" parent="Panel/Margin/VBoxContainer/Minerals" unique_id=2067596173 instance=ExtResource("2_0x840")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-text = "Gold : 345K"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="StatDisplay2" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=1500416263]
-custom_minimum_size = Vector2(600, 60)
+[node name="MineralSilver" parent="Panel/Margin/VBoxContainer/Minerals" unique_id=1500416263 instance=ExtResource("2_0x840")]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
 
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay2" unique_id=873835448]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay2/Margin" unique_id=1631701479]
+[node name="MineralPlatinum" parent="Panel/Margin/VBoxContainer/Minerals" unique_id=2004625290 instance=ExtResource("2_0x840")]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-text = "Silver : 345K"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="StatDisplay3" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=2004625290]
-custom_minimum_size = Vector2(600, 60)
+[node name="RunStats" type="VBoxContainer" parent="Panel/Margin/VBoxContainer" unique_id=1446021473]
+custom_minimum_size = Vector2(0, 270)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+theme_override_constants/separation = 6
+alignment = 1
 
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay3" unique_id=1126144876]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay3/Margin" unique_id=1213107790]
+[node name="StatBlocksMined" parent="Panel/Margin/VBoxContainer/RunStats" unique_id=517635040 instance=ExtResource("2_0x840")]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-text = "Platinum : 345K"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
+reveal_style = &"forager"
 
-[node name="StatDisplay7" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=545515498]
-custom_minimum_size = Vector2(600, 30)
+[node name="StatDamageDealt" parent="Panel/Margin/VBoxContainer/RunStats" unique_id=846367623 instance=ExtResource("2_0x840")]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_7siug")
+reveal_style = &"forager"
 
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay7" unique_id=1684108757]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay7/Margin" unique_id=1236360318]
+[node name="StatDistance" parent="Panel/Margin/VBoxContainer/RunStats" unique_id=545515498 instance=ExtResource("2_0x840")]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-text = "Gold : 345K"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="StatDisplay4" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=1446021473]
-custom_minimum_size = Vector2(600, 60)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
-
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay4" unique_id=179775742]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay4/Margin" unique_id=854238650]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Ore Mined : 23K"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="StatDisplay6" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=517635040]
-custom_minimum_size = Vector2(600, 60)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
-
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay6" unique_id=1275288517]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay6/Margin" unique_id=558553684]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Damaged Dealt: 345K"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="StatDisplay5" type="Panel" parent="Panel/Margin/VBoxContainer/RecapStats" unique_id=846367623]
-custom_minimum_size = Vector2(600, 60)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
-
-[node name="Margin" type="MarginContainer" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay5" unique_id=525841729]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="Stats" type="Label" parent="Panel/Margin/VBoxContainer/RecapStats/StatDisplay5/Margin" unique_id=2081428707]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Distance Traveled : 2345m"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
-vertical_alignment = 1
+reveal_style = &"forager"
 
 [node name="Buttons" type="HBoxContainer" parent="Panel/Margin/VBoxContainer" unique_id=587644991]
 layout_mode = 2

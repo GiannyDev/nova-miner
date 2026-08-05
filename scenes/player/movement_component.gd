@@ -13,3 +13,11 @@ func move(entity: CharacterBody2D, direction: Vector2, delta: float, movement_sp
 		entity.velocity = Vector2.ZERO
 
 	entity.move_and_slide()
+
+
+## Frena rapido al perforar: el player queda clavado hasta destruir el ore.
+func stop(entity: CharacterBody2D, delta: float) -> void:
+	entity.velocity = entity.velocity.lerp(Vector2.ZERO, acceleration * delta * 4.0)
+	if entity.velocity.length() < stop_threshold:
+		entity.velocity = Vector2.ZERO
+	entity.move_and_slide()

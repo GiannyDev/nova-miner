@@ -19,7 +19,9 @@
 				"dc958fb3-2cc1-46dd-b4ff-03d105a3001d",
 				"1bd93972-0248-471f-8bbe-d1e7994d9e0f",
 				"ffc0c436-702e-48be-989e-8d9d368188f7",
-				"adc3642f-82d7-4b37-a9d7-ce274a508131"
+				"adc3642f-82d7-4b37-a9d7-ce274a508131",
+				"3e76a719-8c3e-46c6-b159-270cf18726bb",
+				"fa224f31-293d-4fc9-8a10-3c3174f90288"
 			]
 		},
 		{
@@ -122,6 +124,25 @@
 			"description": "",
 			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
 			"steps": []
+		},
+		{
+			"uuid": "3e76a719-8c3e-46c6-b159-270cf18726bb",
+			"title": "Agregar un InputManager para soporte de Controles",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "fa224f31-293d-4fc9-8a10-3c3174f90288",
+			"title": "Ideas de Skills",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": [
+				{
+					"details": "Skill tipo mushroom para hacerte mas grande",
+					"done": false
+				}
+			]
 		}
 	],
 	"layout": {

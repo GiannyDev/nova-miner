@@ -16,16 +16,21 @@ const TEST_STARTING_ORES := 0
 var curr_state: GameStates = GameStates.NONE
 var skill_levels: Dictionary = {}
 var player_stats: StatsData
-var unlocked_weapon_ids: Array[String] = ["laser_basic"]
-var equipped_weapon_id: String = "laser_basic"
+var unlocked_weapon_ids: Array[String] = ["drill_basic"]
+var equipped_weapon_id: String = "drill_basic"
 
 @export var player_stats_base: StatsData
 
 
 func _ready() -> void:
+	init_locale()
 	init_player_stats()
 	# CurrencyManager ya indexo ores (autoload antes que este).
 	seed_starting_ores()
+
+
+func init_locale() -> void:
+	TranslationServer.set_locale("en")
 
 
 func init_player_stats() -> void:

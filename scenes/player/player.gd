@@ -1,44 +1,63 @@
 extends CharacterBody2D
 class_name Player
 
+signal dealt_damage(amount: float)
+
 @export var fallback_speed: float = 200.0
 @export var run_speed_threshold: float = 20.0
 @export var run_animation: String = "run_forward"
 @export var idle_animation: String = "idle"
-## Offset del laser respecto al centro del player (manos flotantes).
 @export var laser_mount_offset: Vector2 = Vector2(0, -80)
+@export var weapon_mount_offset: Vector2 = Vector2(0, -80)
 
 @onready var movement_component: MovementComponent = $MovementComponent
 @onready var spine_sprite: SpineSprite = $SpineSprite
 @onready var laser_mount: Node2D = $LaserMount
 @onready var laser_weapon: LaserWeapon = $LaserMount/LaserWeapon
+@onready var weapon_mount: Node2D = $Weapon
+@onready var drill_weapon: DrillWeapon = %DrillBase
 
 var input_direction: Vector2 = Vector2.ZERO
 var facing_direction: Vector2 = Vector2.RIGHT
 var aim_direction: Vector2 = Vector2.RIGHT
 var current_animation: String = ""
 var idle_uses_run_fallback: bool = false
-var mine_timer: float = 0.0
+var equipped_weapon: WeaponData
+var laser_mine_timer: float = 0.0
 
 
 func _ready() -> void:
 	y_sort_enabled = true
 	laser_mount.position = laser_mount_offset
-	sync_laser_stats()
+	weapon_mount.position = weapon_mount_offset
+	apply_equipped_weapon()
+	connect_drill_damage_tracking()
 	play_animation(idle_animation, true)
 
 
+func connect_drill_damage_tracking() -> void:
+	if drill_weapon != null and not drill_weapon.ore_hit.is_connected(_on_drill_ore_hit):
+		drill_weapon.ore_hit.connect(_on_drill_ore_hit)
+
+
 func _physics_process(delta: float) -> void:
-	mine_timer = maxf(mine_timer - delta, 0.0)
+	laser_mine_timer = maxf(laser_mine_timer - delta, 0.0)
 
 	if can_move():
 		get_input_direction()
-		move_player(delta)
 		update_facing()
-		update_laser(delta)
+
+		match get_active_weapon_kind():
+			WeaponData.WeaponKind.DRILL:
+				update_drill_weapon(delta)
+			WeaponData.WeaponKind.LASER:
+				update_laser_weapon(delta)
+
+		move_player(delta)
 	else:
 		move_player(delta, true)
-		laser_weapon.is_casting = false
+		if get_active_weapon_kind() == WeaponData.WeaponKind.LASER:
+			laser_weapon.is_casting = false
 
 	update_animation()
 
@@ -51,6 +70,11 @@ func get_input_direction() -> void:
 
 func move_player(delta: float, decelerate_only: bool = false) -> void:
 	var direction := Vector2.ZERO if decelerate_only else input_direction
+
+	if is_drill_locked():
+		movement_component.stop(self, delta)
+		return
+
 	movement_component.move(self, direction, delta, get_move_speed())
 
 
@@ -63,8 +87,30 @@ func update_facing() -> void:
 	apply_facing_flip()
 
 
-## Rota el laser 360° hacia el mouse y dispara mientras se sostiene use_laser.
-func update_laser(_delta: float) -> void:
+func update_drill_weapon(delta: float) -> void:
+	if drill_weapon == null:
+		return
+
+	var has_move_intent := input_direction.length_squared() > 0.01
+	drill_weapon.try_latch_from_movement(has_move_intent)
+	var drill_aim := get_drill_aim_direction()
+	aim_direction = drill_aim
+	drill_weapon.set_aim_direction(drill_aim)
+	drill_weapon.tick(get_attack_damage(), delta)
+
+
+## Solo movimiento / ultimo facing. Nunca apunta al ore (evita flick al destruir).
+func get_drill_aim_direction() -> Vector2:
+	if input_direction.length_squared() > 0.01:
+		return input_direction.normalized()
+
+	if facing_direction.length_squared() > 0.01:
+		return facing_direction.normalized()
+
+	return Vector2.RIGHT
+
+
+func update_laser_weapon(_delta: float) -> void:
 	aim_at_mouse()
 
 	var wants_laser := Input.is_action_pressed("use_laser")
@@ -74,7 +120,7 @@ func update_laser(_delta: float) -> void:
 	laser_weapon.is_casting = wants_laser
 
 	if wants_laser:
-		try_mine()
+		try_laser_mine()
 
 
 func aim_at_mouse() -> void:
@@ -86,13 +132,11 @@ func aim_at_mouse() -> void:
 
 	aim_direction = to_mouse.normalized()
 	laser_mount.look_at(mouse_pos)
-
-	## Mantiene el sprite del arma derecho al apuntar a la izquierda (como la referencia).
 	laser_mount.scale.y = -1.0 if aim_direction.x < 0.0 else 1.0
 
 
-func try_mine() -> void:
-	if mine_timer > 0.0:
+func try_laser_mine() -> void:
+	if laser_mine_timer > 0.0:
 		return
 
 	var ore := laser_weapon.get_hit_ore()
@@ -100,13 +144,52 @@ func try_mine() -> void:
 		return
 
 	ore.take_damage(get_attack_damage())
-	mine_timer = get_attack_cooldown()
+	dealt_damage.emit(get_attack_damage())
+	laser_mine_timer = get_attack_cooldown()
+
+
+func apply_equipped_weapon() -> void:
+	equipped_weapon = WeaponData.load_by_id(GameManager.equipped_weapon_id)
+	if equipped_weapon == null:
+		equipped_weapon = WeaponData.load_by_id("drill_basic")
+
+	refresh_weapon_visibility()
+	sync_weapon_stats()
+
+
+func refresh_weapon_visibility() -> void:
+	var kind := get_active_weapon_kind()
+	laser_mount.visible = kind == WeaponData.WeaponKind.LASER
+	weapon_mount.visible = kind == WeaponData.WeaponKind.DRILL
+
+
+func sync_weapon_stats() -> void:
+	if equipped_weapon == null:
+		return
+
+	if equipped_weapon.kind == WeaponData.WeaponKind.LASER:
+		sync_laser_stats()
+	elif drill_weapon != null:
+		drill_weapon.setup(equipped_weapon)
 
 
 func sync_laser_stats() -> void:
-	if laser_weapon == null:
+	if laser_weapon == null or equipped_weapon == null:
 		return
-	laser_weapon.set_max_length(get_laser_length())
+
+	laser_weapon.set_max_length(equipped_weapon.laser_max_length)
+	laser_weapon.set_color(equipped_weapon.laser_color)
+	laser_weapon.line_width = equipped_weapon.laser_line_width
+
+
+func get_active_weapon_kind() -> WeaponData.WeaponKind:
+	if equipped_weapon != null:
+		return equipped_weapon.kind
+	return WeaponData.WeaponKind.DRILL
+
+
+func is_drill_locked() -> bool:
+	return get_active_weapon_kind() == WeaponData.WeaponKind.DRILL and drill_weapon != null and drill_weapon.is_drilling()
 
 
 func get_move_speed() -> float:
@@ -128,6 +211,8 @@ func get_attack_cooldown() -> float:
 
 
 func get_laser_length() -> float:
+	if equipped_weapon != null and equipped_weapon.kind == WeaponData.WeaponKind.LASER:
+		return equipped_weapon.laser_max_length
 	if GameManager.player_stats != null:
 		return GameManager.player_stats.get_stat("laser_length")
 	return 400.0
@@ -142,10 +227,21 @@ func apply_facing_flip() -> void:
 
 
 func update_animation() -> void:
+	if is_drill_locked():
+		play_animation(idle_animation, true)
+		set_animation_time_scale(0.0)
+		return
+
 	var is_moving := velocity.length() > run_speed_threshold
 	var animation_name := run_animation if is_moving else idle_animation
 	play_animation(animation_name, true)
 	sync_animation_speed(is_moving)
+
+
+func set_animation_time_scale(time_scale: float) -> void:
+	var animation_state := spine_sprite.get_animation_state()
+	if animation_state != null:
+		animation_state.set_time_scale(time_scale)
 
 
 func sync_animation_speed(is_moving: bool) -> void:
@@ -189,3 +285,7 @@ func play_animation(animation_name: String, loop: bool) -> void:
 
 func can_move() -> bool:
 	return GameManager.curr_state == GameManager.GameStates.PLAYING
+
+
+func _on_drill_ore_hit(_ore: Ore, damage: float) -> void:
+	dealt_damage.emit(damage)

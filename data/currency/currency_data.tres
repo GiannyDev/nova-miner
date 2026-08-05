@@ -3,8 +3,10 @@
 [ext_resource type="Script" uid="uid://b252iw7cblwlw" path="res://data/ores/ore_data.gd" id="1_r8h8l"]
 [ext_resource type="Script" uid="uid://du7d2gh4ccwce" path="res://data/currency/currency_data.gd" id="2_de10g"]
 [ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://data/ores/ore_gold.tres" id="2_prveu"]
+[ext_resource type="Resource" path="res://data/ores/ore_silver.tres" id="3_silver"]
+[ext_resource type="Resource" path="res://data/ores/ore_platinum.tres" id="4_platinum"]
 
 [resource]
 script = ExtResource("2_de10g")
-currencies = Array[ExtResource("1_r8h8l")]([ExtResource("2_prveu")])
+currencies = Array[ExtResource("1_r8h8l")]([ExtResource("2_prveu"), ExtResource("3_silver"), ExtResource("4_platinum")])
 metadata/_custom_type_script = "uid://du7d2gh4ccwce"

@@ -1,32 +1,29 @@
 [gd_scene format=3 uid="uid://d0nrrh8k2pww"]
 
-[ext_resource type="Texture2D" uid="uid://dw5seubmtxxkk" path="res://sprites/ui/skill_button_blue.png" id="1"]
 [ext_resource type="Script" uid="uid://nw8dyfw836ag" path="res://scenes/ui/upgrade_tree/upgrade_node.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://bdm0std00v3jj" path="res://sprites/skill_buttons/pickaxe.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_jtecs"]
+[ext_resource type="Script" uid="uid://75xwv0bxg78s" path="res://data/upgrades/stat_upgrade.gd" id="2_tmjhs"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_normal"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_efcpf"]
+bg_color = Color(0.24705882, 0.54901963, 0.48235294, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pressed"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hover"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hover_pressed"]
+[sub_resource type="Resource" id="Resource_jtecs"]
+script = ExtResource("2_tmjhs")
+costs = Array[int]([0, 0])
+metadata/_custom_type_script = "uid://75xwv0bxg78s"
 
 [node name="UpgradeNode" type="Button" unique_id=1970078329]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(120, 120)
 offset_right = 20.0
 offset_bottom = 20.0
-pivot_offset = Vector2(10, 10)
-pivot_offset_ratio = Vector2(0.5, 0.5)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_normal")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_pressed")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_hover")
-theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_hover_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_efcpf")
 toggle_mode = true
-icon = ExtResource("1")
-icon_alignment = 1
-expand_icon = true
 script = ExtResource("2")
+upgrade = SubResource("Resource_jtecs")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=369956107]
 layout_mode = 1
@@ -35,23 +32,15 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -25.0
-offset_top = -25.0
-offset_right = 25.0
-offset_bottom = 25.0
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3")
-
-[node name="WhiteRect" type="ColorRect" parent="." unique_id=928849657]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
+texture = ExtResource("2_jtecs")
+expand_mode = 1
+stretch_mode = 4
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

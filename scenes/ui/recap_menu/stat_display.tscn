@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://cpsqtk66lgftn"]
+
+[ext_resource type="Script" uid="uid://b2332hna563at" path="res://scenes/ui/recap_menu/stat_display.gd" id="1_ulufw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fqte1"]
+bg_color = Color(0.19793725, 0.19793725, 0.19793719, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_name"]
+font_size = 40
+
+[sub_resource type="LabelSettings" id="LabelSettings_value"]
+font_size = 40
+font_color = Color(0.32350525, 0.6500297, 0.75642514, 1)
+
+[node name="StatDisplay" type="Panel" unique_id=2067596173]
+custom_minimum_size = Vector2(600, 60)
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
+script = ExtResource("1_ulufw")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1534117293]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="HBox" type="HBoxContainer" parent="Margin" unique_id=884422001]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Name" type="Label" parent="Margin/HBox" unique_id=879974635]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Gold :"
+label_settings = SubResource("LabelSettings_name")
+vertical_alignment = 1
+
+[node name="Value" type="Label" parent="Margin/HBox" unique_id=879974636]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = SubResource("LabelSettings_value")
+vertical_alignment = 1
+
+[connection signal="mouse_entered" from="." to="." method="play_hover_juice"]

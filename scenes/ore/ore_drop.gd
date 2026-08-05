@@ -68,7 +68,7 @@ func move_to(target: Vector2, duration: float, ease_type: Tween.EaseType) -> voi
 
 func home_to_player() -> void:
 	var from := global_position
-	var to := Refs.player.global_position
+	var to: Vector2 = Refs.player.global_position
 	var control := Vector2(
 		lerpf(from.x, to.x, 0.4),
 		minf(from.y, to.y) - home_arc_height

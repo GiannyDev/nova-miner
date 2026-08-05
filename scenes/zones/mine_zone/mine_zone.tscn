@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://b2g6jlt83l52k" path="res://scenes/player/player.tscn" id="1_mdgi6"]
 [ext_resource type="Script" uid="uid://b1djdot42y4vt" path="res://scenes/zones/mine_zone/mine_zone.gd" id="1_r8hjc"]
+[ext_resource type="Resource" uid="uid://jrtwrfgy4vf" path="res://data/mines/default_spawn_profile.tres" id="3_k6t54"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="3_yy5d6"]
 [ext_resource type="Script" uid="uid://dqvaq2wpkd12e" path="res://scenes/zones/mine_zone/mine_grid.gd" id="4_grid"]
 [ext_resource type="Script" uid="uid://besp4muqiv5ox" path="res://scenes/zones/mine_zone/ore_spawner.gd" id="5_spwn"]
@@ -9,6 +10,8 @@
 [ext_resource type="Resource" uid="uid://b6om4ui0righ0" path="res://data/mines/default_block_layout.tres" id="8_layout"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_1xuby"]
 [ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="9_3eek8"]
+[ext_resource type="Script" uid="uid://2023xnjlulj5" path="res://scenes/zones/mine_zone/mine_chunk.gd" id="11_2crg8"]
+[ext_resource type="Script" uid="uid://dk3ac2sjws58t" path="res://scenes/zones/mine_zone/ore_pool.gd" id="12_0fijc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_3eek8"]
 font_size = 40
@@ -49,14 +52,17 @@ script = ExtResource("1_r8hjc")
 
 [node name="OreSpawner" type="Node" parent="." unique_id=1113268201]
 script = ExtResource("5_spwn")
+profile = ExtResource("3_k6t54")
 block_layout = ExtResource("8_layout")
-debug_stack_height = 25
 
 [node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
 script = ExtResource("4_grid")
-cell_size = Vector2i(256, 158)
-safe_zone_radius_cells = 1
 block_layout = ExtResource("8_layout")
+
+[node name="MineChunk" type="Node2D" parent="." unique_id=1154914423 node_paths=PackedStringArray("grid")]
+script = ExtResource("11_2crg8")
+grid = NodePath("../MineGrid")
+chunk_size_cells = Vector2i(25, 25)
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true
@@ -64,7 +70,7 @@ y_sort_enabled = true
 [node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_mdgi6")]
 
 [node name="Camera2D" type="Camera2D" parent="YSort/Player" unique_id=324192786]
-zoom = Vector2(0.5, 0.5)
+zoom = Vector2(0.4, 0.4)
 
 [node name="GUI" type="CanvasLayer" parent="." unique_id=1755441572]
 
@@ -147,5 +153,8 @@ mouse_filter = 2
 
 [node name="RunTimer" type="Timer" parent="." unique_id=734289188]
 one_shot = true
+
+[node name="OrePool" type="Node" parent="." unique_id=890285604]
+script = ExtResource("12_0fijc")
 
 [connection signal="timeout" from="RunTimer" to="." method="_on_run_timer_timeout"]

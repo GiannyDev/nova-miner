@@ -6,6 +6,7 @@
 [ext_resource type="SpineSkeletonFileResource" uid="uid://br5cdou7odk7g" path="res://spine/Hero_1.skel.skel" id="3_bhlit"]
 [ext_resource type="Script" uid="uid://dtoupnroybw1g" path="res://scenes/player/movement_component.gd" id="4_movement"]
 [ext_resource type="Script" uid="uid://xgqtvlytiak7" path="res://scenes/player/laser_weapon.gd" id="5_p47bc"]
+[ext_resource type="PackedScene" uid="uid://dru37w53vj3w7" path="res://scenes/drills/drill_base.tscn" id="7_0owmy"]
 
 [sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_ad6r8"]
 atlas_res = ExtResource("2_vh40f")
@@ -39,11 +40,13 @@ position = Vector2(0, -3)
 scale = Vector2(0.5, 0.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1856122160]
+visible = false
 z_index = 1
 position = Vector2(0, -38)
 shape = SubResource("CircleShape2D_1xuby")
 
 [node name="LaserMount" type="Node2D" parent="." unique_id=724001299]
+visible = false
 position = Vector2(0, -80)
 
 [node name="LaserFirePos" type="Marker2D" parent="LaserMount" unique_id=724001300]
@@ -62,3 +65,11 @@ points = PackedVector2Array(0, 0, 0, 0)
 width = 4.0
 begin_cap_mode = 2
 end_cap_mode = 2
+
+[node name="Weapon" type="Node2D" parent="." unique_id=1425334778]
+position = Vector2(0, -80)
+
+[node name="DrillBase" parent="Weapon" unique_id=1538618923 instance=ExtResource("7_0owmy")]
+unique_name_in_owner = true
+z_index = 1
+position = Vector2(33, 0)

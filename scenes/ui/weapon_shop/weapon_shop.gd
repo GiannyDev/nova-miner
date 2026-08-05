@@ -1,8 +1,11 @@
 extends Control
 class_name WeaponShop
 
+const DEFAULT_WEAPON_IDS: Array[String] = ["drill_basic", "drill_fast", "laser_basic", "laser_pulse", "laser_beam", "laser_split", "laser_chaos"]
+
+@export_group("Weapons")
+## Lista editable en Inspector. Si queda vacia, carga DEFAULT_WEAPON_IDS al abrir.
 @export var weapons: Array[WeaponData] = []
-@export var anim_sequence: Array[Control]
 
 @onready var weapon_scroll_container: ScrollContainer = %WeaponScrollContainer
 @onready var weapon_image_container: HBoxContainer = %WeaponImageContainer
@@ -40,7 +43,10 @@ func _ready() -> void:
 func show_panel() -> void:
 	show()
 	GameManager.curr_state = GameManager.GameStates.PAUSED
-	ensure_weapons()
+	resolve_weapon_list()
+	if weapons.is_empty():
+		push_error("WeaponShop: no hay armas validas. Revisa data/weapons/*.tres")
+		return
 	if not weapons_built:
 		setup_weapons()
 		weapons_built = true
@@ -52,21 +58,32 @@ func hide_panel() -> void:
 	GameManager.curr_state = GameManager.GameStates.PLAYING
 
 
-func ensure_weapons() -> void:
-	if not weapons.is_empty():
+func resolve_weapon_list() -> void:
+	if weapons == null:
+		weapons = []
+	var valid: Array[WeaponData] = []
+	for weapon in weapons:
+		if weapon != null and not weapon.weapon_id.is_empty():
+			valid.append(weapon)
+	if not valid.is_empty():
+		weapons = valid
 		return
-	weapons = [
-		load("res://data/weapons/laser_basic.tres") as WeaponData,
-		load("res://data/weapons/laser_pulse.tres") as WeaponData,
-		load("res://data/weapons/laser_beam.tres") as WeaponData,
-		load("res://data/weapons/laser_split.tres") as WeaponData,
-		load("res://data/weapons/laser_chaos.tres") as WeaponData,
-	]
+	weapons.clear()
+	for weapon_id in DEFAULT_WEAPON_IDS:
+		var data := WeaponData.load_by_id(weapon_id)
+		if data != null:
+			weapons.append(data)
+		else:
+			push_warning("WeaponShop: no se pudo cargar '%s'." % weapon_id)
+
 
 func setup_weapons() -> void:
+	clear_weapon_slots()
 	add_spacer()
 
 	for weapon in weapons:
+		if weapon == null:
+			continue
 		var slot := CenterContainer.new()
 		slot.custom_minimum_size = Vector2(SLOT_WIDTH, SLOT_WIDTH)
 		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -88,6 +105,11 @@ func setup_weapons() -> void:
 	add_spacer()
 
 
+func clear_weapon_slots() -> void:
+	for child in weapon_image_container.get_children():
+		child.queue_free()
+
+
 func scroll_to_weapon(index: int, animate: bool = true) -> void:
 	if weapons.is_empty():
 		return
@@ -100,28 +122,30 @@ func scroll_to_weapon(index: int, animate: bool = true) -> void:
 
 	if animate:
 		weapon_tween = create_tween().set_parallel(true)
-		weapon_tween.tween_property(weapon_scroll_container, "scroll_horizontal", target_scroll, SCROLL_DURATION)\
-			.set_trans(Tween.TRANS_QUINT)\
-			.set_ease(Tween.EASE_OUT)
+		weapon_tween.tween_property(weapon_scroll_container, "scroll_horizontal", target_scroll, SCROLL_DURATION).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
 	else:
-		weapon_scroll_container.scroll_horizontal = target_scroll
+		weapon_scroll_container.scroll_horizontal = int(target_scroll)
 
 	for i in range(weapons.size()):
+		if weapons[i] == null:
+			continue
 		var sector := weapon_image_container.get_child(i + 1)
+		if sector.get_child_count() == 0:
+			continue
 		var icon := sector.get_child(0) as TextureRect
 
-		var target_scale := Vector2(1, 1)
+		var target_scale := Vector2.ONE
 		var target_modulate := Color(0.5, 0.5, 0.5, 1.0)
 
 		if i == current_weapon_index:
 			target_scale = Vector2(1.4, 1.4)
-			target_modulate = Color(1, 1, 1, 1)
+			target_modulate = Color.WHITE
 			sector.z_index = 1
 		else:
 			sector.z_index = 0
 
 		if not is_weapon_unlocked(weapons[i]):
-			target_modulate = Color(0, 0, 0, 1) if i != current_weapon_index else Color(0.35, 0.35, 0.35, 1)
+			target_modulate = Color.BLACK if i != current_weapon_index else Color(0.35, 0.35, 0.35, 1.0)
 
 		if animate and weapon_tween:
 			weapon_tween.tween_property(icon, "scale", target_scale, SCROLL_DURATION + 0.1)
@@ -147,7 +171,7 @@ func is_weapon_unlocked(weapon: WeaponData) -> bool:
 
 func find_equipped_index() -> int:
 	for i in range(weapons.size()):
-		if weapons[i].weapon_id == GameManager.equipped_weapon_id:
+		if weapons[i] != null and weapons[i].weapon_id == GameManager.equipped_weapon_id:
 			return i
 	return 0
 
@@ -192,9 +216,10 @@ func equip_current_weapon() -> void:
 		return
 
 	GameManager.equipped_weapon_id = weapon.weapon_id
+	if Refs.player != null:
+		Refs.player.apply_equipped_weapon()
 	update_select_button()
 
-#region Callbacks
 
 func _on_prev_weapon_button_pressed() -> void:
 	if weapons.is_empty():
@@ -208,7 +233,7 @@ func _on_next_weapon_button_pressed() -> void:
 	if weapons.is_empty():
 		return
 	var count := weapons.size()
-	current_weapon_index = (current_weapon_index + 1) % count
+	current_weapon_index = (current_weapon_index + 1 + count) % count
 	scroll_to_weapon(current_weapon_index)
 
 
@@ -217,7 +242,6 @@ func _on_select_weapon_button_pressed() -> void:
 
 
 func _on_upgrade_btn_pressed(btn: Button) -> void:
-	#Springer.scale(btn, -0.1)
 	Springer.scale(btn, -0.05)
 
 
@@ -232,5 +256,3 @@ func _on_close_button_pressed() -> void:
 		parent_gui.close_weapon_shop()
 	else:
 		hide_panel()
-
-#endregion

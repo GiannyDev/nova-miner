@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MineSpawnProfile" format=3 uid="uid://jrtwrfgy4vf"]
+
+[ext_resource type="Script" uid="uid://drkdckx2rt1k0" path="res://data/mines/mine_spawn_profile.gd" id="1_profile"]
+[ext_resource type="Script" uid="uid://c7piehx0h7t6d" path="res://data/mines/ore_spawn_entry.gd" id="1_u53bd"]
+
+[resource]
+script = ExtResource("1_profile")

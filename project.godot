@@ -91,11 +91,17 @@ use_laser={
 ]
 }
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://translations/translations.en.translation", "res://translations/translations.es.translation")
+
 [layer_names]
 
 2d_physics/layer_1="Player"
 2d_physics/layer_2="Ore"
 2d_physics/layer_3="World"
+2d_physics/layer_4="Drill"
+2d_physics/layer_5="OreTop"
 
 [physics]
 

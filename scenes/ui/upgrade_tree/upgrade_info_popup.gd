@@ -1,20 +1,20 @@
-extends NinePatchRect
+extends PanelContainer
 class_name UpgradeInfoPopup
 
-@onready var v_box_container: VBoxContainer = $VBoxContainer
-@onready var title_label: RichTextLabel = $VBoxContainer/TitleLabel
-@onready var description_label: RichTextLabel = $VBoxContainer/DescriptionLabel
-@onready var left_stat: RichTextLabel = $VBoxContainer/HBoxContainer2/StatContainer/LeftStat
-@onready var stat_middle: RichTextLabel = $VBoxContainer/HBoxContainer2/StatContainer/StatMiddle
-@onready var right_stat: RichTextLabel = $VBoxContainer/HBoxContainer2/StatContainer/RightStat
-@onready var current_level_label: Label = $VBoxContainer/HBoxContainer2/HBoxContainer/CurrentLevelLabel
-@onready var max_level_label: Label = $VBoxContainer/HBoxContainer2/HBoxContainer/MaxLevelLabel
-@onready var player_currency: RichTextLabel = $VBoxContainer/CostContainer/PlayerCurrency
-@onready var cost_middle: RichTextLabel = $VBoxContainer/CostContainer/CostMiddle
-@onready var cost_label: RichTextLabel = $VBoxContainer/CostContainer/Cost
-@onready var dividing_line_2: ColorRect = $VBoxContainer/DividingLine2
-@onready var dividing_line_3: ColorRect = $VBoxContainer/HBoxContainer2/DividingLine3
-@onready var dividing_line_4: ColorRect = $VBoxContainer/DividingLine4
+@onready var title_label: Label = %TitleLabel
+@onready var description_label: RichTextLabel = %DescriptionLabel
+@onready var left_stat: RichTextLabel = %LeftStat
+@onready var stat_middle: RichTextLabel = %StatMiddle
+@onready var right_stat: RichTextLabel = %RightStat
+@onready var current_level_label: Label = %CurrentLevelLabel
+@onready var level_middle: Label = %LevelMiddle
+@onready var max_level_label: Label = %MaxLevelLabel
+@onready var player_currency: RichTextLabel = %PlayerCurrency
+@onready var cost_middle: RichTextLabel = %CostMiddle
+@onready var cost_label: RichTextLabel = %Cost
+@onready var dividing_line_2: ColorRect = %DividingLine2
+@onready var dividing_line_3: ColorRect = %DividingLine3
+@onready var dividing_line_4: ColorRect = %DividingLine4
 
 var is_closing: bool = false
 var hover_tween: Tween
@@ -36,7 +36,7 @@ func setup_skill_text(
 	max_level: String = "",
 	highlight_word: String = ""
 ) -> void:
-	title_label.text = "[center][color=#FFA500]%s[/color][/center]" % upgrade_title.to_upper()
+	title_label.text = upgrade_title.to_upper()
 
 	var description_text := description.to_upper()
 	var upper_highlight := highlight_word.to_upper()
@@ -102,11 +102,7 @@ func _update_popup_size(raw_title_string: String) -> void:
 	var font_char_width := 10.0
 	var title_pixel_width := raw_title_string.length() * font_char_width
 	var target_width := clampf(title_pixel_width, 180.0, 320.0)
-
 	custom_minimum_size = Vector2.ZERO
-	v_box_container.custom_minimum_size = Vector2(target_width, 0.0)
-	v_box_container.size = Vector2(target_width, 0.0)
-	v_box_container.reset_size()
 
 
 func show_panel(anchor_pos: Vector2, button_size: Vector2, boundary_control: Control = null) -> void:
@@ -114,21 +110,13 @@ func show_panel(anchor_pos: Vector2, button_size: Vector2, boundary_control: Con
 	modulate.a = 0.0
 	show()
 
-	v_box_container.size.x = v_box_container.custom_minimum_size.x
 	await get_tree().process_frame
 	await get_tree().process_frame
 
 	if is_closing:
 		return
 
-	v_box_container.reset_size()
-
 	var panel_padding := Vector2(24.0, 24.0)
-	size = v_box_container.size + panel_padding
-
-	v_box_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
-	v_box_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	v_box_container.grow_vertical = Control.GROW_DIRECTION_BOTH
 	pivot_offset = size / 2.0
 
 	var limit_rect: Rect2

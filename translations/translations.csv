@@ -1,12 +1,15 @@
 keys,en,es
-BTN_PLAY:Play,Jugar
-BTN_COLLECTION:Play,Jugar
-BTN_SETTINGS:Settings,Opciones
-BTN_QUIT:Quit,Salir
-BTN_WISHLIST:Wishlist,Wishlist
+BTN_PLAY,Play,Jugar
+BTN_COLLECTION,Collection,Colección
+BTN_SETTINGS,Settings,Opciones
+BTN_QUIT,Quit,Salir
+BTN_WISHLIST,Wishlist,Wishlist
 LB_QUOTA_EXT,Quota Extraction,Cuota de Extracción
 RECAP,Recap,Resumen
-ORES_MINED,Ores Mined,Minerales Extraídos
+BLOCKS_MINED,Blocks Mined,Bloques Minados
 DAMAGE_DEALT,Damage Dealt,Daño Provocado
 DISTANCE_TRAVELED,Distance Traveled,Distancia Recorrida
 BTN_BASE,Base,Base
+ORE_GOLD,Gold,Oro
+ORE_SILVER,Silver,Plata
+ORE_PLATINUM,Platinum,Platino

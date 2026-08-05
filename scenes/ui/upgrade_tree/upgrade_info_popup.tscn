@@ -1,63 +1,57 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://df8opq5yf5pv8"]
 
-[ext_resource type="Texture2D" uid="uid://xskavaatjop4" path="res://sprites/ui/UI_HoloBook_Page02a-orange-white-orange.png" id="1"]
 [ext_resource type="Script" uid="uid://dv1ps40n1ma1l" path="res://scenes/ui/upgrade_tree/upgrade_info_popup.gd" id="2"]
-[ext_resource type="FontFile" uid="uid://nxf1kqkc2c2v" path="res://resources/fonts/04B_03__.TTF" id="3"]
 
-[node name="UpgradeInfoPopup" type="NinePatchRect"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
+bg_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 18
+
+[sub_resource type="LabelSettings" id="LabelSettings_25ach"]
+
+[node name="UpgradeInfoPopup" type="PanelContainer" unique_id=2041815122]
 z_index = 5
-offset_right = 150.0
-offset_bottom = 100.0
-texture = ExtResource("1")
-patch_margin_left = 11
-patch_margin_top = 11
-patch_margin_right = 11
-patch_margin_bottom = 11
+offset_right = 300.0
+offset_bottom = 170.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
 script = ExtResource("2")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -74.0
-offset_top = -41.0
-offset_right = 74.0
-offset_bottom = 41.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=998876044]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
-[node name="TitleLabel" type="RichTextLabel" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=890066955]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=2068049589]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 15)
 layout_mode = 2
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_outline_size = 1
-theme_override_constants/shadow_offset_x = -1
-theme_override_constants/shadow_offset_y = 1
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 16
-bbcode_enabled = true
 text = "TITLE"
-scroll_active = false
-autowrap_mode = 0
+label_settings = SubResource("LabelSettings_ad6r8")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DividingLine" type="ColorRect" parent="VBoxContainer"]
+[node name="DividingLine" type="ColorRect" parent="MarginContainer/VBoxContainer" unique_id=102431237]
 custom_minimum_size = Vector2(10, 1)
 layout_mode = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
-[node name="DescriptionLabel" type="RichTextLabel" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 25)
+[node name="DescriptionLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=331179100]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_vertical = 6
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = true
 text = "description"
 fit_content = true
@@ -65,133 +59,148 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DividingLine2" type="ColorRect" parent="VBoxContainer"]
+[node name="DividingLine2" type="ColorRect" parent="MarginContainer/VBoxContainer" unique_id=1415742451]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(10, 1)
 layout_mode = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=722482117]
 custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
-size_flags_horizontal = 4
+alignment = 1
 
-[node name="StatContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer2"]
+[node name="StatContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1422353430]
 layout_mode = 2
 size_flags_horizontal = 4
 alignment = 1
 
-[node name="LeftStat" type="RichTextLabel" parent="VBoxContainer/HBoxContainer2/StatContainer"]
+[node name="LeftStat" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer2/StatContainer" unique_id=1640504991]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 size_flags_horizontal = 10
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "10"
+fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="StatMiddle" type="RichTextLabel" parent="VBoxContainer/HBoxContainer2/StatContainer"]
+[node name="StatMiddle" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer2/StatContainer" unique_id=1145820977]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = ">"
+fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RightStat" type="RichTextLabel" parent="VBoxContainer/HBoxContainer2/StatContainer"]
+[node name="RightStat" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer2/StatContainer" unique_id=741698363]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 size_flags_horizontal = 2
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "15"
+fit_content = true
 scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="DividingLine3" type="ColorRect" parent="VBoxContainer/HBoxContainer2"]
+[node name="DividingLine3" type="ColorRect" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1574867639]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(1, 10)
 layout_mode = 2
+size_flags_horizontal = 4
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1790176975]
+custom_minimum_size = Vector2(98, 0)
 layout_mode = 2
-size_flags_horizontal = 10
+size_flags_horizontal = 0
+alignment = 1
 
-[node name="CurrentLevelLabel" type="Label" parent="VBoxContainer/HBoxContainer2/HBoxContainer"]
+[node name="CurrentLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2/HBoxContainer" unique_id=1230382684]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 8
+size_flags_horizontal = 3
 text = "1"
+label_settings = SubResource("LabelSettings_25ach")
+horizontal_alignment = 2
 
-[node name="LevelMiddle" type="Label" parent="VBoxContainer/HBoxContainer2/HBoxContainer"]
+[node name="LevelMiddle" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2/HBoxContainer" unique_id=1959760248]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 8
 text = "/"
+label_settings = SubResource("LabelSettings_25ach")
 
-[node name="MaxLevelLabel" type="Label" parent="VBoxContainer/HBoxContainer2/HBoxContainer"]
+[node name="MaxLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2/HBoxContainer" unique_id=208680113]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 8
+size_flags_horizontal = 3
 text = "3"
+label_settings = SubResource("LabelSettings_25ach")
 
-[node name="DividingLine4" type="ColorRect" parent="VBoxContainer"]
+[node name="DividingLine4" type="ColorRect" parent="MarginContainer/VBoxContainer" unique_id=1239449860]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(10, 1)
 layout_mode = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
-[node name="CostContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="CostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1942090423]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="PlayerCurrency" type="RichTextLabel" parent="VBoxContainer/CostContainer"]
+[node name="PlayerCurrency" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=658620728]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "100"
+fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="CostMiddle" type="RichTextLabel" parent="VBoxContainer/CostContainer"]
+[node name="CostMiddle" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=509012664]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "/"
+fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Cost" type="RichTextLabel" parent="VBoxContainer/CostContainer"]
+[node name="Cost" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=1904446076]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 0
-theme_override_fonts/normal_font = ExtResource("3")
-theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "100"
+fit_content = true
 scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1

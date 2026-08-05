@@ -107,12 +107,14 @@ Never dump code without explanation.
 * Signal connection callbacks go at the **bottom** of the script.
 * Built-ins (`_ready`, `_enter_tree`, `_process`, …) go near the **top** (after exports / onready / vars).
 * Prefer bool helpers when logic exceeds one line: `can_pickup_item()`, `can_move()`, `is_player_grounded()`, `is_alive()`, `has_target()`.
+* **Function signatures on one line** — keep the full signature on a single line even when long; wrap only the body when needed.
+* **Juice / UI feel** — reusable animation helpers live under `res://scripts/juice/` (e.g. `UIJuice`, `JuicePreset`). Scene scripts call those helpers; do not copy tween blocks inline.
 
 ### Inline comments
 
 When you add or meaningfully change gameplay code, leave a short comment that explains **why / what it does**:
 
-* **Do comment:** functions (including signal callbacks), `signal` declarations when non-obvious, and non-obvious lines *inside* functions. `@export` fields to help non coders inside the team.
+* **Do comment:** functions (including signal callbacks), and non-obvious lines *inside* functions. `@export` fields to help non coders inside the team.
 * **Do not comment:** private/runtime variables, or restating the identifier name.
 * Keep comments to one short line when possible; prefer intent over narration.
 
@@ -126,6 +128,7 @@ res://
   AI_CONTEXT/            # these docs
   autoloads/            # EventBus, registries, pools (or Project Settings Autoload)
   scripts/
+    juice/              # UIJuice, JuicePreset — animaciones reutilizables (ShellDiver, Forager, count-up)
 	zombies/
 	survivors/
 	commune/    
@@ -327,3 +330,4 @@ func despawn(node: Node) -> void:
 * Permanent `print` spam in hot paths
 * Hardcoding scene paths for UI inside combat
 * Ignoring signal disconnects / leaking Autoload connections across runs
+* Ignore wasting time defactoring anything to fix warnings.

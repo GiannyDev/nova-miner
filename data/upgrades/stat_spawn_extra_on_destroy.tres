@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="StatUpgrade" format=3 uid="uid://bb3nk6ie5ijb5"]
+
+[ext_resource type="Script" uid="uid://75xwv0bxg78s" path="res://data/upgrades/stat_upgrade.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "spawn_extra_on_destroy"
+costs = Array[int]([150, 400, 800])
+values = Array[float]([1.0, 1.0, 2.0])

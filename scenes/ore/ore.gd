@@ -1,6 +1,7 @@
 extends Node2D
 class_name Ore
-## Bloque minable individual. Solo se mueve este nodo padre; Visuals/collider quedan fijos en la escena.
+## Bloque minable individual y reciclable por el OrePool.
+## Solo se mueve este nodo padre; Visuals/collider quedan fijos como en ore.tscn.
 
 signal destroyed(ore: Ore)
 
@@ -11,8 +12,14 @@ signal destroyed(ore: Ore)
 ## OreData del catalogo (id + icon). Si null al spawnear, el spawner asigna default.
 @export var ore_data: OreData
 
+@export_group("Performance")
+## Apaga el collider al salir de pantalla. Ojo: un taladro fuera de vista tampoco podra golpearlo.
+@export var cull_collision_offscreen: bool = false
+
 # --- Onready / cached ---
 @onready var visuals: Node2D = $Visuals
+@onready var sprite: Sprite2D = %Sprite
+@onready var collision_shape: CollisionShape2D = $StaticBody2D/CollisionShape2D
 
 # --- Runtime ---
 var current_hp: float = 30.0
@@ -20,11 +27,14 @@ var grid: MineGrid
 var grid_cell: Vector2i = Vector2i.ZERO
 var stack_index: int = 0
 var is_destroyed: bool = false
+var spawn_tween: Tween
+var screen_notifier: VisibleOnScreenNotifier2D
 
 
 # --- Built-ins ---
 func _ready() -> void:
 	current_hp = max_hp
+	ensure_screen_notifier()
 
 
 # --- Public API ---
@@ -62,6 +72,7 @@ func show_mine_animation() -> void:
 	Springer.squash(visuals, 0.1, -0.1)
 
 
+## Marca el bloque como minado, suelta drops y avisa. El pool decide cuando reciclarlo.
 func destroy() -> void:
 	if is_destroyed:
 		return
@@ -69,20 +80,92 @@ func destroy() -> void:
 
 	if grid != null:
 		grid.remove_stack_occupation(grid_cell)
+
+	EventBus.run_ore_destroyed.emit(self)
 	spawn_ore_drops()
 	destroyed.emit(self)
-	queue_free()
+
+
+## Contrato de pool: deja el bloque listo para volver a minarse.
+func on_spawned() -> void:
+	is_destroyed = false
+	current_hp = max_hp
+	visible = true
+	scale = Vector2.ONE
+	visuals.scale = Vector2.ONE
+	set_collision_enabled(true)
+
+
+## Contrato de pool: lo apaga sin liberarlo (lo saca de vista y de la fisica).
+func on_despawned() -> void:
+	kill_spawn_tween()
+	visible = false
+	set_collision_enabled(false)
+	grid = null
+
+
+## "Plop" de aparicion. El tween vive en el bloque para poder matarlo al reciclarlo.
+func play_spawn_animation(duration: float) -> void:
+	kill_spawn_tween()
+
+	if duration <= 0.0:
+		scale = Vector2.ONE
+		return
+
+	scale = Vector2.ZERO
+	spawn_tween = create_tween()
+	spawn_tween.tween_property(self, "scale", Vector2.ONE, duration)\
+		.set_trans(Tween.TRANS_BACK)\
+		.set_ease(Tween.EASE_OUT)
 
 
 ## Spawnea 1/2/3 drops visuales segun el size del ore (no es la cantidad de inventario).
 func spawn_ore_drops() -> void:
 	var drop_count := get_drop_visual_count()
 	var spawn_pos := global_position
+	var parent := get_parent()
+	if parent == null:
+		return
 
 	for i in drop_count:
 		var drop: OreDrop = Refs.ORE_DROP_SCENE.instantiate()
-		get_parent().add_child(drop)
+		parent.add_child(drop)
 		drop.setup(spawn_pos, ore_data, 1)
+
+
+# --- Private helpers (no leading _) ---
+## set_deferred porque el bloque puede apagarse dentro de un callback de fisica.
+func set_collision_enabled(enabled: bool) -> void:
+	if collision_shape == null:
+		return
+	collision_shape.set_deferred(&"disabled", not enabled)
+
+
+func kill_spawn_tween() -> void:
+	if spawn_tween != null and spawn_tween.is_valid():
+		spawn_tween.kill()
+	spawn_tween = null
+
+
+## Notifier opt-in: solo se crea si el culling esta activado, asi cuesta cero cuando no se usa.
+func ensure_screen_notifier() -> void:
+	if not cull_collision_offscreen or screen_notifier != null:
+		return
+
+	screen_notifier = VisibleOnScreenNotifier2D.new()
+	screen_notifier.rect = get_visual_rect()
+	add_child(screen_notifier)
+	screen_notifier.screen_entered.connect(_on_screen_entered)
+	screen_notifier.screen_exited.connect(_on_screen_exited)
+
+
+## Rect local que cubre el sprite del bloque (base del notifier).
+func get_visual_rect() -> Rect2:
+	if sprite == null or sprite.texture == null:
+		return Rect2(-128.0, -384.0, 256.0, 384.0)
+
+	var size := sprite.texture.get_size() * sprite.scale
+	return Rect2(sprite.position - size * 0.5, size)
 
 
 # --- Bool / queries ---
@@ -95,3 +178,17 @@ func get_drop_visual_count() -> int:
 		OreDefinition.OreSize.LARGE:
 			return 3
 	return 1
+
+
+func is_alive() -> bool:
+	return not is_destroyed
+
+
+# --- Signal callbacks ---
+func _on_screen_entered() -> void:
+	if not is_destroyed:
+		set_collision_enabled(true)
+
+
+func _on_screen_exited() -> void:
+	set_collision_enabled(false)

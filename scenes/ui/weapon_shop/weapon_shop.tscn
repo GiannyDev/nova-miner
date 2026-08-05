@@ -2,8 +2,17 @@
 
 [ext_resource type="Script" uid="uid://b05tl8ouiejqv" path="res://scenes/ui/weapon_shop/weapon_shop.gd" id="1_jhov4"]
 [ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="1_rn4b7"]
+[ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://data/weapons/weapon_data.gd" id="2_5d11l"]
+[ext_resource type="Resource" uid="uid://drillbasic001" path="res://data/weapons/drill_basic.tres" id="2_drill"]
+[ext_resource type="Resource" uid="uid://drillfast001" path="res://data/weapons/drill_fast.tres" id="3_drill_fast"]
+[ext_resource type="Resource" uid="uid://0yreobs4fl05" path="res://data/weapons/laser_basic.tres" id="4_laser"]
+[ext_resource type="Resource" path="res://data/weapons/laser_pulse.tres" id="5_laser"]
+[ext_resource type="Resource" path="res://data/weapons/laser_beam.tres" id="6_laser"]
+[ext_resource type="Resource" path="res://data/weapons/laser_split.tres" id="7_laser"]
+[ext_resource type="Resource" path="res://data/weapons/laser_chaos.tres" id="8_laser"]
 [ext_resource type="Shader" uid="uid://lmdjjpft2tv" path="res://resources/shaders/dithering.gdshader" id="9_n50vb"]
 [ext_resource type="Texture2D" uid="uid://bcj5m18kmm5xx" path="res://dithering_pattern.png" id="10_n50vb"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="13_gvnn5"]
 
 [sub_resource type="Curve" id="Curve_rn4b7"]
 _data = [Vector2(0, 0), 0.0, 1.4, 0, 0, Vector2(0.49838188, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -45,7 +54,10 @@ shader = ExtResource("9_n50vb")
 shader_parameter/scroll_speed = Vector2(0.5, 0.5)
 shader_parameter/brightness = 0.10000000475
 
-[node name="WeaponShop" type="Control" unique_id=432418539 node_paths=PackedStringArray("anim_sequence")]
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 64
+
+[node name="WeaponShop" type="Control" unique_id=432418539]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -53,7 +65,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jhov4")
-anim_sequence = [NodePath("Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/WeaponSelection"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade1Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade2Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade3Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/VBoxContainer/Upgrade4Button"), NodePath("Panel/MarginContainer/HBoxContainer/WeaponUpgrades/CloseButton")]
+weapons = Array[ExtResource("2_5d11l")]([ExtResource("2_drill"), ExtResource("3_drill_fast"), ExtResource("4_laser"), ExtResource("5_laser"), ExtResource("6_laser"), ExtResource("7_laser"), ExtResource("8_laser")])
 
 [node name="BG" type="ColorRect" parent="." unique_id=1288448497]
 visible = false
@@ -322,6 +334,32 @@ text = "UPGRADE 1"
 scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades" unique_id=321806469]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -128.0
+offset_right = 175.0
+grow_vertical = 0
+theme_override_constants/separation = 12
+
+[node name="OreRequired" type="TextureRect" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/HBoxContainer" unique_id=1060154221]
+custom_minimum_size = Vector2(70, 70)
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("13_gvnn5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/HBoxContainer/WeaponUpgrades/HBoxContainer" unique_id=566661948]
+layout_mode = 2
+size_flags_vertical = 1
+text = "234K"
+label_settings = SubResource("LabelSettings_ad6r8")
+vertical_alignment = 2
 
 [connection signal="pressed" from="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer/PrevWeaponButton" to="." method="_on_prev_weapon_button_pressed"]
 [connection signal="pressed" from="Panel/MarginContainer/HBoxContainer/WeaponSelection/VBoxContainer/ButtonsContainer/SelectWeaponButton" to="." method="_on_select_weapon_button_pressed"]
