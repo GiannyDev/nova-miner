@@ -1,6 +1,7 @@
 extends Node
 
-signal upgrade_purchased
+signal upgrade_purchased(upgrade: StatUpgrade, new_level: int)
+signal upgrade_stat_changed(stat_id: int, new_value: float)
 signal currency_ui_update
 
 ## ore_data puede ser null si el id no esta en el catalogo; new_amount es el total post-cambio.
@@ -11,3 +12,7 @@ signal on_level_floor_selected(floor: LevelData)
 signal on_run_started
 signal on_run_ended
 signal run_ore_destroyed(ore: Ore)
+
+## Durabilidad de la perforadora (HUD + fin de run).
+signal drill_durability_changed(current: float, max_value: float)
+signal drill_durability_depleted

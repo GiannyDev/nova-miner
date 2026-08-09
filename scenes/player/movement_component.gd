@@ -21,3 +21,9 @@ func stop(entity: CharacterBody2D, delta: float) -> void:
 	if entity.velocity.length() < stop_threshold:
 		entity.velocity = Vector2.ZERO
 	entity.move_and_slide()
+
+
+## Corte seco de velocidad: evita el tira-y-afloja contra colliders al perforar.
+func hard_stop(entity: CharacterBody2D) -> void:
+	entity.velocity = Vector2.ZERO
+	entity.move_and_slide()

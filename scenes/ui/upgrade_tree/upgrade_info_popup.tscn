@@ -4,25 +4,31 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
 bg_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
-font_size = 18
+font_size = 32
 
 [sub_resource type="LabelSettings" id="LabelSettings_25ach"]
 
 [node name="UpgradeInfoPopup" type="PanelContainer" unique_id=2041815122]
 z_index = 5
-offset_right = 300.0
-offset_bottom = 170.0
+offset_right = 400.0
+offset_bottom = 220.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
 script = ExtResource("2")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=998876044]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
@@ -31,6 +37,8 @@ theme_override_constants/margin_bottom = 8
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=890066955]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=2068049589]
 unique_name_in_owner = true
@@ -44,6 +52,7 @@ vertical_alignment = 1
 [node name="DividingLine" type="ColorRect" parent="MarginContainer/VBoxContainer" unique_id=102431237]
 custom_minimum_size = Vector2(10, 1)
 layout_mode = 2
+mouse_filter = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
 [node name="DescriptionLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=331179100]
@@ -51,7 +60,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_vertical = 6
-theme_override_font_sizes/normal_font_size = 14
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 24
 bbcode_enabled = true
 text = "description"
 fit_content = true
@@ -63,16 +73,19 @@ vertical_alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(10, 1)
 layout_mode = 2
+mouse_filter = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=722482117]
 custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
+mouse_filter = 2
 alignment = 1
 
 [node name="StatContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1422353430]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_filter = 2
 alignment = 1
 
 [node name="LeftStat" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer2/StatContainer" unique_id=1640504991]
@@ -80,7 +93,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 size_flags_horizontal = 10
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 text = "10"
 fit_content = true
@@ -95,7 +108,7 @@ custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 text = ">"
 fit_content = true
@@ -109,7 +122,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 size_flags_horizontal = 2
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 text = "15"
 fit_content = true
@@ -122,12 +135,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(1, 10)
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_filter = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1790176975]
 custom_minimum_size = Vector2(98, 0)
 layout_mode = 2
 size_flags_horizontal = 0
+mouse_filter = 2
 alignment = 1
 
 [node name="CurrentLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2/HBoxContainer" unique_id=1230382684]
@@ -155,52 +170,27 @@ label_settings = SubResource("LabelSettings_25ach")
 unique_name_in_owner = true
 custom_minimum_size = Vector2(10, 1)
 layout_mode = 2
+mouse_filter = 2
 color = Color(0.654902, 0.654902, 0.654902, 1)
 
 [node name="CostContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1942090423]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_filter = 2
 alignment = 1
 
-[node name="PlayerCurrency" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=658620728]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/normal_font_size = 12
-bbcode_enabled = true
-text = "100"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="CostMiddle" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=509012664]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(10, 10)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/normal_font_size = 12
-bbcode_enabled = true
-text = "/"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Cost" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=1904446076]
+[node name="CostLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/CostContainer" unique_id=1904446076]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 0
-theme_override_font_sizes/normal_font_size = 12
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "100"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
+horizontal_alignment = 1
 vertical_alignment = 1

@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://kjam8mw5tj61"]
+
+[ext_resource type="Script" uid="uid://5a8h0jqyrt3g" path="res://scenes/ui/weapon_shop/drill_upgrade_button.gd" id="1_ia4fm"]
+
+[node name="DrillUpgradeButton" type="Button" unique_id=1386201721]
+custom_minimum_size = Vector2(704, 140)
+script = ExtResource("1_ia4fm")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=746555731]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 56
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="Margin" unique_id=922339716]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Stat" type="Control" parent="Margin/HBox" unique_id=961512596]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="StatName" type="RichTextLabel" parent="Margin/HBox/Stat" unique_id=698933541]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 44
+bbcode_enabled = true
+text = "Damage"
+scroll_active = false
+vertical_alignment = 1
+
+[node name="StatValue" type="RichTextLabel" parent="Margin/HBox/Stat" unique_id=3007258]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.23553786, 0.9069698, 0.766684, 1)
+theme_override_font_sizes/normal_font_size = 32
+bbcode_enabled = true
+text = "23 > 28"
+scroll_active = false
+vertical_alignment = 1
+
+[node name="PriceLabel" type="RichTextLabel" parent="Margin/HBox" unique_id=1966974326]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 45
+bbcode_enabled = true
+text = "[img=74]sprites/coin.png[/img] 23.4K"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="pressed" from="." to="." method="_on_pressed"]

@@ -3,10 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://b2g6jlt83l52k" path="res://scenes/player/player.tscn" id="1_0xwva"]
 [ext_resource type="Script" uid="uid://dmbt68v0i6g4b" path="res://scenes/zones/base_zone/base_zone.gd" id="1_wrtbe"]
 [ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_2e3ff"]
+[ext_resource type="Script" uid="uid://dsckmmpo34hbe" path="res://data/levels/level_data.gd" id="2_5gdsq"]
 [ext_resource type="PackedScene" uid="uid://dvkowrqhi4chd" path="res://scenes/ui/upgrade_tree/upgrade_tree.tscn" id="2_m1t7q"]
 [ext_resource type="PackedScene" uid="uid://cfyfnd1x504br" path="res://scenes/ui/weapon_shop/weapon_shop.tscn" id="3_2e3ff"]
 [ext_resource type="Script" uid="uid://q5ew6j4wae2h" path="res://scenes/zones/base_zone/bench.gd" id="3_mngwo"]
+[ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://data/levels/mine_01.tres" id="3_yu1jf"]
 [ext_resource type="Script" uid="uid://dgkgkuwla3cgp" path="res://scenes/zones/base_zone/gui.gd" id="4_2dcdp"]
+[ext_resource type="Script" uid="uid://bavo0br8jb0pp" path="res://scripts/custom_camera.gd" id="4_yu1jf"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="5_2dcdp"]
 [ext_resource type="Script" uid="uid://1r7rqkf01cc3" path="res://scenes/zones/base_zone/refinery_bench.gd" id="5_la2ei"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
@@ -53,13 +56,22 @@ shader = ExtResource("9_4vgyc")
 shader_parameter/outerRadius = 5.0
 shader_parameter/MainAlpha = 1.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5gdsq"]
+shader = ExtResource("9_4vgyc")
+shader_parameter/outerRadius = 4.00000019
+shader_parameter/MainAlpha = 0.50000002375
+
 [node name="BaseZone" type="Node2D" unique_id=1296669802 node_paths=PackedStringArray("player")]
 script = ExtResource("1_wrtbe")
 player = NodePath("YSort/Player")
+mines = Array[ExtResource("2_5gdsq")]([ExtResource("3_yu1jf")])
+
+[node name="InputManager" type="Node" parent="." unique_id=1824731173]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=354706872]
 position = Vector2(960, 540)
 zoom = Vector2(0.9, 0.9)
+script = ExtResource("4_yu1jf")
 
 [node name="Border" type="Node2D" parent="." unique_id=1510669431]
 
@@ -67,7 +79,6 @@ zoom = Vector2(0.9, 0.9)
 y_sort_enabled = true
 
 [node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_0xwva")]
-y_sort_enabled = false
 position = Vector2(960, 540)
 
 [node name="UpgradeBench" type="Node2D" parent="YSort" unique_id=908875353 node_paths=PackedStringArray("player_area", "panel_to_open")]
@@ -420,7 +431,6 @@ visible = false
 [node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("12_dpy17")]
 
 [node name="Vignette" type="ColorRect" parent="GUI" unique_id=1631264448]
-visible = false
 material = SubResource("ShaderMaterial_2dcdp")
 anchors_preset = 15
 anchor_right = 1.0
@@ -429,6 +439,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.78431374)
+
+[node name="Vignette2" type="ColorRect" parent="GUI" unique_id=612238448]
+visible = false
+material = SubResource("ShaderMaterial_5gdsq")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1077753099]
 visible = false

@@ -5,8 +5,6 @@ class_name MineGrid
 ## No decide donde nace contenido: eso es del MineChunk (ventana) y del OreSpawner (relleno).
 ## Asume el nodo sin transform propio (position 0, sin rotar ni escalar).
 
-# --- Exports ---
-@export_category("Config")
 ## Tamano de celda en pixeles (X = ancho de footprint, Y = paso de stack). Lo dicta block_layout.
 @export var cell_size: Vector2i = Vector2i(256, 158) : set = set_cell_size
 ## Sprite del bloque + cell_size + offset de asiento. Fuente de verdad compartida con OreSpawner.

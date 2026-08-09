@@ -11,8 +11,6 @@ signal on_chunk_resized(size_cells: Vector2i)
 
 const MIN_SIZE_CELLS := 1
 
-# --- Exports ---
-@export_category("Chunk")
 ## Grid que define el tamano de celda. Si lo dejas vacio toma el MineGrid hermano.
 @export var grid: MineGrid
 ## Cuantos ores caben en la ventana en X e Y. Los pixeles salen solos del cell_size del grid.
@@ -21,12 +19,6 @@ const MIN_SIZE_CELLS := 1
 @export var lookahead_cells: Vector2 = Vector2(3.0, 3.0)
 ## Celdas que debe recorrer el player antes de recalcular la ventana (dead-zone).
 @export var refresh_step_cells: int = 1
-
-@export_category("Upgrades")
-## Stat del UpgradeTree que suma celdas a la ventana (vacio = sin bonus).
-@export var size_bonus_stat: String = "chunk_size_bonus_cells"
-## Como se reparte ese bonus entre X e Y (las celdas no son cuadradas).
-@export var size_bonus_ratio: Vector2 = Vector2(1.0, 1.0)
 
 @export_category("Debug")
 @export var show_window: bool = true : set = set_show_window
@@ -136,7 +128,7 @@ func remove_size_modifier(id: StringName) -> void:
 
 ## Recalcula el tamano efectivo (base + upgrades + skills) y recentra si ya habia ventana.
 func refresh_size() -> void:
-	var raw := chunk_size_cells + get_stat_bonus_cells() + get_modifier_cells()
+	var raw := chunk_size_cells + get_modifier_cells()
 	var clamped := Vector2i(maxi(raw.x, MIN_SIZE_CELLS), maxi(raw.y, MIN_SIZE_CELLS))
 	if clamped == effective_size_cells:
 		return
@@ -239,17 +231,6 @@ func update_window(center_cell: Vector2i) -> void:
 
 	if show_window or show_camera_view:
 		queue_redraw()
-
-
-## Celdas extra que vienen del UpgradeTree.
-func get_stat_bonus_cells() -> Vector2i:
-	if Engine.is_editor_hint() or size_bonus_stat.is_empty():
-		return Vector2i.ZERO
-	if GameManager.player_stats == null:
-		return Vector2i.ZERO
-
-	var bonus := GameManager.player_stats.get_stat(size_bonus_stat)
-	return Vector2i(roundi(bonus * size_bonus_ratio.x), roundi(bonus * size_bonus_ratio.y))
 
 
 func get_modifier_cells() -> Vector2i:

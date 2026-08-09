@@ -179,8 +179,8 @@ Contiene: `upgrade_data`, `currency_data`, `world_progress`, `skill_levels`, too
 ### Enum ProcEvent
 ```gdscript
 enum ProcEvent {
-    MINE_HIT, ORE_MINED, ENEMY_KILLED, PROJECTILE_HIT,
-    LIGHTNING_HIT, BOMB_EXPLOSION, VORTEX_DAMAGE, MISSILE_HIT, SPLINTER_HIT
+	MINE_HIT, ORE_MINED, ENEMY_KILLED, PROJECTILE_HIT,
+	LIGHTNING_HIT, BOMB_EXPLOSION, VORTEX_DAMAGE, MISSILE_HIT, SPLINTER_HIT
 }
 ```
 
@@ -265,8 +265,8 @@ Al llegar a 0: `EventBus.round_over.emit(true, "OUT OF CO2")`
 Cada entrada keyed por **hit RID** (PhysicsServer2D):
 ```gdscript
 {
-    type, hp, max_hp, sprite, pos, variation,
-    base_rid, middle_point, active_effects, is_boss, ...
+	type, hp, max_hp, sprite, pos, variation,
+	base_rid, middle_point, active_effects, is_boss, ...
 }
 ```
 
@@ -343,9 +343,9 @@ Cada entrada keyed por **hit RID** (PhysicsServer2D):
 ```
 Player.try_mining()
   → BaseMiningTool._mine()
-    → TargetingComponent.acquire_targets() → Array[RID]
-    → MiningBehavior.execute(targets)
-      → SpawnManager.damage_ore_by_rid()
+	→ TargetingComponent.acquire_targets() → Array[RID]
+	→ MiningBehavior.execute(targets)
+	  → SpawnManager.damage_ore_by_rid()
 ```
 
 ### Escenas de herramientas
@@ -639,18 +639,18 @@ Sincronizado por `UpgradeManager`
 ```
 left_click (held)
   → Player.try_mining()
-    → BaseMiningTool._mine()
-      → TargetingComponent.acquire_targets()
-        → MouseTargeting / RaycastTargeting / AoeTargeting
-      → MiningBehavior.execute(targets)
-        → LaserBehavior / PickaxeBehavior / ...
-          → SpawnManager.damage_ore_by_rid(rid, damage, attack_type)
-            → HP update, EventBus.proc_event(MINE_HIT)
-            → on break:
-                → CurrencyManager.spawn_ore(type, pos)
-                → homing pickup → add_ore()
-                → EventBus.add_xp + QuotaManager.add_quota()
-                → EventBus.proc_event(ORE_MINED)
+	→ BaseMiningTool._mine()
+	  → TargetingComponent.acquire_targets()
+		→ MouseTargeting / RaycastTargeting / AoeTargeting
+	  → MiningBehavior.execute(targets)
+		→ LaserBehavior / PickaxeBehavior / ...
+		  → SpawnManager.damage_ore_by_rid(rid, damage, attack_type)
+			→ HP update, EventBus.proc_event(MINE_HIT)
+			→ on break:
+				→ CurrencyManager.spawn_ore(type, pos)
+				→ homing pickup → add_ore()
+				→ EventBus.add_xp + QuotaManager.add_quota()
+				→ EventBus.proc_event(ORE_MINED)
 ```
 
 ---

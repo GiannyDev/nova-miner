@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="Resource_def"]
 script = ExtResource("1_def")
-hp = 4.0
+hp = 36.0
 
 [resource]
 script = ExtResource("1_ore")

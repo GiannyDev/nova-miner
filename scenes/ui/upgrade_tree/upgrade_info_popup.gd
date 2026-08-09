@@ -9,9 +9,7 @@ class_name UpgradeInfoPopup
 @onready var current_level_label: Label = %CurrentLevelLabel
 @onready var level_middle: Label = %LevelMiddle
 @onready var max_level_label: Label = %MaxLevelLabel
-@onready var player_currency: RichTextLabel = %PlayerCurrency
-@onready var cost_middle: RichTextLabel = %CostMiddle
-@onready var cost_label: RichTextLabel = %Cost
+@onready var cost_label: RichTextLabel = %CostLabel
 @onready var dividing_line_2: ColorRect = %DividingLine2
 @onready var dividing_line_3: ColorRect = %DividingLine3
 @onready var dividing_line_4: ColorRect = %DividingLine4
@@ -30,7 +28,6 @@ func setup_skill_text(
 	has_stats: bool,
 	stat_1: String,
 	stat_2: String,
-	currency_amount: String,
 	upgrade_cost: String,
 	current_level: String = "",
 	max_level: String = "",
@@ -38,7 +35,7 @@ func setup_skill_text(
 ) -> void:
 	title_label.text = upgrade_title.to_upper()
 
-	var description_text := description.to_upper()
+	var description_text := description
 	var upper_highlight := highlight_word.to_upper()
 	if upper_highlight != "":
 		var regex := RegEx.new()
@@ -51,8 +48,6 @@ func setup_skill_text(
 
 	description_label.text = "[center]%s[/center]" % description_text
 
-	player_currency.show()
-	cost_middle.show()
 	cost_label.show()
 	dividing_line_2.show()
 	dividing_line_3.show()
@@ -86,9 +81,6 @@ func setup_skill_text(
 	if current_level != "" and max_level != "":
 		current_level_label.text = current_level
 		max_level_label.text = max_level
-
-	player_currency.text = "[center][color=#8bff8d]%s[/color][/center]" % currency_amount
-	cost_middle.text = "[center]/[/center]"
 
 	if is_maxed:
 		cost_label.text = "[center][color=#8bff8d]MAXED[/color][/center]"
@@ -126,10 +118,10 @@ func show_panel(anchor_pos: Vector2, button_size: Vector2, boundary_control: Con
 		limit_rect = get_viewport().get_visible_rect()
 
 	var target_x := anchor_pos.x + button_size.x / 2.0 - size.x / 2.0
-	var target_y := anchor_pos.y - size.y - 6.0
+	var target_y := anchor_pos.y - size.y - 24.0
 
 	if target_y < limit_rect.position.y:
-		target_y = anchor_pos.y + button_size.y + 6.0
+		target_y = anchor_pos.y + button_size.y + 24.0
 
 	target_x = clampf(target_x, limit_rect.position.x + 6.0, limit_rect.end.x - size.x - 6.0)
 	target_y = clampf(target_y, limit_rect.position.y + 6.0, limit_rect.end.y - size.y - 6.0)

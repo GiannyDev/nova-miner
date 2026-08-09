@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" uid="uid://btril3plfwqn0" path="res://scenes/ui/levels_menu/levels_menu.gd" id="1_t0er7"]
 [ext_resource type="Script" uid="uid://doo84wqhoahuw" path="res://scenes/ui/levels_menu/level_card.gd" id="2_j3bhq"]
-[ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://data/levels/level_01_name.tres" id="3_s5ev8"]
+[ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://data/levels/mine_01.tres" id="3_s5ev8"]
 [ext_resource type="Texture2D" uid="uid://cesirwjp1rny6" path="res://sprites/Selector.png" id="4_bd5to"]
+[ext_resource type="Texture2D" uid="uid://ceja5kmm0ebic" path="res://sprites/ShopLock.png" id="5_115ed"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
 font_size = 48
@@ -22,7 +23,17 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="LevelsMenu" type="Control" unique_id=1902323767]
+[sub_resource type="LabelSettings" id="LabelSettings_m156b"]
+font_size = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_spt12"]
+bg_color = Color(0.2665752, 0.26657522, 0.26657507, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="LevelsMenu" type="Control" unique_id=1902323767 node_paths=PackedStringArray("level_buttons")]
 custom_minimum_size = Vector2(1100, 840)
 layout_mode = 3
 anchors_preset = 8
@@ -36,7 +47,10 @@ offset_right = 550.0
 offset_bottom = 410.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
 script = ExtResource("1_t0er7")
+level_buttons = [NodePath("Margin/VBoxContainer/Levels/Level1/Floor1Button"), NodePath("Margin/VBoxContainer/Levels/Level1/Floor2Button"), NodePath("Margin/VBoxContainer/Levels/Level1/Floor3Button"), NodePath("Margin/VBoxContainer/Levels/Level2/Floor1Button"), NodePath("Margin/VBoxContainer/Levels/Level2/Floor2Button"), NodePath("Margin/VBoxContainer/Levels/Level2/Floor3Button"), NodePath("Margin/VBoxContainer/Levels/Level3/Floor1Button"), NodePath("Margin/VBoxContainer/Levels/Level3/Floor2Button"), NodePath("Margin/VBoxContainer/Levels/Level3/Floor3Button"), NodePath("Margin/VBoxContainer/Levels/Level4/Floor1Button"), NodePath("Margin/VBoxContainer/Levels/Level4/Floor2Button"), NodePath("Margin/VBoxContainer/Levels/Level4/Floor3Button")]
+fade_duration = 0.25
 
 [node name="Panel" type="Panel" parent="." unique_id=1688598168]
 layout_mode = 1
@@ -113,6 +127,20 @@ mouse_filter = 2
 texture = ExtResource("4_bd5to")
 expand_mode = 1
 
+[node name="Label" type="Label" parent="Margin/VBoxContainer/Levels/Level1/Floor1Button" unique_id=1549216779]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -35.0
+offset_bottom = -5.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "100m"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+
 [node name="Floor2Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=424240464]
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
@@ -137,6 +165,48 @@ mouse_filter = 2
 texture = ExtResource("4_bd5to")
 expand_mode = 1
 
+[node name="Label2" type="Label" parent="Margin/VBoxContainer/Levels/Level1/Floor2Button" unique_id=154807139]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -35.0
+offset_bottom = -5.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "200m"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
+
+[node name="BlockPanel" type="Panel" parent="Margin/VBoxContainer/Levels/Level1/Floor2Button" unique_id=697084463]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_spt12")
+
+[node name="TextureRect" type="TextureRect" parent="Margin/VBoxContainer/Levels/Level1/Floor2Button/BlockPanel" unique_id=1599797998]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_115ed")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Floor3Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=1558074109]
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
@@ -160,6 +230,20 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("4_bd5to")
 expand_mode = 1
+
+[node name="Label3" type="Label" parent="Margin/VBoxContainer/Levels/Level1/Floor3Button" unique_id=1266465299]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -35.0
+offset_bottom = -5.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "300m"
+label_settings = SubResource("LabelSettings_m156b")
+horizontal_alignment = 1
 
 [node name="Level2" type="HBoxContainer" parent="Margin/VBoxContainer/Levels" unique_id=270750450 node_paths=PackedStringArray("floor_1_button", "floor_2_button", "floor_3_button", "completion_next_level")]
 layout_mode = 2

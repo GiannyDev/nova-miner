@@ -41,6 +41,31 @@ func can_afford(currency_type: CurrencyData.CurrencyType, amount: int) -> bool:
 	return get_currency(currency_type) >= amount
 
 
+## True si el bag tiene al menos `amount` del ore_id.
+func can_afford_ore(ore_id: String, amount: int) -> bool:
+	if ore_id.is_empty() or amount <= 0:
+		return amount <= 0
+	return get_ore_amount(ore_id) >= amount
+
+
+## True si el bag tiene amount del Ores enum.
+func can_afford_ore_type(ore: int, amount: int) -> bool:
+	return can_afford_ore(Ores.get_id(ore), amount)
+
+
+## Gasta ores crudos si alcanza; false si no hay suficientes.
+func spend_ore(ore_id: String, amount: int) -> bool:
+	if not can_afford_ore(ore_id, amount):
+		return false
+	remove_ore(ore_id, amount)
+	return true
+
+
+## Gasta usando Ores enum (dropdown de upgrades).
+func spend_ore_type(ore: int, amount: int) -> bool:
+	return spend_ore(Ores.get_id(ore), amount)
+
+
 # --- Ore inventory ---
 ## Agrega amount usando la referencia OreData (id + icon). Emite evento siempre.
 func add_ore(ore_data: OreData, amount: int = 1) -> void:

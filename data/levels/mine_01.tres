@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="LevelData" format=3 uid="uid://bbt1ycabk7f3n"]
+
+[ext_resource type="Script" uid="uid://cww7oadxpgohb" path="res://data/levels/floor_data.gd" id="1_u45r0"]
+[ext_resource type="Resource" uid="uid://oresilver001" path="res://data/ores/ore_silver.tres" id="2_8a4rq"]
+[ext_resource type="Script" uid="uid://dsckmmpo34hbe" path="res://data/levels/level_data.gd" id="2_ny50u"]
+[ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://data/ores/ore_gold.tres" id="3_05sq5"]
+[ext_resource type="Resource" uid="uid://c553s32qx80qq" path="res://data/ores/ore_platinum.tres" id="4_ayw8j"]
+
+[sub_resource type="Resource" id="Resource_ny50u"]
+script = ExtResource("1_u45r0")
+id = "silver"
+ore_data = ExtResource("2_8a4rq")
+probability = 70.0
+metadata/_custom_type_script = "uid://cww7oadxpgohb"
+
+[sub_resource type="Resource" id="Resource_ie4ry"]
+script = ExtResource("1_u45r0")
+id = "gold"
+ore_data = ExtResource("3_05sq5")
+probability = 20.0
+metadata/_custom_type_script = "uid://cww7oadxpgohb"
+
+[sub_resource type="Resource" id="Resource_u45r0"]
+script = ExtResource("1_u45r0")
+id = "platinum"
+ore_data = ExtResource("4_ayw8j")
+probability = 10.0
+metadata/_custom_type_script = "uid://cww7oadxpgohb"
+
+[resource]
+script = ExtResource("2_ny50u")
+id = "mine_01"
+floor_1_data = Array[ExtResource("1_u45r0")]([SubResource("Resource_ny50u"), SubResource("Resource_ie4ry"), SubResource("Resource_u45r0")])
+metadata/_custom_type_script = "uid://dsckmmpo34hbe"

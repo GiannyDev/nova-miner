@@ -1,27 +1,16 @@
 extends Node
 class_name OreSpawner
-## Coloca ores solo cuando toca spawnear: batch inicial (starting_ore_amount) y al destruir (upgrades).
-## El MineChunk acota WHERE puede ir cada ore; este nodo decide WHEN y HOW MANY.
-## Hot path: _process solo corre mientras queda cola pendiente.
+## Spawn caotico en el chunk: mayoria random, poco bias cerca del player.
+## Nunca safe_zone ni celdas recien minadas (evita respawn en el mismo cell).
 
 # --- Exports ---
 @export_group("Spawn")
-## Reglas de contenido de la mina: clustering, stacks y ores posibles.
 @export var profile: MineSpawnProfile
-## Maximo de bloques instanciados por frame: evita picos al spawnear muchos a la vez.
 @export var max_spawns_per_frame: int = 24
-## Stat del UpgradeTree que multiplica starting_ore_amount (upgrade OreCount).
-@export var starting_amount_mult_stat: String = "ore_density_mult"
-## Stats del UpgradeTree que controlan el spawn al destruir un ore.
-@export var spawn_on_destroy_chance_stat: String = "spawn_on_destroy_chance"
-@export var spawn_extra_on_destroy_stat: String = "spawn_extra_on_destroy"
-@export var destroy_cluster_chance_stat: String = "destroy_cluster_chance"
-@export var destroy_cluster_size_stat: String = "destroy_cluster_size"
+@export var refill_interval: float = 0.25
 
 @export_group("Block Layout")
-## Misma layout que MineGrid. Si esta asignada, se aplica al grid en setup().
 @export var block_layout: MineBlockLayout
-
 
 # --- Runtime ---
 var grid: MineGrid
@@ -29,25 +18,26 @@ var chunk: MineChunk
 var pool: OrePool
 var target: Node2D
 var active_ores: Dictionary = {}
-## Cola de bloques pendientes: x,y = celda, z = stack_index.
+## Cola: x,y = celda, z = stack_index.
 var spawn_queue: Array[Vector3i] = []
+var refill_timer: float = 0.0
+var window_connected: bool = false
+## cell -> expire_msec. Evita respawn inmediato en celdas minadas.
+var banned_cells: Dictionary = {}
 
 
 # --- Built-ins ---
-## Vacia la cola con presupuesto por frame y se apaga sola cuando no queda nada pendiente.
-func _process(_delta: float) -> void:
-	var budget := maxi(max_spawns_per_frame, 1)
+func _process(delta: float) -> void:
+	drain_spawn_queue()
+	expire_banned_cells()
 
-	while budget > 0 and not spawn_queue.is_empty():
-		spawn_queued_block(spawn_queue.pop_back())
-		budget -= 1
-
-	if spawn_queue.is_empty():
-		set_process(false)
+	refill_timer -= delta
+	if refill_timer <= 0.0:
+		refill_timer = maxf(refill_interval, 0.05)
+		request_refill()
 
 
 # --- Public API ---
-## Inyecta grid, chunk, padre de los ores y pool.
 func setup(mine_grid: MineGrid, mine_chunk: MineChunk, ore_parent: Node2D, ore_pool: OrePool = null) -> void:
 	grid = mine_grid
 	chunk = mine_chunk
@@ -56,49 +46,51 @@ func setup(mine_grid: MineGrid, mine_chunk: MineChunk, ore_parent: Node2D, ore_p
 
 	ensure_profile()
 	apply_block_layout_to_grid()
-	set_process(false)
+	connect_chunk_signals()
+	refill_timer = 0.0
+	banned_cells.clear()
+	set_process(true)
 
 
-## Reserva celdas libres alrededor del punto de entrada para que el player no nazca enterrado.
 func reserve_entry_area(world_position: Vector2) -> void:
 	if grid == null:
 		return
 	grid.reserve_area(grid.world_to_cell(world_position), profile.start_clearance_cells)
 
 
-## Batch inicial al entrar a la mina: starting_ore_amount * ore_density_mult dentro de la ventana.
 func spawn_initial_batch() -> void:
 	if grid == null or chunk == null or not chunk.has_window:
 		push_warning("OreSpawner: la ventana del chunk no esta lista para el spawn inicial.")
 		return
 
-	var count := get_starting_ore_count()
+	var count := get_target_ore_count()
 	if count <= 0:
 		return
 
-	spawn_in_area(chunk.window_cells, count)
+	enqueue_scatter(count)
 
 
-## Ores extra alrededor de una celda: gancho del upgrade "spawnea X al destruir uno".
-func spawn_burst_around(cell: Vector2i, count: int, spread: int = -1) -> void:
+## Extras al destruir: scatter en el chunk (no anclados a la celda rota).
+func spawn_burst_around(_source_cell: Vector2i, count: int, _spread: int = -1) -> void:
 	if count <= 0 or grid == null or chunk == null or not chunk.has_window:
 		return
+	enqueue_scatter(count)
 
-	var radius := spread if spread > 0 else maxi(profile.cluster_spread, 1)
-	var burst := Rect2i(cell - Vector2i(radius, radius), Vector2i(radius * 2 + 1, radius * 2 + 1))
-	var area := intersect_with_window(burst)
-	if area.size == Vector2i.ZERO:
+
+func request_refill() -> void:
+	if grid == null or chunk == null or not chunk.has_window:
 		return
 
-	var placed: Array[Vector2i] = [cell]
-	for i in count:
-		try_queue_cell(area, placed, profile.cluster_chance)
+	var missing := get_target_ore_count() - get_pending_ore_count()
+	if missing <= 0:
+		return
+
+	enqueue_scatter(missing)
 
 
-## Recicla todos los bloques activos y vacia la cola (fin de run / reinicio).
 func clear_ores() -> void:
 	spawn_queue.clear()
-	set_process(false)
+	banned_cells.clear()
 
 	for ore in active_ores.keys():
 		if is_instance_valid(ore):
@@ -106,10 +98,8 @@ func clear_ores() -> void:
 	active_ores.clear()
 
 
-## Reinicia la mina entera: bloques, ocupacion y ventana del chunk.
 func reset() -> void:
 	clear_ores()
-
 	if grid != null:
 		grid.reset()
 	if chunk != null:
@@ -120,41 +110,117 @@ func get_active_ore_count() -> int:
 	return active_ores.size()
 
 
-# --- Private helpers (no leading _) ---
-## Encola `count` ores en celdas libres del rect, respetando cluster_chance del perfil.
-func spawn_in_area(area: Rect2i, count: int, cluster_chance: float = -1.0) -> void:
+func get_pending_ore_count() -> int:
+	return active_ores.size() + spawn_queue.size()
+
+
+func get_target_ore_count() -> int:
+	if GameManager.player_stats == null:
+		return 0
+	return maxi(int(GameManager.player_stats.get_stat(int(Stats.STARTING_ORE_AMOUNT))), 0)
+
+
+# --- Private helpers ---
+func connect_chunk_signals() -> void:
+	if chunk == null or window_connected:
+		return
+	if not chunk.on_window_moved.is_connected(_on_window_moved):
+		chunk.on_window_moved.connect(_on_window_moved)
+	window_connected = true
+
+
+## Coloca `count` ores: mayoria random en el chunk, near_player_bias cerca del player.
+func enqueue_scatter(count: int) -> void:
+	if not chunk.has_window:
+		return
+
 	var placed: Array[Vector2i] = []
-	var chance := cluster_chance if cluster_chance >= 0.0 else profile.cluster_chance
-
 	for i in count:
-		try_queue_cell(area, placed, chance)
+		var prefer_near := randf() < profile.near_player_bias
+		try_queue_cell(prefer_near, placed)
 
 
-## Busca hueco (random o pegado a lo ya colocado) y lo encola. false = no habia lugar.
-func try_queue_cell(area: Rect2i, placed_cells: Array[Vector2i], cluster_chance: float) -> bool:
+func try_queue_cell(prefer_near: bool, placed_cells: Array[Vector2i]) -> bool:
+	var area := get_spawn_area(prefer_near)
+	if area.size == Vector2i.ZERO:
+		area = chunk.window_cells
+
 	for i in maxi(profile.max_attempts_per_ore, 1):
-		var cell := pick_candidate_cell(area, placed_cells, cluster_chance)
+		var cell := pick_candidate_cell(area, placed_cells, prefer_near)
 		if not can_spawn_at(cell):
 			continue
-
 		placed_cells.append(cell)
 		enqueue_stack(cell)
 		return true
 
+	# Fallback: cualquier hueco libre del chunk.
+	if prefer_near:
+		return try_queue_cell(false, placed_cells)
 	return false
 
 
-func pick_candidate_cell(area: Rect2i, placed_cells: Array[Vector2i], cluster_chance: float) -> Vector2i:
-	if placed_cells.is_empty() or randf() > cluster_chance:
-		return Vector2i(
-			randi_range(area.position.x, area.end.x - 1),
-			randi_range(area.position.y, area.end.y - 1)
-		)
+func get_spawn_area(prefer_near: bool) -> Rect2i:
+	if prefer_near:
+		return get_near_player_spawn_area(get_player_cell())
+	return chunk.window_cells
 
+
+func pick_candidate_cell(area: Rect2i, placed_cells: Array[Vector2i], prefer_near: bool) -> Vector2i:
+	if prefer_near and should_apply_forward_bias():
+		return pick_forward_biased_cell(area)
+
+	# Cluster hacia ores ya puestos en este batch, nunca offset (0,0).
+	if not placed_cells.is_empty() and randf() <= profile.cluster_chance:
+		return pick_cluster_neighbor(area, placed_cells)
+
+	return pick_random_valid_in_area(area)
+
+
+func pick_cluster_neighbor(area: Rect2i, placed_cells: Array[Vector2i]) -> Vector2i:
 	var base: Vector2i = placed_cells.pick_random()
 	var spread := maxi(profile.cluster_spread, 1)
-	var cell := base + Vector2i(randi_range(-spread, spread), randi_range(-spread, spread))
-	return clamp_cell_to_rect(cell, area)
+	for i in maxi(profile.max_attempts_per_ore, 1):
+		var offset := Vector2i(randi_range(-spread, spread), randi_range(-spread, spread))
+		if offset == Vector2i.ZERO:
+			continue
+		var cell := clamp_cell_to_rect(base + offset, area)
+		if cell != base:
+			return cell
+	return pick_random_valid_in_area(area)
+
+
+func pick_forward_biased_cell(area: Rect2i) -> Vector2i:
+	var direction := get_player_move_direction()
+	var player_cell := get_player_cell()
+
+	for i in maxi(profile.max_attempts_per_ore, 1):
+		var cell := pick_random_valid_in_area(area)
+		var offset := Vector2(cell - player_cell)
+		if offset.length_squared() < 0.01:
+			continue
+		if offset.dot(direction) >= 0.0:
+			return cell
+
+	return pick_random_valid_in_area(area)
+
+
+func pick_random_valid_in_area(area: Rect2i) -> Vector2i:
+	var player_cell := get_player_cell()
+	for i in maxi(profile.max_attempts_per_ore, 1):
+		var cell := random_cell_in(area)
+		if profile.is_inside_safe_zone(cell, player_cell):
+			continue
+		if is_cell_banned(cell):
+			continue
+		return cell
+	return random_cell_in(area)
+
+
+func random_cell_in(area: Rect2i) -> Vector2i:
+	return Vector2i(
+		randi_range(area.position.x, area.end.x - 1),
+		randi_range(area.position.y, area.end.y - 1)
+	)
 
 
 func clamp_cell_to_rect(cell: Vector2i, cell_rect: Rect2i) -> Vector2i:
@@ -164,7 +230,18 @@ func clamp_cell_to_rect(cell: Vector2i, cell_rect: Rect2i) -> Vector2i:
 	)
 
 
-## Interseccion del burst local con la ventana del chunk (spawn solo dentro del chunk).
+func get_near_player_spawn_area(player_cell: Vector2i) -> Rect2i:
+	var radius := maxi(profile.near_spawn_radius, profile.safe_zone_size + 1)
+	var area := Rect2i(
+		player_cell - Vector2i(radius, radius),
+		Vector2i(radius * 2 + 1, radius * 2 + 1)
+	)
+	var clipped := intersect_with_window(area)
+	if clipped.size != Vector2i.ZERO:
+		return clipped
+	return chunk.window_cells if chunk != null else area
+
+
 func intersect_with_window(area: Rect2i) -> Rect2i:
 	if chunk == null or not chunk.has_window:
 		return area
@@ -184,36 +261,52 @@ func intersect_with_window(area: Rect2i) -> Rect2i:
 	return Rect2i(min_pos, max_pos - min_pos)
 
 
-## Ocupa la celda al encolar (para que nadie mas la tome) y encola sus bloques apilados.
 func enqueue_stack(cell: Vector2i) -> void:
 	var height := profile.get_stack_height()
-
 	for stack_index in height:
 		grid.add_stack_occupation(cell)
 		spawn_queue.append(Vector3i(cell.x, cell.y, stack_index))
 
-	set_process(true)
+
+func drain_spawn_queue() -> void:
+	var budget := maxi(max_spawns_per_frame, 1)
+	while budget > 0 and not spawn_queue.is_empty():
+		spawn_queued_block(spawn_queue.pop_back())
+		budget -= 1
 
 
 func spawn_queued_block(entry: Vector3i) -> void:
 	var cell := Vector2i(entry.x, entry.y)
 
-	# El player pudo caminar hasta esa celda mientras estaba en cola: mejor liberarla que sepultarlo.
-	if is_near_player(cell):
+	# Revalidar: player pudo entrar / celda baneada mientras esperaba en cola.
+	if not can_spawn_at(cell, true):
 		grid.remove_stack_occupation(cell)
 		return
 
 	spawn_ore_at_cell(cell, entry.z)
 
 
-## Instancia (o recicla) un bloque en celda + indice de stack. No toca la ocupacion del grid.
+## occupation_already_held: la cola ya marco la celda; no exigir is_free_for_spawn.
+func can_spawn_at(cell: Vector2i, occupation_already_held: bool = false) -> bool:
+	if grid == null:
+		return false
+	if not occupation_already_held and not grid.is_free_for_spawn(cell):
+		return false
+	if is_cell_banned(cell):
+		return false
+	if profile.is_inside_safe_zone(cell, get_player_cell()):
+		return false
+	if chunk == null or not chunk.has_window:
+		return false
+	return chunk.is_inside_window(cell)
+
+
 func spawn_ore_at_cell(cell: Vector2i, stack_index: int = 0) -> Ore:
 	var ore := acquire_ore()
 	if ore == null:
 		return null
 
 	var ore_data := profile.pick_ore_data()
-	# Solo mueve el OreBlock padre; Visuals/collider quedan como en ore.tscn.
 	ore.global_position = grid.get_ore_world_position(cell, stack_index)
 	ore.setup(
 		profile.get_ore_hp(ore_data, OreDefinition.OreSize.SMALL),
@@ -256,7 +349,6 @@ func ensure_profile() -> void:
 		push_warning("OreSpawner: sin MineSpawnProfile asignado, usando valores por defecto.")
 
 
-## Empuja la layout del spawner al grid para una sola fuente de verdad en runtime.
 func apply_block_layout_to_grid() -> void:
 	if grid == null:
 		return
@@ -266,66 +358,76 @@ func apply_block_layout_to_grid() -> void:
 	grid.sync_cell_size_from_layout()
 
 
-func get_starting_ore_count() -> int:
-	var base := 0
-	if GameManager.player_stats != null:
-		base = int(GameManager.player_stats.get_stat("starting_ore_amount"))
-	return int(round(float(base) * get_starting_amount_multiplier()))
-
-
-func get_starting_amount_multiplier() -> float:
-	if starting_amount_mult_stat.is_empty() or GameManager.player_stats == null:
-		return 1.0
-	return maxf(GameManager.player_stats.get_stat(starting_amount_mult_stat), 0.0)
-
-
-func get_player_stat(stat_name: String) -> float:
-	if stat_name.is_empty() or GameManager.player_stats == null:
+func get_player_stat(stat_id: int) -> float:
+	if GameManager.player_stats == null:
 		return 0.0
-	return GameManager.player_stats.get_stat(stat_name)
+	return GameManager.player_stats.get_stat(int(stat_id))
 
 
-## Evalua las stats de destroy-spawn y encola los ores que correspondan cerca de la celda minada.
 func handle_destroy_spawns(source_cell: Vector2i) -> void:
+	ban_cell(source_cell)
+
 	var spawn_count := 0
-
-	if randf() <= get_player_stat(spawn_on_destroy_chance_stat):
+	if randf() <= get_player_stat(Stats.SPAWN_ON_DESTROY_CHANCE):
 		spawn_count += 1
-
-	spawn_count += int(get_player_stat(spawn_extra_on_destroy_stat))
+	spawn_count += int(get_player_stat(Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT))
 
 	if spawn_count > 0:
-		spawn_burst_around(source_cell, spawn_count)
+		enqueue_scatter(spawn_count)
 
-	if randf() <= get_player_stat(destroy_cluster_chance_stat):
-		var cluster_size := int(get_player_stat(destroy_cluster_size_stat))
+	if randf() <= get_player_stat(Stats.SPAWN_CLUSTER_CHANCE):
+		var cluster_size := int(get_player_stat(Stats.SPAWN_CLUSTER_SIZE))
 		if cluster_size > 0:
-			spawn_burst_around(source_cell, cluster_size, profile.cluster_spread)
+			enqueue_scatter(cluster_size)
 
 
-# --- Bool queries ---
-func can_spawn_at(cell: Vector2i) -> bool:
-	if not grid.is_free_for_spawn(cell):
+func ban_cell(cell: Vector2i) -> void:
+	var ban_ms := int(maxf(profile.mined_cell_ban_seconds, 0.05) * 1000.0)
+	banned_cells[cell] = Time.get_ticks_msec() + ban_ms
+
+
+func is_cell_banned(cell: Vector2i) -> bool:
+	return banned_cells.has(cell)
+
+
+func expire_banned_cells() -> void:
+	if banned_cells.is_empty():
+		return
+	var now := Time.get_ticks_msec()
+	var expired: Array[Vector2i] = []
+	for cell in banned_cells.keys():
+		if int(banned_cells[cell]) <= now:
+			expired.append(cell)
+	for cell in expired:
+		banned_cells.erase(cell)
+
+
+func get_player_cell() -> Vector2i:
+	if chunk == null or chunk.follow_target == null or grid == null:
+		return Vector2i.ZERO
+	return grid.world_to_cell(chunk.follow_target.global_position)
+
+
+func get_player_move_direction() -> Vector2:
+	if chunk == null or chunk.follow_target == null:
+		return Vector2.ZERO
+	if chunk.follow_target is CharacterBody2D:
+		var body := chunk.follow_target as CharacterBody2D
+		if body.velocity.length_squared() > profile.forward_bias_min_speed * profile.forward_bias_min_speed:
+			return body.velocity.normalized()
+	return Vector2.ZERO
+
+
+func should_apply_forward_bias() -> bool:
+	if profile.forward_bias_ratio <= 0.0:
 		return false
-	if is_near_player(cell):
+	if get_player_move_direction() == Vector2.ZERO:
 		return false
-	if chunk != null and chunk.has_window and not chunk.is_inside_window(cell):
-		return false
-	return true
+	return randf() < profile.forward_bias_ratio
 
 
-## No spawnear encima ni pegado al player.
-func is_near_player(cell: Vector2i) -> bool:
-	if chunk == null:
-		return false
-
-	var player := chunk.follow_target
-	if player == null:
-		return false
-
-	var player_cell := grid.world_to_cell(player.global_position)
-	var clearance := profile.player_clearance_cells
-	return maxi(absi(cell.x - player_cell.x), absi(cell.y - player_cell.y)) <= clearance
+func is_inside_player_safe_zone(cell: Vector2i) -> bool:
+	return profile.is_inside_safe_zone(cell, get_player_cell())
 
 
 # --- Signal callbacks ---
@@ -334,3 +436,8 @@ func _on_ore_destroyed(ore: Ore) -> void:
 	var source_cell := ore.grid_cell
 	release_ore(ore)
 	handle_destroy_spawns(source_cell)
+	request_refill()
+
+
+func _on_window_moved(_window_cells: Rect2i) -> void:
+	request_refill()

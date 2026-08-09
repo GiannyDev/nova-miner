@@ -22,3 +22,10 @@ class_name JuicePreset
 
 @export_group("Stagger")
 @export var stagger_delay: float = 0.1
+
+@export_group("Slide In (HUD cascade)")
+@export var slide_in_offset: float = 80.0
+@export var slide_in_duration: float = 0.4
+@export var slide_in_fade_duration: float = 0.28
+@export var slide_in_trans: Tween.TransitionType = Tween.TRANS_QUART
+@export var slide_in_ease: Tween.EaseType = Tween.EASE_OUT

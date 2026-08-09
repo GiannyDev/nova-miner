@@ -13,6 +13,10 @@ class_name OreDrop
 
 var ore_data: OreData
 var pickup_amount: int = 1
+var player_curr_pos: Vector2
+
+func _process(delta: float) -> void:
+	player_curr_pos = Refs.player.global_position
 
 ## Spawnea en el centro de la celda, cae con 2 rebotes y luego va al player.
 func setup(spawn_pos: Vector2, data: OreData = null, amount: int = 1) -> void:
@@ -60,39 +64,19 @@ func play_drop_and_home() -> void:
 
 func move_to(target: Vector2, duration: float, ease_type: Tween.EaseType) -> void:
 	var tween := create_tween()
-	tween.tween_property(self, "global_position", target, duration)\
-		.set_trans(Tween.TRANS_QUAD)\
-		.set_ease(ease_type)
+	tween.tween_property(self, "global_position", target, duration).set_trans(Tween.TRANS_QUAD).set_ease(ease_type)
 	await tween.finished
 
 
 func home_to_player() -> void:
 	var from := global_position
-	var to: Vector2 = Refs.player.global_position
-	var control := Vector2(
-		lerpf(from.x, to.x, 0.4),
-		minf(from.y, to.y) - home_arc_height
-	)
+	var to: Vector2 = player_curr_pos
+	await Feedbacks.do_jump(self, from, to, home_duration, home_arc_height)
 
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tween.tween_method(
-		func(t: float) -> void:
-			global_position = quadratic_bezier(from, control, to, t),
-		0.0,
-		1.0,
-		home_duration
-	)
-	tween.parallel().tween_property(self, "scale", Vector2(0.6, 0.6), home_duration)\
-		.set_trans(Tween.TRANS_SINE)\
-		.set_ease(Tween.EASE_IN)
-	await tween.finished
-
-
-func quadratic_bezier(p0: Vector2, p1: Vector2, p2: Vector2, t: float) -> Vector2:
-	var u := 1.0 - t
-	return (u * u * p0) + (2.0 * u * t * p1) + (t * t * p2)
-
+	#tween.parallel().tween_property(self, "scale", Vector2(0.6, 0.6), home_duration)\
+		#.set_trans(Tween.TRANS_SINE)\
+		#.set_ease(Tween.EASE_IN)
+	#await tween.finished
 
 func add_ore_to_inventory() -> void:
 	if ore_data == null:

@@ -4,14 +4,15 @@
 [ext_resource type="Texture2D" uid="uid://bancrv3wjv34f" path="res://sprites/block.png" id="2_0isyo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
-size = Vector2(256, 225)
+size = Vector2(256, 183)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m156b"]
-size = Vector2(256, 159)
+size = Vector2(256, 122)
 
 [node name="OreBlock" type="Node2D" unique_id=1779767453]
 physics_interpolation_mode = 2
 script = ExtResource("1_kfe1t")
+max_hp = 1.0
 
 [node name="Visuals" type="Node2D" parent="." unique_id=2002492290]
 
@@ -24,7 +25,7 @@ texture = ExtResource("2_0isyo")
 collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1559311200]
-position = Vector2(0, -112.5)
+position = Vector2(0, -133.5)
 shape = SubResource("RectangleShape2D_ad6r8")
 
 [node name="StaticBody2D2" type="StaticBody2D" parent="." unique_id=762780259]
@@ -33,6 +34,6 @@ collision_layer = 16
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2" unique_id=574830286]
-position = Vector2(0, -79.5)
+position = Vector2(0, -61)
 shape = SubResource("RectangleShape2D_m156b")
 debug_color = Color(0.85066974, 0.36398613, 0.22195959, 0.41960785)

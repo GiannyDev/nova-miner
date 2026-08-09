@@ -7,13 +7,10 @@ signal dealt_damage(amount: float)
 @export var run_speed_threshold: float = 20.0
 @export var run_animation: String = "run_forward"
 @export var idle_animation: String = "idle"
-@export var laser_mount_offset: Vector2 = Vector2(0, -80)
 @export var weapon_mount_offset: Vector2 = Vector2(0, -80)
 
 @onready var movement_component: MovementComponent = $MovementComponent
 @onready var spine_sprite: SpineSprite = $SpineSprite
-@onready var laser_mount: Node2D = $LaserMount
-@onready var laser_weapon: LaserWeapon = $LaserMount/LaserWeapon
 @onready var weapon_mount: Node2D = $Weapon
 @onready var drill_weapon: DrillWeapon = %DrillBase
 
@@ -23,12 +20,10 @@ var aim_direction: Vector2 = Vector2.RIGHT
 var current_animation: String = ""
 var idle_uses_run_fallback: bool = false
 var equipped_weapon: WeaponData
-var laser_mine_timer: float = 0.0
 
 
 func _ready() -> void:
 	y_sort_enabled = true
-	laser_mount.position = laser_mount_offset
 	weapon_mount.position = weapon_mount_offset
 	apply_equipped_weapon()
 	connect_drill_damage_tracking()
@@ -41,24 +36,13 @@ func connect_drill_damage_tracking() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	laser_mine_timer = maxf(laser_mine_timer - delta, 0.0)
-
 	if can_move():
 		get_input_direction()
 		update_facing()
-
-		match get_active_weapon_kind():
-			WeaponData.WeaponKind.DRILL:
-				update_drill_weapon(delta)
-			WeaponData.WeaponKind.LASER:
-				update_laser_weapon(delta)
-
+		update_drill_weapon(delta)
 		move_player(delta)
 	else:
 		move_player(delta, true)
-		if get_active_weapon_kind() == WeaponData.WeaponKind.LASER:
-			laser_weapon.is_casting = false
-
 	update_animation()
 
 
@@ -71,8 +55,8 @@ func get_input_direction() -> void:
 func move_player(delta: float, decelerate_only: bool = false) -> void:
 	var direction := Vector2.ZERO if decelerate_only else input_direction
 
-	if is_drill_locked():
-		movement_component.stop(self, delta)
+	if is_drill_engaged():
+		movement_component.hard_stop(self)
 		return
 
 	movement_component.move(self, direction, delta, get_move_speed())
@@ -92,11 +76,12 @@ func update_drill_weapon(delta: float) -> void:
 		return
 
 	var has_move_intent := input_direction.length_squared() > 0.01
-	drill_weapon.try_latch_from_movement(has_move_intent)
+	var attack := get_attack_damage()
 	var drill_aim := get_drill_aim_direction()
 	aim_direction = drill_aim
 	drill_weapon.set_aim_direction(drill_aim)
-	drill_weapon.tick(get_attack_damage(), delta)
+	drill_weapon.update_latching(has_move_intent, attack)
+	drill_weapon.tick(attack, delta)
 
 
 ## Solo movimiento / ultimo facing. Nunca apunta al ore (evita flick al destruir).
@@ -110,112 +95,47 @@ func get_drill_aim_direction() -> Vector2:
 	return Vector2.RIGHT
 
 
-func update_laser_weapon(_delta: float) -> void:
-	aim_at_mouse()
-
-	var wants_laser := Input.is_action_pressed("use_laser")
-	if wants_laser and not laser_weapon.is_casting:
-		sync_laser_stats()
-
-	laser_weapon.is_casting = wants_laser
-
-	if wants_laser:
-		try_laser_mine()
-
-
-func aim_at_mouse() -> void:
-	var mouse_pos := get_global_mouse_position()
-	var to_mouse := mouse_pos - laser_mount.global_position
-
-	if to_mouse.length_squared() < 0.01:
-		return
-
-	aim_direction = to_mouse.normalized()
-	laser_mount.look_at(mouse_pos)
-	laser_mount.scale.y = -1.0 if aim_direction.x < 0.0 else 1.0
-
-
-func try_laser_mine() -> void:
-	if laser_mine_timer > 0.0:
-		return
-
-	var ore := laser_weapon.get_hit_ore()
-	if ore == null:
-		return
-
-	ore.take_damage(get_attack_damage())
-	dealt_damage.emit(get_attack_damage())
-	laser_mine_timer = get_attack_cooldown()
-
-
 func apply_equipped_weapon() -> void:
 	equipped_weapon = WeaponData.load_by_id(GameManager.equipped_weapon_id)
 	if equipped_weapon == null:
 		equipped_weapon = WeaponData.load_by_id("drill_basic")
 
-	refresh_weapon_visibility()
 	sync_weapon_stats()
-
-
-func refresh_weapon_visibility() -> void:
-	var kind := get_active_weapon_kind()
-	laser_mount.visible = kind == WeaponData.WeaponKind.LASER
-	weapon_mount.visible = kind == WeaponData.WeaponKind.DRILL
 
 
 func sync_weapon_stats() -> void:
 	if equipped_weapon == null:
 		return
 
-	if equipped_weapon.kind == WeaponData.WeaponKind.LASER:
-		sync_laser_stats()
 	elif drill_weapon != null:
 		drill_weapon.setup(equipped_weapon)
 
 
-func sync_laser_stats() -> void:
-	if laser_weapon == null or equipped_weapon == null:
-		return
-
-	laser_weapon.set_max_length(equipped_weapon.laser_max_length)
-	laser_weapon.set_color(equipped_weapon.laser_color)
-	laser_weapon.line_width = equipped_weapon.laser_line_width
-
-
-func get_active_weapon_kind() -> WeaponData.WeaponKind:
-	if equipped_weapon != null:
-		return equipped_weapon.kind
-	return WeaponData.WeaponKind.DRILL
-
-
 func is_drill_locked() -> bool:
-	return get_active_weapon_kind() == WeaponData.WeaponKind.DRILL and drill_weapon != null and drill_weapon.is_drilling()
+	return is_drill_engaged()
+
+
+## Hold estable: perforando, grace tras soltar, o empujando contra contacto.
+func is_drill_engaged() -> bool:
+	return drill_weapon != null and drill_weapon.should_hold_player()
 
 
 func get_move_speed() -> float:
 	if GameManager.player_stats != null:
-		return GameManager.player_stats.speed
+		return GameManager.player_stats.get_stat(int(Stats.PLAYER_SPEED))
 	return fallback_speed
 
 
 func get_attack_damage() -> float:
 	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat("attack")
+		return GameManager.player_stats.get_stat(int(Stats.PLAYER_DMG))
 	return 10.0
 
 
 func get_attack_cooldown() -> float:
 	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat("attack_cooldown")
+		return GameManager.player_stats.get_stat(int(Stats.PLAYER_ATTACK_COOLDOWN))
 	return 0.5
-
-
-func get_laser_length() -> float:
-	if equipped_weapon != null and equipped_weapon.kind == WeaponData.WeaponKind.LASER:
-		return equipped_weapon.laser_max_length
-	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat("laser_length")
-	return 400.0
 
 
 func apply_facing_flip() -> void:
@@ -227,10 +147,11 @@ func apply_facing_flip() -> void:
 
 
 func update_animation() -> void:
-	if is_drill_locked():
-		play_animation(idle_animation, true)
-		set_animation_time_scale(0.0)
-		return
+	#if is_drill_engaged():
+		## Pose de empuje: run congelado. No swap a idle (ese cambio causaba flicker).
+		#play_animation(run_animation, true)
+		#set_animation_time_scale(0.0)
+		#return
 
 	var is_moving := velocity.length() > run_speed_threshold
 	var animation_name := run_animation if is_moving else idle_animation

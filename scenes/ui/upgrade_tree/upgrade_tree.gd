@@ -9,10 +9,7 @@ class_name UpgradeTree
 @export var line_width: float = 6.0
 @export var line_cap_mode: Line2D.LineCapMode = Line2D.LINE_CAP_ROUND
 @export var line_color_locked: Color = Color("#343434")
-@export var line_color_owned: Color = Color("#2ebecb")
-@export var line_color_affordable: Color = Color("#1a9745")
-@export var line_color_partial: Color = Color("b67500ff")
-@export var line_color_blocked: Color = Color("#bd273e")
+@export var line_color_owned: Color = Color("#1a9745")
 
 @export_category("Reveal Animation")
 @export var play_reveal_on_open: bool = true
@@ -45,13 +42,13 @@ class_name UpgradeTree
 
 @onready var buttons: Control = %Buttons
 @onready var maxed_message: PanelContainer = $MaxedMessage
+@onready var upgrade_popup: UpgradeInfoPopup = $UpgradeInfoPopup
 
 var dragging: bool = false
 var zoom: float = 1.0
 var min_zoom: float = 0.25
 var max_zoom: float = 1.0
 var zoom_step: float = 0.1
-var skill_info: UpgradeInfoPopup = null
 var is_revealing: bool = false
 var node_rest_positions: Dictionary = {}
 var reveal_jobs_remaining: int = 0
@@ -73,6 +70,11 @@ func _ready() -> void:
 	_initialize_view.call_deferred()
 	setup_buttons.call_deferred()
 	_update_currency_label.call_deferred()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("escape"):
+		if visible: close()
 
 
 func show_panel() -> void:
@@ -121,8 +123,8 @@ func finish_reveal_state(nodes: Array[UpgradeNode]) -> void:
 
 
 func close() -> void:
-	if skill_info != null:
-		skill_info.hide_panel()
+	if upgrade_popup != null:
+		upgrade_popup.hide_panel()
 	visible = false
 	is_revealing = false
 	reveal_jobs_remaining = 0
@@ -136,10 +138,9 @@ func setup_buttons() -> void:
 			continue
 
 		node.max_level = node.upgrade.get_max_level()
-		node.level = GameManager.skill_levels.get(node.upgrade.id, 0)
+		node.level = UpgradeManager.get_level(node.upgrade.id)
 		if node.icon_tex != null:
 			node.skill_icon.texture = node.icon_tex
-		node.sync_runtime_from_level(node.level)
 		node.apply_tree_line_style(self)
 
 	for node in upgrade_nodes:
@@ -364,10 +365,8 @@ func resolve_line_color(node: UpgradeNode) -> Color:
 	if node.level >= node.max_level:
 		return line_color_owned
 	if node.can_purchase():
-		return line_color_affordable
-	if node.level > 0:
-		return line_color_partial
-	return line_color_blocked
+		return line_color_owned
+	return line_color_owned
 
 
 func change_zoom(delta: float, mouse_pos: Vector2) -> void:
@@ -391,7 +390,7 @@ func _initialize_view() -> void:
 	content.position = (window_size / 2.0) - (content_size / 2.0)
 
 
-func _update_lines() -> void:
+func _update_lines(_upgrade: StatUpgrade = null, _new_level: int = 0) -> void:
 	if is_revealing:
 		return
 
@@ -495,8 +494,8 @@ func _input(event: InputEvent) -> void:
 		dragging = event.is_pressed()
 	elif event is InputEventMouseMotion and dragging:
 		content.position += event.relative
-		if skill_info != null:
-			skill_info.hide_panel()
+		if upgrade_popup != null:
+			upgrade_popup.hide_panel()
 
 
 func _on_close_button_pressed() -> void:

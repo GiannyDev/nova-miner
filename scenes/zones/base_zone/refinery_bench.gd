@@ -28,14 +28,10 @@ var refine_queue: Array[String] = []
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_action_pressed("interact"):
-		return
-	if not is_player_colliding:
-		return
-	if GameManager.curr_state != GameManager.GameStates.PLAYING:
-		return
-	if is_depositing or is_collecting:
-		return
+	if not event.is_action_pressed("interact"): return
+	if not is_player_colliding: return
+	if GameManager.curr_state != GameManager.GameStates.PLAYING: return
+	if is_depositing or is_collecting: return
 
 	if GameManager.has_raw_ores():
 		deposit_ores_to_machine()
@@ -48,12 +44,10 @@ func _unhandled_input(event: InputEvent) -> void:
 ## Deposita ores mientras se mantiene E. Al soltar, deja de depositar.
 func deposit_ores_to_machine() -> void:
 	is_depositing = true
-
 	while can_keep_depositing():
 		var ore_id: String = GameManager.take_next_raw_ore()
 		launch_raw_ore_to_machine(ore_id)
 		await get_tree().create_timer(deposit_stagger).timeout
-
 	is_depositing = false
 
 
@@ -73,18 +67,9 @@ func launch_raw_ore_to_machine(ore_id: String) -> void:
 	drop.scale = Vector2.ZERO
 
 	var pop := create_tween()
-	pop.tween_property(drop, "scale", Vector2.ONE, 0.12)\
-		.set_trans(Tween.TRANS_BACK)\
-		.set_ease(Tween.EASE_OUT)
-
-	await animate_arc(
-		drop,
-		drop.global_position,
-		refinery_machine_pos.global_position,
-		fly_duration,
-		arc_height
-	)
-
+	pop.tween_property(drop, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	await Feedbacks.do_jump(drop, drop.global_position, refinery_machine_pos.global_position, fly_duration, arc_height)
 	drop.queue_free()
 	enqueue_refine(ore_id)
 
@@ -125,11 +110,9 @@ func deposit_refined_ore_to_bench(ore_id: String) -> void:
 	refined.scale = Vector2.ZERO
 
 	var pop := create_tween()
-	pop.tween_property(refined, "scale", Vector2.ONE, 0.12)\
-		.set_trans(Tween.TRANS_BACK)\
-		.set_ease(Tween.EASE_OUT)
+	pop.tween_property(refined, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
-	await animate_arc(refined, refined.global_position, target, fly_duration, arc_height)
+	await Feedbacks.do_jump(refined, refined.global_position, target, fly_duration, arc_height)
 
 	refined.global_position = target
 	visible_refined.append(refined)
@@ -171,7 +154,7 @@ func launch_refined_to_player(refined: Node2D, refined_id: String) -> void:
 		refined.reparent(self, true)
 		refined.global_position = global_pos
 
-	await animate_arc(refined, refined.global_position, target, fly_duration, arc_height)
+	await Feedbacks.do_jump(refined, refined.global_position, target, fly_duration, arc_height)
 
 	GameManager.add_ore(refined_id, 1)
 	refined.queue_free()
@@ -193,36 +176,6 @@ func get_stack_top_global_position() -> Vector2:
 	if visible_refined.is_empty():
 		return refine_ore_pos.global_position
 	return visible_refined.back().global_position
-
-
-## Arco: sube y cae hacia el destino.
-func animate_arc(
-	node: Node2D,
-	from: Vector2,
-	to: Vector2,
-	duration: float,
-	height: float
-) -> void:
-	var control := Vector2(
-		lerpf(from.x, to.x, 0.35),
-		minf(from.y, to.y) - height
-	)
-
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_method(
-		func(t: float) -> void:
-			node.global_position = quadratic_bezier(from, control, to, t),
-		0.0,
-		1.0,
-		duration
-	)
-	await tween.finished
-
-
-func quadratic_bezier(p0: Vector2, p1: Vector2, p2: Vector2, t: float) -> Vector2:
-	var u := 1.0 - t
-	return (u * u * p0) + (2.0 * u * t * p1) + (t * t * p2)
 
 
 func _on_player_detector_body_entered(body: Node2D) -> void:

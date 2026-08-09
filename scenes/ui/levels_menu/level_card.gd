@@ -11,9 +11,9 @@ var curr_floor_data: FloorData
 
 func _ready() -> void:
 	if not floor_1_button or not floor_2_button or not floor_3_button or not level_data: return
-	floor_1_button.pressed.connect(_on_floor_selected.bind(level_data.floor_1_data))
-	floor_2_button.pressed.connect(_on_floor_selected.bind(level_data.floor_2_data))
-	floor_3_button.pressed.connect(_on_floor_selected.bind(level_data.floor_3_data))
+	floor_1_button.pressed.connect(_on_floor_selected.bind(level_data.floor_1_data[0]))
+	#floor_2_button.pressed.connect(_on_floor_selected.bind(level_data.floor_2_data[1]))
+	#floor_3_button.pressed.connect(_on_floor_selected.bind(level_data.floor_3_data[2]))
 	
 	floor_1_button.mouse_entered.connect(on_floor_button_mouse_entered.bind(floor_1_button))
 	floor_2_button.mouse_entered.connect(on_floor_button_mouse_entered.bind(floor_2_button))

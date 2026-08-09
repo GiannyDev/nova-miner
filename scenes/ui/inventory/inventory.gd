@@ -1,24 +1,30 @@
 extends PanelContainer
 class_name Inventory
-## HUD de ores: crea/actualiza OreInventoryDisplay por eventos. Sync al ready por si hay pickups previos.
+## HUD de ores (esquina). Cascada ShellDiver: filas entran de izquierda a derecha en secuencia.
 
 const ORE_INVENTORY_DISPLAY_SCENE = preload("uid://2pwbkmfd12eg")
 
-# --- Onready / cached ---
+@export_category("Enter Transition")
+@export var play_transition_on_ready: bool = false
+@export var slide_offset: float = 80.0
+@export var slide_duration: float = 0.4
+@export var fade_duration: float = 0.28
+@export var stagger_delay: float = 0.07
+@export var slide_trans: Tween.TransitionType = Tween.TRANS_QUART
+@export var slide_ease: Tween.EaseType = Tween.EASE_OUT
+
 @onready var container: VBoxContainer = %Container
 
-# --- Runtime ---
 ## ore_id -> display activo en el HUD.
 var displays: Dictionary = {}
+var is_transitioning: bool = false
+var transition_tweens: Array[Tween] = []
 
 
-# --- Built-ins ---
 func _ready() -> void:
-	clear_placeholder_displays()
 	EventBus.ore_amount_changed.connect(_on_ore_amount_changed)
 	# Sync despues de conectar: cubre ores agregados antes de que exista este HUD.
 	sync_from_currency_manager()
-	update_panel_visibility()
 
 
 func _exit_tree() -> void:
@@ -26,7 +32,6 @@ func _exit_tree() -> void:
 		EventBus.ore_amount_changed.disconnect(_on_ore_amount_changed)
 
 
-# --- Public API ---
 ## Reconstruye filas desde el bag del CurrencyManager (safe si UI nace tarde).
 func sync_from_currency_manager() -> void:
 	var snapshot := CurrencyManager.get_ore_amounts_snapshot()
@@ -37,7 +42,76 @@ func sync_from_currency_manager() -> void:
 	update_panel_visibility()
 
 
-# --- Private helpers (no leading _) ---
+## Cascada: cada fila sale de la izquierda (invisible) y aterriza en su sitio con stagger.
+func do_displays_transition() -> void:
+	if is_transitioning:
+		return
+	if container == null or container.get_child_count() == 0:
+		return
+
+	is_transitioning = true
+	kill_transition_tweens()
+
+	# Deja que el VBox termine de layout antes de cachear rests.
+	await get_tree().process_frame
+	if not is_inside_tree():
+		is_transitioning = false
+		return
+
+	var rows: Array[Control] = []
+	var rests: Array[Vector2] = []
+	for child in container.get_children():
+		if child is Control and is_instance_valid(child):
+			rows.append(child as Control)
+			rests.append((child as Control).global_position)
+
+	if rows.is_empty():
+		is_transitioning = false
+		return
+
+	# top_level: el VBox no pisa global_position durante el slide.
+	for i in rows.size():
+		UIJuice.prepare_slide_in_from_left(rows[i], rests[i], slide_offset)
+
+	var preset := build_slide_preset()
+	for i in rows.size():
+		var row := rows[i]
+		var rest := rests[i]
+		var tween := UIJuice.animate_slide_in_from_left(self, row, rest, preset)
+		transition_tweens.append(tween)
+		if stagger_delay > 0.0 and i < rows.size() - 1:
+			await get_tree().create_timer(stagger_delay).timeout
+
+	var last_tween: Tween = transition_tweens.back() if not transition_tweens.is_empty() else null
+	if last_tween != null and last_tween.is_valid() and last_tween.is_running():
+		await last_tween.finished
+
+	is_transitioning = false
+
+
+func build_slide_preset() -> JuicePreset:
+	var preset := JuicePreset.new()
+	preset.slide_in_offset = slide_offset
+	preset.slide_in_duration = slide_duration
+	preset.slide_in_fade_duration = fade_duration
+	preset.slide_in_trans = slide_trans
+	preset.slide_in_ease = slide_ease
+	preset.stagger_delay = stagger_delay
+	return preset
+
+
+func kill_transition_tweens() -> void:
+	for tween in transition_tweens:
+		if tween != null and tween.is_valid():
+			tween.kill()
+	transition_tweens.clear()
+	# Por si se corto a mitad: devolver filas al layout.
+	for child in container.get_children():
+		if child is Control:
+			(child as Control).top_level = false
+			(child as Control).modulate.a = 1.0
+
+
 ## Quita instancias de editor placeholder para empezar limpio.
 func clear_placeholder_displays() -> void:
 	for child in container.get_children():
@@ -94,7 +168,6 @@ func update_panel_visibility() -> void:
 	visible = not displays.is_empty()
 
 
-# --- Signal callbacks ---
 func _on_ore_amount_changed(ore_data: OreData, new_amount: int, _delta: int) -> void:
 	var ore_id := ""
 	if ore_data != null:

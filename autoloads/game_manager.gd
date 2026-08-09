@@ -1,5 +1,3 @@
-## Guarda estado global, niveles del arbol y stats del jugador con upgrades aplicados.
-
 extends Node
 
 enum GameStates {
@@ -11,46 +9,86 @@ enum GameStates {
 
 const RAW_ORE_ID := "gold"
 const REFINED_ORE_SUFFIX := "_refined"
-const TEST_STARTING_ORES := 0
 
 var curr_state: GameStates = GameStates.NONE
-var skill_levels: Dictionary = {}
 var player_stats: StatsData
 var unlocked_weapon_ids: Array[String] = ["drill_basic"]
 var equipped_weapon_id: String = "drill_basic"
 
-@export var player_stats_base: StatsData
+## Runtime de la run: current durability
+var drill_durability_current: float = 0.0
+var durability_depleted_emitted: bool = false
+var drill_durability_drain_per_frame: float = 5.0
+
+var player_stats_base: StatsData
 
 
 func _ready() -> void:
 	init_locale()
 	init_player_stats()
-	# CurrencyManager ya indexo ores (autoload antes que este).
-	seed_starting_ores()
+	repair_drill_full()
 
 
 func init_locale() -> void:
 	TranslationServer.set_locale("en")
 
 
+## Base defaults. SaveData.load_progress (deferred) pisa con valores guardados.
 func init_player_stats() -> void:
 	if player_stats_base == null:
 		player_stats_base = load("res://data/player/player_stats_base.tres")
-
 	player_stats = player_stats_base.duplicate(true)
-	UpgradeManager.apply_stats_to_player()
 
 
-func seed_starting_ores() -> void:
-	add_ore(RAW_ORE_ID, TEST_STARTING_ORES)
+# --- Drill durability ---
+func get_drill_durability() -> float:
+	return drill_durability_current
 
 
-func refresh_player_stats() -> void:
-	player_stats = player_stats_base.duplicate(true)
-	UpgradeManager.apply_stats_to_player()
+func get_drill_durability_max() -> float:
+	if player_stats == null:
+		return 0.0
+	return maxf(player_stats.get_stat(int(Stats.DRILL_DURABILITY_MAX)), 0.0)
 
 
-## Proxy al CurrencyManager (fuente de verdad del inventario de ores).
+func increase_drill_durability(amount: float) -> void:
+	if amount == 0.0 or player_stats == null:
+		return
+	var new_max := maxf(player_stats.get_stat(int(Stats.DRILL_DURABILITY_MAX)) + amount, 0.0)
+	player_stats.set_stat(int(Stats.DRILL_DURABILITY_MAX), new_max)
+	SaveData.save_progress()
+	EventBus.drill_durability_changed.emit(drill_durability_current, get_drill_durability_max())
+
+
+func set_drill_durability_max(value: float) -> void:
+	if player_stats == null:
+		return
+	player_stats.set_stat(int(Stats.DRILL_DURABILITY_MAX), maxf(value, 0.0))
+	SaveData.save_progress()
+	EventBus.drill_durability_changed.emit(drill_durability_current, get_drill_durability_max())
+
+
+func repair_drill_full() -> void:
+	durability_depleted_emitted = false
+	drill_durability_current = get_drill_durability_max()
+	EventBus.drill_durability_changed.emit(drill_durability_current, get_drill_durability_max())
+
+
+func consume_drill_durability(delta: float) -> void:
+	if curr_state != GameStates.PLAYING:
+		return
+	if drill_durability_drain_per_frame <= 0:
+		return
+
+	drill_durability_current -= drill_durability_drain_per_frame * delta
+	EventBus.drill_durability_changed.emit(drill_durability_current, get_drill_durability_max())
+
+	if drill_durability_current <= 0.0 and not durability_depleted_emitted:
+		drill_durability_current = 0.0
+		durability_depleted_emitted = true
+		EventBus.drill_durability_depleted.emit()
+
+
 func add_ore(ore_id: String, amount: int = 1) -> void:
 	CurrencyManager.add_ore_by_id(ore_id, amount)
 
@@ -83,7 +121,6 @@ func has_raw_ores() -> bool:
 	return get_raw_ore_total() > 0
 
 
-## Extrae un ore crudo del inventario. Devuelve su id.
 func take_next_raw_ore() -> String:
 	for ore_id in CurrencyManager.get_ore_amounts_snapshot().keys():
 		if is_refined_id(ore_id):
@@ -95,7 +132,6 @@ func take_next_raw_ore() -> String:
 	return ""
 
 
-## Regresa el ore a spawnear
 func get_ore_with_probabilities() -> PackedScene:
 	return null
 

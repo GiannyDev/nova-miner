@@ -1,105 +1,132 @@
 extends Resource
 class_name StatsData
+## Stats permanentes del jugador. Lookup por Stats enum (int), no por String.
 
-var attack: float = 60.0
+var attack: float = 8.0
 var attack_cooldown: float = 0.5
-var oxygen: float = 100.0
-var speed: float = 600.0
-var laser_length: float = 400.0
+var fuel: float = 100.0
+var speed: float = 350.0
 var pickup_radius: float = 50.0
 var helpers_unlocked: int = 0
 
-## Ores
-## Cantidad inicial al entrar a la mina (multiplicada por ore_density_mult).
-var starting_ore_amount: int = 200
-## Multiplica starting_ore_amount al entrar a la mina (upgrade OreCount).
-var ore_density_mult: float = 1.0
+var deposit_time: float = 0.0
+var refiniment_time: float = 0.0
 
-## Spawn al destruir
-## Probabilidad base de spawnear un ore al destruir uno (upgrade SpawnOnDestroy).
-var spawn_on_destroy_amount: float = 1.0
-## Ores extra al destruir uno ademas del spawn base (upgrade SpawnXOresWhenOneDestroyed).
-var spawn_extra_on_destroy: int = 0
-## Probabilidad de spawnear un cluster al destruir uno (upgrade DestroyClusterChance).
-var destroy_cluster_chance: float = 100.0
-## Cuantos ores forman el cluster cuando destroy_cluster_chance activa.
-var destroy_cluster_size: int = 30
+var inventory_size: int = 0
 
-## Chunk de spawn
-## Celdas extra que suma la ventana de spawn del MineChunk (skills de alcance/velocidad).
-var chunk_size_bonus_cells: float = 0.0
+var unlock_weapon_shop: bool = false
+var unlock_refinement: bool = false
+var unlock_workshop: bool = false
 
-func get_stat(stat_name: String) -> float:
-	match stat_name:
-		"attack":
+## Cantidad objetivo de ores cerca del player (batch + refill).
+var starting_ore_amount: int = 12
+
+## Extras al destruir.
+var spawn_on_destroy_chance: float = 0.0
+var spawn_extra_on_destroy: float = 0.0
+var destroy_cluster_chance: float = 0.0
+var destroy_cluster_size: int = 3
+
+var drill_durability_max: float = 40.0
+
+func get_stat(stat_id: Variant) -> float:
+	var id := int(stat_id)
+	match id:
+		Stats.PLAYER_DMG:
 			return attack
-		"attack_left", "attack_right":
-			return attack
-		"attack_cooldown":
+		Stats.PLAYER_ATTACK_COOLDOWN:
 			return attack_cooldown
-		"oxygen":
-			return oxygen
-		"speed":
+		Stats.FUEL:
+			return fuel
+		Stats.DEPOSIT_TIME:
+			return deposit_time
+		Stats.REFINEMENT_TIME:
+			return refiniment_time
+		Stats.INVENTORY_SIZE:
+			return float(inventory_size)
+		Stats.PLAYER_SPEED:
 			return speed
-		"laser_length":
-			return laser_length
-		"pickup_radius":
+		Stats.PICKUP_RADIUS:
 			return pickup_radius
-		"helpers_unlocked":
+		Stats.HELPERS_UNLOCKED:
 			return float(helpers_unlocked)
-		"starting_ore_amount":
-			return starting_ore_amount
-		"ore_density_mult":
-			return ore_density_mult
-		"spawn_on_destroy_amount":
-			return spawn_on_destroy_amount
-		"spawn_extra_on_destroy":
-			return float(spawn_extra_on_destroy)
-		"destroy_cluster_chance":
+		Stats.STARTING_ORE_AMOUNT:
+			return float(starting_ore_amount)
+		Stats.SPAWN_ON_DESTROY_CHANCE:
+			return spawn_on_destroy_chance
+		Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT:
+			return spawn_extra_on_destroy
+		Stats.SPAWN_CLUSTER_CHANCE:
 			return destroy_cluster_chance
-		"destroy_cluster_size":
+		Stats.SPAWN_CLUSTER_SIZE:
 			return float(destroy_cluster_size)
-		"chunk_size_bonus_cells":
-			return chunk_size_bonus_cells
+		Stats.DRILL_DURABILITY_MAX:
+			return drill_durability_max
+		Stats.UNLOCK_WEAPON_SHOP:
+			return 1.0 if unlock_weapon_shop else 0.0
+		Stats.UNLOCK_REFINEMENT:
+			return 1.0 if unlock_refinement else 0.0
+		Stats.UNLOCK_WORKSHOP:
+			return 1.0 if unlock_workshop else 0.0
 		_:
-			push_warning("Unknown stat: %s" % stat_name)
+			push_warning("Unknown stat id: %d (%s)" % [id, Stats.get_name(id)])
 			return 0.0
 
 
-func set_stat(stat_name: String, value: float) -> void:
-	match stat_name:
-		"attack":
+func set_stat(stat_id: Variant, value: float) -> void:
+	var id := int(stat_id)
+	match id:
+		Stats.PLAYER_DMG:
 			attack = value
-		"attack_left", "attack_right":
-			attack = value
-		"speed":
+		Stats.PLAYER_ATTACK_COOLDOWN:
+			attack_cooldown = value
+		Stats.FUEL:
+			fuel = value
+		Stats.DEPOSIT_TIME:
+			deposit_time = value
+		Stats.REFINEMENT_TIME:
+			refiniment_time = value
+		Stats.INVENTORY_SIZE:
+			inventory_size = int(value)
+		Stats.PLAYER_SPEED:
 			speed = value
-		"laser_length":
-			laser_length = value
-		"pickup_radius":
+		Stats.PICKUP_RADIUS:
 			pickup_radius = value
-		"helpers_unlocked":
+		Stats.HELPERS_UNLOCKED:
 			helpers_unlocked = int(value)
-		"starting_ore_amount":
-			starting_ore_amount = value
-		"ore_density_mult":
-			ore_density_mult = value
-		"spawn_on_destroy_amount":
-			spawn_on_destroy_amount = value
-		"spawn_extra_on_destroy":
-			spawn_extra_on_destroy = int(value)
-		"destroy_cluster_chance":
+		Stats.STARTING_ORE_AMOUNT:
+			starting_ore_amount = int(value)
+		Stats.SPAWN_ON_DESTROY_CHANCE:
+			spawn_on_destroy_chance = value
+		Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT:
+			spawn_extra_on_destroy = value
+		Stats.SPAWN_CLUSTER_CHANCE:
 			destroy_cluster_chance = value
-		"destroy_cluster_size":
+		Stats.SPAWN_CLUSTER_SIZE:
 			destroy_cluster_size = int(value)
-		"chunk_size_bonus_cells":
-			chunk_size_bonus_cells = value
+		Stats.DRILL_DURABILITY_MAX:
+			drill_durability_max = value
+		Stats.UNLOCK_WEAPON_SHOP:
+			unlock_weapon_shop = value >= 1.0
+		Stats.UNLOCK_REFINEMENT:
+			unlock_refinement = value >= 1.0
+		Stats.UNLOCK_WORKSHOP:
+			unlock_workshop = value >= 1.0
 		_:
-			push_warning("Unknown stat: %s" % stat_name)
+			push_warning("Unknown stat id: %d (%s)" % [id, Stats.get_name(id)])
 
 
-func modify_stat(stat_name: String, amount: float, mode: StatUpgrade.OperationMode, op: StatUpgrade.OperationType) -> void:
-	var current := get_stat(stat_name)
+func modify_stat(stat_id: Variant, amount: float, mode: StatUpgrade.OperationMode, op: StatUpgrade.OperationType) -> void:
+	var id := int(stat_id)
+	match op:
+		StatUpgrade.OperationType.SET_TRUE:
+			set_stat(id, 1.0)
+			return
+		StatUpgrade.OperationType.SET_FALSE:
+			set_stat(id, 0.0)
+			return
+
+	var current := get_stat(id)
 	var new_value := current
 
 	match op:
@@ -120,4 +147,4 @@ func modify_stat(stat_name: String, amount: float, mode: StatUpgrade.OperationMo
 				StatUpgrade.OperationMode.MULTIPLIER:
 					new_value = current / amount if amount != 0.0 else current
 
-	set_stat(stat_name, new_value)
+	set_stat(id, new_value)

@@ -7,20 +7,29 @@
 [ext_resource type="Texture2D" uid="uid://bv6jpettv5mpl" path="res://sprites/ui/mouse_right_click.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://b6om5jx1x555e" path="res://sprites/ui/mouse_middle_click.png" id="5"]
 [ext_resource type="PackedScene" uid="uid://d0nrrh8k2pww" path="res://scenes/ui/upgrade_tree/upgrade_node.tscn" id="6"]
-[ext_resource type="Resource" uid="uid://yeecv5fdir71" path="res://data/upgrades/stat_attack.tres" id="7_attack"]
 [ext_resource type="Resource" uid="uid://bb3nk6ie5ijb5" path="res://data/upgrades/stat_spawn_extra_on_destroy.tres" id="8_spawn"]
-[ext_resource type="Resource" uid="uid://cattackbranch2" path="res://data/upgrades/stat_attack_right.tres" id="9_attack_r"]
-[ext_resource type="Resource" uid="uid://cattackbranch3" path="res://data/upgrades/stat_attack_left.tres" id="10_attack_l"]
+[ext_resource type="Resource" uid="uid://c4vhblohn7gl2" path="res://data/upgrades/stat_attack_right.tres" id="9_attack_r"]
+[ext_resource type="Resource" uid="uid://c4vhblohn7gl3" path="res://data/upgrades/stat_attack_left.tres" id="10_attack_l"]
+[ext_resource type="Resource" uid="uid://bsbmugjtt6lc7" path="res://data/upgrades/stat_starting_ore_amount.tres" id="11_ore_amt"]
+[ext_resource type="PackedScene" uid="uid://df8opq5yf5pv8" path="res://scenes/ui/upgrade_tree/upgrade_info_popup.tscn" id="12_0meom"]
+[ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="13_efcpf"]
+[ext_resource type="Resource" uid="uid://b1cxjsvb1n73u" path="res://data/upgrades/stat_speed.tres" id="14_speed"]
+[ext_resource type="Resource" uid="uid://b65wydb8gm7ea" path="res://data/upgrades/stat_drill_durability.tres" id="15_drill_dur"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
 shader = ExtResource("2_efcpf")
 shader_parameter/speed = 0.35
 
-[sub_resource type="LabelSettings" id="LabelSettings_efcpf"]
-font_size = 24
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ogihg"]
 bg_color = Color(0.29586652, 0.29586652, 0.29586637, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_efcpf"]
+bg_color = Color(0.15487584, 0.15487605, 0.15487596, 1)
+draw_center = false
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -37,7 +46,15 @@ script = ExtResource("1")
 content = NodePath("TreeViewport/Content")
 lines_container = NodePath("TreeViewport/Content/Lines")
 line_width = 10.0
-line_color_owned = Color(0.18039216, 0.74509805, 0.73333335, 1)
+line_color_owned = Color(0.20392157, 0.20392157, 0.20392157, 1)
+node_reveal_duration = 0.1
+line_grow_duration = 0.05
+root_stagger = 0.03
+node_start_rotation_deg = -10.0
+node_reveal_spring = 0.2
+node_flash_peak = 1.0
+node_flash_duration = 0.1
+unpurchased_dim = 0.5
 
 [node name="BackBackground" type="ColorRect" parent="." unique_id=2138438461]
 layout_mode = 1
@@ -60,32 +77,6 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("3_k2ohx")
 stretch_mode = 1
-
-[node name="Header" type="HBoxContainer" parent="." unique_id=784446534]
-custom_minimum_size = Vector2(1850, 50)
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -925.0
-offset_top = 16.0
-offset_right = 925.0
-offset_bottom = 66.0
-grow_horizontal = 2
-
-[node name="TitleLabel" type="Label" parent="Header" unique_id=1384983928]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "UPGRADE TREE"
-label_settings = SubResource("LabelSettings_efcpf")
-
-[node name="CloseButton" type="Button" parent="Header" unique_id=513142081]
-custom_minimum_size = Vector2(120, 50)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_ogihg")
-text = "CLOSE"
 
 [node name="TreeViewport" type="Control" parent="." unique_id=1239101654]
 clip_contents = true
@@ -128,7 +119,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Attack" parent="TreeViewport/Content/Buttons" unique_id=1970078329 instance=ExtResource("6")]
+[node name="Attack1" parent="TreeViewport/Content/Buttons" unique_id=1970078329 instance=ExtResource("6")]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -141,9 +132,9 @@ offset_right = 60.0
 offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
-upgrade = ExtResource("7_attack")
-popup_title = "Attack"
-popup_description = "Increase laser damage by {stat_amount}."
+upgrade = ExtResource("9_attack_r")
+popup_title = "Attack Right"
+popup_description = "Increase drill damage by {stat_amount}."
 
 [node name="Attack2" parent="TreeViewport/Content/Buttons" unique_id=1364061289 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
 layout_mode = 1
@@ -159,9 +150,9 @@ offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
 upgrade = ExtResource("9_attack_r")
-previous_skills = [NodePath("../Attack")]
+previous_skills = [NodePath("../Attack1")]
 popup_title = "Attack Right"
-popup_description = "Increase laser damage by {stat_amount}."
+popup_description = "Increase drill damage by {stat_amount}."
 
 [node name="Attack3" parent="TreeViewport/Content/Buttons" unique_id=894184850 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
 layout_mode = 1
@@ -177,9 +168,9 @@ offset_bottom = 60.0
 grow_horizontal = 2
 grow_vertical = 2
 upgrade = ExtResource("10_attack_l")
-previous_skills = [NodePath("../Attack")]
+previous_skills = [NodePath("../Attack1")]
 popup_title = "Attack Left"
-popup_description = "Increase laser damage by {stat_amount}."
+popup_description = "Increase drill damage by {stat_amount}."
 
 [node name="SpawnOnDestroy" parent="TreeViewport/Content/Buttons" unique_id=1613322259 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
 layout_mode = 1
@@ -195,9 +186,63 @@ offset_bottom = -190.0
 grow_horizontal = 2
 grow_vertical = 2
 upgrade = ExtResource("8_spawn")
-previous_skills = [NodePath("../Attack")]
+previous_skills = [NodePath("../Attack1")]
 popup_title = "Extra Spawn"
 popup_description = "Spawn {stat_amount} extra ore when you destroy one."
+
+[node name="StartingOreAmount" parent="TreeViewport/Content/Buttons" unique_id=2100000001 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 190.0
+offset_right = 60.0
+offset_bottom = 310.0
+grow_horizontal = 2
+grow_vertical = 2
+upgrade = ExtResource("11_ore_amt")
+previous_skills = [NodePath("../Attack1")]
+popup_title = "Ore Density"
+popup_description = "Spawn {stat_amount} more ores near you in the mine."
+
+[node name="DrillDurability" parent="TreeViewport/Content/Buttons" unique_id=2100000002 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 190.0
+offset_top = 190.0
+offset_right = 310.0
+offset_bottom = 310.0
+grow_horizontal = 2
+grow_vertical = 2
+upgrade = ExtResource("15_drill_dur")
+previous_skills = [NodePath("../StartingOreAmount")]
+popup_title = "Drill Durability"
+popup_description = "Increase max drill durability by {stat_amount}."
+
+[node name="Speed" parent="TreeViewport/Content/Buttons" unique_id=2100000003 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = 190.0
+offset_right = -190.0
+offset_bottom = 310.0
+grow_horizontal = 2
+grow_vertical = 2
+upgrade = ExtResource("14_speed")
+previous_skills = [NodePath("../StartingOreAmount")]
+popup_title = "Speed"
+popup_description = "Move {stat_amount} faster while mining."
 
 [node name="Hints" type="HBoxContainer" parent="." unique_id=638364553]
 layout_mode = 1
@@ -275,4 +320,31 @@ theme_override_font_sizes/font_size = 18
 text = "ALL UPGRADES MAXED!"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="Header/CloseButton" to="." method="_on_close_button_pressed"]
+[node name="UpgradeInfoPopup" parent="." unique_id=2041815122 instance=ExtResource("12_0meom")]
+visible = false
+layout_mode = 0
+
+[node name="CloseButton" type="Button" parent="." unique_id=513142081]
+custom_minimum_size = Vector2(120, 60)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = 90.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_ogihg")
+text = "CLOSE"
+
+[node name="Inventory" parent="." unique_id=1580823554 instance=ExtResource("13_efcpf")]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 175.0
+offset_bottom = 95.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_efcpf")
+
+[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]

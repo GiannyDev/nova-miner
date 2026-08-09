@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cupgrade_line001"]
+[gd_scene format=3 uid="uid://d0bil58d3joac"]
 
-[ext_resource type="Script" path="res://scenes/ui/upgrade_tree/upgrade_line.gd" id="1"]
+[ext_resource type="Script" uid="uid://dlfgdrhb15ll7" path="res://scenes/ui/upgrade_tree/upgrade_line.gd" id="1"]
 
-[node name="UpgradeLine" type="Line2D"]
+[node name="UpgradeLine" type="Line2D" unique_id=742655318]
 points = PackedVector2Array(0, 0, 50, 0)
 width = 2.0
 default_color = Color(0.20392157, 0.20392157, 0.20392157, 1)

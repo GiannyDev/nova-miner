@@ -58,6 +58,29 @@ static func animate_fade_in(host: Node, control: CanvasItem, duration: float = 0
 	return tween
 
 
+## Prepara una fila HUD fuera a la izquierda (usa top_level para no pelear con VBox).
+static func prepare_slide_in_from_left(control: Control, rest_global: Vector2, offset: float) -> void:
+	control.modulate.a = 0.0
+	control.top_level = true
+	control.global_position = rest_global + Vector2(-absf(offset), 0.0)
+
+
+## Slide L→R + fade hacia rest_global. Al terminar, top_level=false para devolver al layout.
+static func animate_slide_in_from_left(host: Node, control: Control, rest_global: Vector2, preset: JuicePreset = null) -> Tween:
+	var cfg := resolve_preset(preset)
+	var tween := host.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(control, "modulate:a", 1.0, cfg.slide_in_fade_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(control, "global_position", rest_global, cfg.slide_in_duration).set_trans(cfg.slide_in_trans).set_ease(cfg.slide_in_ease)
+	tween.finished.connect(func() -> void:
+		if not is_instance_valid(control):
+			return
+		control.top_level = false
+		control.modulate.a = 1.0
+	, CONNECT_ONE_SHOT)
+	return tween
+
+
 static func animate_count_up(host: Node, label: Label, from_value: float, to_value: float, formatter: Callable, preset: JuicePreset = null) -> Tween:
 	var cfg := resolve_preset(preset)
 	var tween := host.create_tween()

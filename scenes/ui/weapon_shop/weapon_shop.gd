@@ -1,23 +1,19 @@
 extends Control
 class_name WeaponShop
 
-const DEFAULT_WEAPON_IDS: Array[String] = ["drill_basic", "drill_fast", "laser_basic", "laser_pulse", "laser_beam", "laser_split", "laser_chaos"]
+const DEFAULT_WEAPON_IDS: Array[String] = ["drill_basic", "drill_fast"]
 
 @export_group("Weapons")
-## Lista editable en Inspector. Si queda vacia, carga DEFAULT_WEAPON_IDS al abrir.
 @export var weapons: Array[WeaponData] = []
 
 @onready var weapon_scroll_container: ScrollContainer = %WeaponScrollContainer
 @onready var weapon_image_container: HBoxContainer = %WeaponImageContainer
 @onready var selection_frame: Panel = %SelectionFrame
-@onready var prev_weapon_button: Button = %PrevWeaponButton
 @onready var select_weapon_button: Button = %SelectWeaponButton
-@onready var next_weapon_button: Button = %NextWeaponButton
 
-@onready var upgrade_1_button: Button = %Upgrade1Button
-@onready var upgrade_2_button: Button = %Upgrade2Button
-@onready var upgrade_3_button: Button = %Upgrade3Button
-@onready var upgrade_4_button: Button = %Upgrade4Button
+@onready var next_weapon_button: Button = %NextWeaponButton
+@onready var prev_weapon_button: Button = %PrevWeaponButton
+@onready var close_button: Button = %CloseButton
 
 const SLOT_WIDTH := 280.0
 const VISIBLE_SLOT_COUNT := 3
@@ -30,14 +26,11 @@ var weapons_built: bool = false
 
 func _ready() -> void:
 	visible = false
-	upgrade_1_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_1_button))
-	upgrade_2_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_2_button))
-	upgrade_3_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_3_button))
-	upgrade_4_button.pressed.connect(_on_upgrade_btn_pressed.bind(upgrade_4_button))
-	upgrade_1_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_1_button))
-	upgrade_2_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_2_button))
-	upgrade_3_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_3_button))
-	upgrade_4_button.mouse_entered.connect(_on_upgrade_btn_mouse_entered.bind(upgrade_4_button))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("escape"):
+		if visible: hide_panel()
 
 
 func show_panel() -> void:
@@ -222,6 +215,7 @@ func equip_current_weapon() -> void:
 
 
 func _on_prev_weapon_button_pressed() -> void:
+	Springer.scale(prev_weapon_button, -0.05)
 	if weapons.is_empty():
 		return
 	var count := weapons.size()
@@ -230,6 +224,7 @@ func _on_prev_weapon_button_pressed() -> void:
 
 
 func _on_next_weapon_button_pressed() -> void:
+	Springer.scale(next_weapon_button, -0.05)
 	if weapons.is_empty():
 		return
 	var count := weapons.size()
@@ -237,17 +232,19 @@ func _on_next_weapon_button_pressed() -> void:
 	scroll_to_weapon(current_weapon_index)
 
 
+func _on_prev_weapon_button_mouse_entered() -> void:
+	prev_weapon_button.pivot_offset = prev_weapon_button.size / 2
+	Springer.rotate(prev_weapon_button, 12)
+
+
+func _on_next_weapon_button_mouse_entered() -> void:
+	
+	next_weapon_button.pivot_offset = next_weapon_button.size / 2
+	Springer.rotate(next_weapon_button, 12)
+
+
 func _on_select_weapon_button_pressed() -> void:
 	equip_current_weapon()
-
-
-func _on_upgrade_btn_pressed(btn: Button) -> void:
-	Springer.scale(btn, -0.05)
-
-
-func _on_upgrade_btn_mouse_entered(btn: Button) -> void:
-	btn.pivot_offset = btn.size / 2
-	Springer.rotate(btn, 3.0)
 
 
 func _on_close_button_pressed() -> void:
@@ -256,3 +253,8 @@ func _on_close_button_pressed() -> void:
 		parent_gui.close_weapon_shop()
 	else:
 		hide_panel()
+
+
+func _on_close_button_mouse_entered() -> void:
+	close_button.pivot_offset = close_button.size / 2
+	Springer.rotate(close_button, 10)

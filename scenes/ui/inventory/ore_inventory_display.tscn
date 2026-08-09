@@ -5,6 +5,9 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_la2ei"]
 font_size = 36
+shadow_size = 2
+shadow_color = Color(0.13333334, 0.13333334, 0.13333334, 1)
+shadow_offset = Vector2(2, 2)
 
 [node name="OreInventoryDisplay" type="HBoxContainer" unique_id=1136786209]
 theme_override_constants/separation = 8

@@ -1,16 +1,22 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://drillfast001"]
 
-[ext_resource type="Script" path="res://data/weapons/weapon_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bkkghrj4jut8f" path="res://data/weapons/weapon_data.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b56d4hf7k8m1i" path="res://sprites/right.png" id="2"]
 
 [resource]
 script = ExtResource("1")
 weapon_id = "drill_fast"
 weapon_name = "Turbo Drill"
-kind = 1
 sprite = ExtResource("2")
 description = "Faster ticks and stronger bite for quicker mining runs."
-damage_multiplier = 1.5
+upgrade_damage_stats = Array[float]([0.0])
+upgrade_damage_stats_costs = Array[float]([0.0])
+upgrade_drill_speed = Array[float]([0.0])
+upgrade_drill_speed_costs = Array[float]([0.0])
+upgrade_drill_durability = Array[float]([0.0])
+upgrade_drill_durability_costs = Array[float]([0.0])
+upgrade_ore_bonus = Array[float]([0.0])
+upgrade_ore_bonus_costs = Array[float]([0.0])
 drill_hit_delay = 0.1
 drill_spin_speed = 22.0
 rotation_smoothing = 20.0
