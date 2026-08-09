@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://b2g6jlt83l52k" path="res://scenes/player/player.tscn" id="1_mdgi6"]
 [ext_resource type="Script" uid="uid://b1djdot42y4vt" path="res://scenes/zones/mine_zone/mine_zone.gd" id="1_r8hjc"]
+[ext_resource type="Script" uid="uid://xhadfk6c5chj" path="res://data/perks/perk_data.gd" id="2_agnlg"]
 [ext_resource type="Resource" uid="uid://jrtwrfgy4vf" path="res://data/mines/default_spawn_profile.tres" id="3_k6t54"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="3_yy5d6"]
 [ext_resource type="Script" uid="uid://dqvaq2wpkd12e" path="res://scenes/zones/mine_zone/mine_grid.gd" id="4_grid"]
@@ -13,7 +14,10 @@
 [ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="9_3eek8"]
 [ext_resource type="Script" uid="uid://2023xnjlulj5" path="res://scenes/zones/mine_zone/mine_chunk.gd" id="11_2crg8"]
 [ext_resource type="Script" uid="uid://dk3ac2sjws58t" path="res://scenes/zones/mine_zone/ore_pool.gd" id="12_0fijc"]
-[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="12_2crg8"]
+[ext_resource type="Material" uid="uid://cbpjar43wpa2" path="res://resources/crt_01.tres" id="14_riejj"]
+[ext_resource type="LabelSettings" uid="uid://bkyjcykmls2up" path="res://resources/label_24.tres" id="15_ln1sk"]
+[ext_resource type="Resource" uid="uid://n1h27e03if8m" path="res://data/perks/perk_speed_boost.tres" id="16_perk_speed"]
+[ext_resource type="Resource" uid="uid://bmqavw2l3rg2f" path="res://data/perks/perk_cluster_bonus.tres" id="17_perk_cluster"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
 shader = ExtResource("9_1xuby")
@@ -21,7 +25,7 @@ shader_parameter/outerRadius = 4.00000019
 shader_parameter/MainAlpha = 0.50000002375
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1xuby"]
-bg_color = Color(0.49354547, 0.49354553, 0.49354535, 1)
+bg_color = Color(0.45840502, 0.45840508, 0.45840502, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -44,8 +48,26 @@ font_size = 28
 shadow_color = Color(0.18039216, 0.18039216, 0.18039216, 0.5882353)
 shadow_offset = Vector2(1.5, 1.5)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
+bg_color = Color(0.21176471, 0.23921569, 0.32156864, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.16553193, 0.18848825, 0.25744718, 1)
+shadow_size = 1
+shadow_offset = Vector2(6, 6)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ln1sk"]
+font_size = 28
+font_color = Color(1.317, 0.877, 0.317, 1)
+
+[sub_resource type="Environment" id="Environment_0fijc"]
+glow_enabled = true
+
 [node name="MineZone" type="Node2D" unique_id=1113268112]
 script = ExtResource("1_r8hjc")
+debug_start_perks = Array[ExtResource("2_agnlg")]([ExtResource("16_perk_speed"), ExtResource("17_perk_cluster")])
 debug_fast_forward = 2.5
 
 [node name="OreSpawner" type="Node" parent="." unique_id=1113268201]
@@ -84,7 +106,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="QuotaProgressBar" type="ProgressBar" parent="GUI" unique_id=1428977027]
+[node name="DrillDurability" type="ProgressBar" parent="GUI" unique_id=1428977027]
+unique_name_in_owner = true
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -104,7 +127,8 @@ step = 0.001
 value = 0.5
 show_percentage = false
 
-[node name="QuotaExtraction" type="Label" parent="GUI/QuotaProgressBar" unique_id=1793530715]
+[node name="DurabilityTitle" type="Label" parent="GUI/DrillDurability" unique_id=1793530715]
+unique_name_in_owner = true
 layout_mode = 0
 offset_top = -40.0
 offset_right = 284.0
@@ -112,7 +136,7 @@ text = "Drill durability"
 label_settings = SubResource("LabelSettings_ad6r8")
 vertical_alignment = 2
 
-[node name="QuotaProgressLabel" type="Label" parent="GUI/QuotaProgressBar" unique_id=1140248880]
+[node name="DurabilityValue" type="Label" parent="GUI/DrillDurability" unique_id=1140248880]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -126,6 +150,11 @@ label_settings = SubResource("LabelSettings_1xuby")
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("9_3eek8")]
+unique_name_in_owner = true
+offset_right = 100.0
+offset_bottom = 40.0
+
 [node name="SettingsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("3_yy5d6")]
 unique_name_in_owner = true
 visible = false
@@ -134,48 +163,88 @@ visible = false
 unique_name_in_owner = true
 visible = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GUI" unique_id=811534603]
+[node name="PerksContainer" type="VBoxContainer" parent="GUI" unique_id=811534603]
+unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -100.0
+offset_left = -110.0
 offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 100.0
+offset_right = -30.0
+offset_bottom = 364.0
 grow_horizontal = 0
 theme_override_constants/separation = 8
 
-[node name="TextureRect" type="TextureRect" parent="GUI/VBoxContainer" unique_id=819961013]
-custom_minimum_size = Vector2(70, 70)
-layout_mode = 2
-texture = ExtResource("12_2crg8")
-expand_mode = 1
-stretch_mode = 5
+[node name="PerksTooltip" type="PanelContainer" parent="GUI" unique_id=1896298254]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(350, 0)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -493.0
+offset_top = 20.0
+offset_right = -143.0
+offset_bottom = 254.0
+grow_horizontal = 0
+pivot_offset_ratio = Vector2(1, 0.5)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
 
-[node name="TextureRect2" type="TextureRect" parent="GUI/VBoxContainer" unique_id=1236708611]
-custom_minimum_size = Vector2(70, 70)
+[node name="Margin" type="MarginContainer" parent="GUI/PerksTooltip" unique_id=965467088]
 layout_mode = 2
-texture = ExtResource("12_2crg8")
-expand_mode = 1
-stretch_mode = 5
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
-[node name="TextureRect3" type="TextureRect" parent="GUI/VBoxContainer" unique_id=307514787]
-custom_minimum_size = Vector2(70, 70)
+[node name="VBox" type="VBoxContainer" parent="GUI/PerksTooltip/Margin" unique_id=2015492397]
 layout_mode = 2
-texture = ExtResource("12_2crg8")
-expand_mode = 1
-stretch_mode = 5
+mouse_filter = 2
+theme_override_constants/separation = 12
 
-[node name="TextureRect4" type="TextureRect" parent="GUI/VBoxContainer" unique_id=865475645]
-custom_minimum_size = Vector2(70, 70)
+[node name="PerkTitle" type="Label" parent="GUI/PerksTooltip/Margin/VBox" unique_id=1283236987]
+unique_name_in_owner = true
 layout_mode = 2
-texture = ExtResource("12_2crg8")
-expand_mode = 1
-stretch_mode = 5
+text = "Titulo"
+label_settings = ExtResource("15_ln1sk")
+horizontal_alignment = 1
 
-[node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("9_3eek8")]
-offset_right = 100.0
-offset_bottom = 40.0
+[node name="Rect" type="ColorRect" parent="GUI/PerksTooltip/Margin/VBox" unique_id=123547901]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.17603248, 0.19844356, 0.27317643, 1)
+
+[node name="PerkDescription" type="Label" parent="GUI/PerksTooltip/Margin/VBox" unique_id=1628157575]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Descripcion del
+perk para saber
+que hace"
+label_settings = ExtResource("15_ln1sk")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="PerkValue" type="Label" parent="GUI/PerksTooltip/Margin/VBox" unique_id=1701656033]
+unique_name_in_owner = true
+layout_mode = 2
+text = "234"
+label_settings = SubResource("LabelSettings_ln1sk")
+horizontal_alignment = 1
+
+[node name="CRT" type="ColorRect" parent="GUI" unique_id=1463877075]
+material = ExtResource("14_riejj")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="OrePool" type="Node" parent="." unique_id=890285604]
 script = ExtResource("12_0fijc")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=174832406]
+environment = SubResource("Environment_0fijc")

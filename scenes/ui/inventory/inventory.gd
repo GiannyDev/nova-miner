@@ -155,13 +155,31 @@ func ensure_ore_display(ore_data: OreData) -> OreInventoryDisplay:
 	return display
 
 
+## Asegura la fila HUD antes de que el drop vuele hacia ella.
+func prepare_incoming(ore_data: OreData) -> void:
+	var current := CurrencyManager.get_ore_amount(ore_data.id)
+	var display := ensure_ore_display(ore_data)
+	display.set_amount(maxi(current, 0))
+	visible = true
+
+
+## Centro del icono en coordenadas de canvas/pantalla.
+func get_ore_icon_center(ore_id: String) -> Vector2:
+	var display: OreInventoryDisplay = displays[ore_id]
+	return display.get_icon_center()
+
+
+func pulse_ore_display(ore_id: String) -> void:
+	var display: OreInventoryDisplay = displays[ore_id]
+	display.pulse()
+
+
 func remove_ore_display(ore_id: String) -> void:
 	if not displays.has(ore_id):
 		return
 	var display: OreInventoryDisplay = displays[ore_id]
 	displays.erase(ore_id)
-	if is_instance_valid(display):
-		display.queue_free()
+	display.queue_free()
 
 
 func update_panel_visibility() -> void:

@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bjd3b8sdmag3t"]
+
+[ext_resource type="Script" uid="uid://cqgd72ccgl2iy" path="res://scenes/ui/damage_text/damage_text.gd" id="1_dmg"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
+font_size = 64
+font_color = Color(1, 0.24169937, 0.32159248, 1)
+shadow_color = Color(0.19972259, 0, 0.02167229, 1)
+shadow_offset = Vector2(2, 2)
+
+[node name="DamageText" type="Node2D" unique_id=2102611858]
+physics_interpolation_mode = 2
+z_index = 20
+script = ExtResource("1_dmg")
+
+[node name="Label" type="Label" parent="." unique_id=1890158793]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -44.5
+offset_top = -29.5
+offset_right = 44.5
+offset_bottom = 29.5
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+text = "204"
+label_settings = SubResource("LabelSettings_ad6r8")
+horizontal_alignment = 1
+vertical_alignment = 1

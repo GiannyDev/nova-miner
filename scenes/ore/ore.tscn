@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://b7vv5tefc8fhj" path="res://scenes/ore/ore.gd" id="1_kfe1t"]
 [ext_resource type="Texture2D" uid="uid://bancrv3wjv34f" path="res://sprites/block.png" id="2_0isyo"]
+[ext_resource type="Texture2D" uid="uid://cmves85nyu84w" path="res://sprites/block_75.png" id="3_ft7y1"]
+[ext_resource type="Texture2D" uid="uid://vewgvvy3crk5" path="res://sprites/block_50.png" id="4_m4c5s"]
+[ext_resource type="Texture2D" uid="uid://gronwooo2vwe" path="res://sprites/block_25.png" id="5_ptdkf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
 size = Vector2(256, 183)
@@ -12,7 +15,11 @@ size = Vector2(256, 122)
 [node name="OreBlock" type="Node2D" unique_id=1779767453]
 physics_interpolation_mode = 2
 script = ExtResource("1_kfe1t")
-max_hp = 1.0
+max_hp = 20.0
+texture_100 = ExtResource("2_0isyo")
+texture_75 = ExtResource("3_ft7y1")
+texture_50 = ExtResource("4_m4c5s")
+texture_25 = ExtResource("5_ptdkf")
 
 [node name="Visuals" type="Node2D" parent="." unique_id=2002492290]
 
@@ -37,3 +44,6 @@ collision_mask = 0
 position = Vector2(0, -61)
 shape = SubResource("RectangleShape2D_m156b")
 debug_color = Color(0.85066974, 0.36398613, 0.22195959, 0.41960785)
+
+[node name="DamageMarker" type="Marker2D" parent="." unique_id=1225226312]
+position = Vector2(0, -257)

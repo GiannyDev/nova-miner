@@ -28,7 +28,7 @@ static func reset_forager(control: Control, rest_position: Vector2) -> void:
 static func animate_shell_diver_in(host: Node, control: Control, rest_position: Vector2, preset: JuicePreset = null) -> Tween:
 	var cfg := resolve_preset(preset)
 	prepare_pivot(control)
-	var tween := host.create_tween()
+	var tween := host.get_tree().create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(control, "modulate:a", 1.0, cfg.shell_fade_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.tween_property(control, "position", rest_position, cfg.shell_slide_duration).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
@@ -43,7 +43,7 @@ static func animate_forager_pop_in(host: Node, control: Control, rest_position: 
 	control.position = rest_position
 	control.scale = Vector2.ZERO
 	control.modulate.a = 0.0
-	var tween := host.create_tween()
+	var tween := host.get_tree().create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(control, "scale", Vector2.ONE, cfg.forager_pop_duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(control, "modulate:a", 1.0, cfg.forager_fade_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
@@ -53,7 +53,7 @@ static func animate_forager_pop_in(host: Node, control: Control, rest_position: 
 
 static func animate_fade_in(host: Node, control: CanvasItem, duration: float = 0.25) -> Tween:
 	control.modulate.a = 0.0
-	var tween := host.create_tween()
+	var tween := host.get_tree().create_tween()
 	tween.tween_property(control, "modulate:a", 1.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	return tween
 
@@ -83,7 +83,7 @@ static func animate_slide_in_from_left(host: Node, control: Control, rest_global
 
 static func animate_count_up(host: Node, label: Label, from_value: float, to_value: float, formatter: Callable, preset: JuicePreset = null) -> Tween:
 	var cfg := resolve_preset(preset)
-	var tween := host.create_tween()
+	var tween := host.get_tree().create_tween()
 	tween.tween_method(func(value: float) -> void: label.text = formatter.call(value), from_value, to_value, cfg.count_up_duration).set_trans(cfg.count_up_trans).set_ease(cfg.count_up_ease)
 	return tween
 

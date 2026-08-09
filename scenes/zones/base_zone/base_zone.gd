@@ -9,4 +9,5 @@ class_name BaseZone
 func _ready() -> void:
 	Refs.player = player
 	Refs.gui = gui
+	Refs.inventory = gui.inventory
 	GameManager.curr_state = GameManager.GameStates.PLAYING

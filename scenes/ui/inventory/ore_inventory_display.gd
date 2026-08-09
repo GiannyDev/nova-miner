@@ -37,6 +37,17 @@ func set_amount(amount: int) -> void:
 	ore_amount_label.text = str(maxi(amount, 0))
 
 
+## Centro global del icono (para homing de OreDrop).
+func get_icon_center() -> Vector2:
+	return ore_icon.get_global_rect().get_center()
+
+
+## Pop breve al recibir un drop.
+func pulse() -> void:
+	ore_icon.pivot_offset = ore_icon.size * 0.5
+	Springer.scale(ore_icon, 0.2, 1.0)
+
+
 func refresh_visuals() -> void:
 	if not is_node_ready():
 		return

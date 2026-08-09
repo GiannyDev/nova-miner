@@ -8,6 +8,7 @@ signal ore_hit(ore: Ore, damage: float)
 @export var pivot_path: NodePath = ^"Pivot"
 @export var sprite_path: NodePath = ^"Pivot/Sprite"
 @export var contact_path: NodePath = ^"ContactArea"
+@onready var drill_vfx: GPUParticles2D = %DrillVFX
 ## Distancia tip→ore para soltar el latch si el Area2D ya no reporta overlap.
 @export var latch_break_distance: float = 160.0
 ## Freno breve solo si no hay siguiente ore en contacto (cadena continua no lo usa).
@@ -32,6 +33,7 @@ func _ready() -> void:
 	pivot = get_node_or_null(pivot_path) as Node2D
 	bit_sprite = get_node_or_null(sprite_path) as Sprite2D
 	contact_area = get_node_or_null(contact_path) as Area2D
+	set_drill_vfx_emitting(false)
 
 
 func _physics_process(delta: float) -> void:
@@ -273,9 +275,18 @@ func update_drilling_state() -> void:
 	var drilling_now := is_drilling()
 	if drilling_now and not was_drilling:
 		drilling_started.emit(latched_ore)
+		set_drill_vfx_emitting(true)
 	elif not drilling_now and was_drilling:
 		drilling_stopped.emit()
+		set_drill_vfx_emitting(false)
 	was_drilling = drilling_now
+
+
+## Particles bajo Pivot: velocity local -X = opuesto al aim (+X del drill).
+func set_drill_vfx_emitting(active: bool) -> void:
+	if drill_vfx == null:
+		return
+	drill_vfx.emitting = active
 
 
 ## preserve_hit_timer: al encadenar ores mantiene el ritmo de golpe (cadena fluida).

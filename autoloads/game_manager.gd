@@ -2,6 +2,7 @@ extends Node
 
 enum GameStates {
 	NONE,
+	INTRO,
 	PLAYING,
 	PAUSED,
 	GAMEOVER,

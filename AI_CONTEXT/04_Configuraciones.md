@@ -12,11 +12,18 @@ Nuestros proyectos siempre tiene Godot MCP enabled, usalo cuando aplicas algo im
 * SubMine → `Resource` con icon, name, ore, ore_chance, quota, etc.
 * Maps → `Resource` con array[submine], name, banner, etc.
 * UpgradeTree → cada `UpgradeNode` lleva un `StatUpgrade` con `id` unico (save + stat), `costs[]` y `values[]` paralelos. Reveal ShellDiver: cascada BFS (linea crece → nodo pop), timings en categoria Reveal Animation.
-* RecapMenu → Sequence Timing en Inspector (ShellDiver minerals/title, Forager run stats/buttons, count-up). Empuja presets a los StatDisplay hijos.
+* RecapMenu → secuencia simple en Inspector (`Sequence`): paneles juntos sin texto → delay → textos en cadena (stagger) → delay → `records_panel`. Sin presets ShellDiver/Forager en el recap.
 * Weapons → `WeaponData` en `data/weapons/` (`drill_hit_delay`, `damage_multiplier`, `drill_spin_speed`, etc.). El player carga por `weapon_id` via `WeaponData.load_by_id()`.
 * Recap → `RunRecapData` + `StatDisplay`; textos con `tr("KEY")` desde `translations/translations.csv`.
-* Juice → helpers en `scripts/juice/` (`UIJuice`, `JuicePreset`); no duplicar tweens de feel en cada pantalla.
+* DamageText → `scenes/ui/damage_text/`; spawn via `Feedbacks.spawn_damage_text(amount, world_pos, mine_dir)` (pop gordo → stretch en direccion de minado).
+* OreDrop → cae/rebota y vuela en curva (`Feedbacks.do_jump`) al icono de `Inventory` (`Refs.inventory`).
+* Mine intro → `GameStates.INTRO`: player delay → ores `play_rise_animation` todos a la vez → `begin_run()` (`PLAYING` + `on_run_started`). Timings en MineZone `Intro`.
+* Juice → helpers en `scripts/juice/` (`UIJuice`, `JuicePreset`) donde aporten; no forzar presets en pantallas que ya tienen una secuencia propia simple.
 
 Exponer en el Inspector (`@export`, `@export_group`, `@export_subgroup`, `@export_multiline`) todo lo que un diseñador pueda querer tunear.
 
 Todo debe ser configurable, modular y extensible.
+
+## Controles de escena siempre existen
+
+Los nodos cableados en `.tscn` (`@onready`, `%UniqueName`, paths `$Child`) **siempre existen** en runtime. No hagas `if node != null` / early-return defensivos por si “faltara” un control de UI o gameplay de la escena. Si falta, es un error de escena que debe romperse claro — no enmascararlo con checks.

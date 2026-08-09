@@ -2,15 +2,23 @@ extends Node2D
 class_name MineZone
 ## Zona de mina: cablea grid, chunk, spawner, pool, player. Fin de run = durabilidad 0.
 
+const PERK_DISPLAY_SCENE := preload("res://scenes/ui/perks/perk_mine_display.tscn")
+
 @export_group("Recap")
-## Los 3 minerales que muestra el recap de esta submina (orden fijo en pantalla).
 @export var recap_ore_ids: Array[String] = ["gold", "silver", "platinum"]
 
+@export_group("Perks")
+@export var debug_start_perks: Array[PerkData] = []
+@export var perk_tooltip_spring: float = 8.0
+
+@export_group("Intro")
+@export var player_intro_delay: float = 0.4
+@export var delay_before_ores_rise: float = 0.15
+@export var ores_rise_duration: float = 0.55
 
 @export_category("Debug")
 @export var debug_fast_forward: float = 1.0
 
-# --- Onready / cached ---
 @onready var grid: MineGrid = $MineGrid
 @onready var chunk: MineChunk = $MineChunk
 @onready var ore_pool: OrePool = $OrePool
@@ -19,13 +27,25 @@ class_name MineZone
 @onready var player: Player = $YSort/Player
 
 ## GUI
-@onready var durability_bar: ProgressBar = $GUI/QuotaProgressBar
-@onready var durability_title: Label = $GUI/QuotaProgressBar/QuotaExtraction
-@onready var durability_label: Label = %QuotaProgressLabel
+@onready var inventory: Inventory = %Inventory
+@onready var drill_durability: ProgressBar = %DrillDurability
+@onready var durability_title: Label = %DurabilityTitle
+@onready var durability_value: Label = %DurabilityValue
 @onready var recap_menu: RecapMenu = %RecapMenu
 @onready var settings_menu: SettingsMenu = %SettingsMenu
 
-## Run data
+## Perk Tooltip
+@onready var perks_tooltip: PanelContainer = %PerksTooltip
+@onready var perks_container: VBoxContainer = %PerksContainer
+@onready var perk_title: Label = %PerkTitle
+@onready var perk_description: Label = %PerkDescription
+@onready var perk_value: Label = %PerkValue
+
+var durability_init_pos := Vector2(460, 1014)
+var durability_final_pos := Vector2(460, 1142)
+
+var perks: Array[PerkMineDisplay] = []
+
 var ores_collected: Dictionary = {}
 var blocks_mined: int = 0
 var damage_dealt: float = 0.0
@@ -37,16 +57,20 @@ var run_ended: bool = false
 
 # --- Built-ins ---
 func _ready() -> void:
-	GameManager.curr_state = GameManager.GameStates.PLAYING
+	GameManager.curr_state = GameManager.GameStates.INTRO
 	run_ended = false
 	run_elapsed = 0.0
+	Refs.inventory = inventory
 	ore_spawner.setup(grid, chunk, ysort, ore_pool)
 	GameManager.repair_drill_full()
 	spawn_player()
-	start_mine_generation()
 	connect_run_tracking()
+	connect_perk_tooltip()
 	setup_durability_hud()
-	EventBus.on_run_started.emit()
+	hide_perk_tooltip()
+	setup_debug_perks()
+	await play_intro_sequence()
+	begin_run()
 
 
 func _input(event: InputEvent) -> void:
@@ -57,16 +81,15 @@ func _input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if run_ended or player == null:
+	if run_ended or GameManager.curr_state != GameManager.GameStates.PLAYING:
 		return
 	run_elapsed += delta
 	track_distance_traveled()
 
 
 func _process(delta: float) -> void:
-	if run_ended:
+	if run_ended or GameManager.curr_state != GameManager.GameStates.PLAYING:
 		return
-	
 	GameManager.consume_drill_durability(delta)
 	refresh_durability_hud()
 
@@ -79,12 +102,18 @@ func connect_run_tracking() -> void:
 	if player != null and not player.dealt_damage.is_connected(_on_dealt_damage): player.dealt_damage.connect(_on_dealt_damage)
 
 
+func connect_perk_tooltip() -> void:
+	perks_tooltip.reset_size()
+	if not EventBus.on_perk_mine_display_tooltip.is_connected(_on_perk_mine_display_tooltip):
+		EventBus.on_perk_mine_display_tooltip.connect(_on_perk_mine_display_tooltip)
+	if not EventBus.on_perk_mine_display_tooltip_hide.is_connected(_on_perk_mine_display_tooltip_hide):
+		EventBus.on_perk_mine_display_tooltip_hide.connect(_on_perk_mine_display_tooltip_hide)
+
+
 func setup_durability_hud() -> void:
-	if durability_title != null:
-		durability_title.text = "Drill Durability"
-	if durability_bar != null:
-		durability_bar.max_value = 1.0
-		durability_bar.min_value = 0.0
+	durability_title.text = "Drill Durability"
+	drill_durability.max_value = 1.0
+	drill_durability.min_value = 0.0
 	refresh_durability_hud()
 
 
@@ -93,6 +122,26 @@ func spawn_player() -> void:
 	player.global_position = Vector2.ZERO
 	last_player_cell = grid.world_to_cell(player.global_position)
 	Refs.player = player
+
+
+## Intro: player (placeholder) → ores crecen todos juntos → recien ahi empieza la run.
+func play_intro_sequence() -> void:
+	# Placeholder hasta que exista la animacion de entrada del player.
+	await get_tree().create_timer(player_intro_delay).timeout
+
+	ore_spawner.intro_spawn_mode = true
+	start_mine_generation()
+	ore_spawner.flush_spawn_queue()
+	ore_spawner.intro_spawn_mode = false
+
+	await get_tree().create_timer(delay_before_ores_rise).timeout
+	await ore_spawner.play_intro_rise_all(ores_rise_duration)
+
+
+func begin_run() -> void:
+	GameManager.curr_state = GameManager.GameStates.PLAYING
+	refresh_durability_hud()
+	EventBus.on_run_started.emit()
 
 
 func start_mine_generation() -> void:
@@ -107,6 +156,75 @@ func spawn_extra_ores(cell: Vector2i, count: int) -> void:
 
 func boost_chunk_size(extra_cells: Vector2i, duration: float) -> void:
 	chunk.add_size_modifier(&"skill_boost", extra_cells, duration)
+
+
+## Carga perks de prueba exportados en el inspector.
+func setup_debug_perks() -> void:
+	clear_perks()
+	for perk in debug_start_perks:
+		add_perk(perk)
+
+
+## Instancia un PerkMineDisplay con la data y lo mete al container.
+func add_perk(data: PerkData) -> PerkMineDisplay:
+	if data == null or perks_container == null:
+		return null
+	var display := PERK_DISPLAY_SCENE.instantiate() as PerkMineDisplay
+	perks_container.add_child(display)
+	display.setup(data)
+	perks.append(display)
+	return display
+
+
+## Agrega varios perks de golpe (orden = orden en el array).
+func add_perks(datas: Array[PerkData]) -> void:
+	for data in datas:
+		add_perk(data)
+
+
+## Quita todos los displays del container.
+func clear_perks() -> void:
+	perks.clear()
+	if perks_container == null:
+		return
+	for child in perks_container.get_children():
+		child.queue_free()
+
+
+## Tooltip: misma X, Y alineada al top del display; spring rotate.
+## Posiciona con offsets (no global_position) para no estirar por anchors top-right.
+func show_perk_tooltip(display: PerkMineDisplay) -> void:
+	if display == null or display.perk_data == null or perks_tooltip == null:
+		return
+	
+	var data := display.perk_data
+	perk_title.text = data.title
+	perk_description.text = data.description
+	
+	var parent_control := perks_tooltip.get_parent() as Control
+	perks_tooltip.show()
+	perks_tooltip.modulate.a = 0.0
+	perks_tooltip.reset_size()
+	await get_tree().process_frame
+	if not is_instance_valid(perks_tooltip) or not is_instance_valid(display):
+		return
+
+	var height := maxf(perks_tooltip.get_combined_minimum_size().y, 1.0)
+	var local_y := display.global_position.y
+	if parent_control != null:
+		local_y -= parent_control.global_position.y
+	perks_tooltip.offset_top = local_y
+	perks_tooltip.offset_bottom = local_y + height / 2
+	perks_tooltip.reset_size()
+	perks_tooltip.offset_bottom = perks_tooltip.offset_top + maxf(perks_tooltip.size.y, height)
+	perks_tooltip.rotation_degrees = 0.0
+	perks_tooltip.modulate.a = 1.0
+	Springer.rotate(perks_tooltip, perk_tooltip_spring)
+
+
+func hide_perk_tooltip() -> void:
+	if perks_tooltip != null:
+		perks_tooltip.hide()
 
 
 ## 1 metro por cada celda recorrida (Manhattan en el grid).
@@ -143,16 +261,18 @@ func refresh_durability_hud() -> void:
 	var max_value: float = maxf(GameManager.get_drill_durability_max(), 0.001)
 	var ratio := clampf(current / max_value, 0.0, 1.0)
 
-	durability_bar.value = ratio
-	durability_label.text = "%d%%" % int(round(ratio * 100.0))
+	drill_durability.value = ratio
+	durability_value.text = "%d%%" % int(round(ratio * 100.0))
 
 
 func end_run() -> void:
-	#if not run_ended:
-		#return
 	run_ended = true
 	EventBus.on_run_ended.emit()
 	GameManager.curr_state = GameManager.GameStates.PAUSED
+	var tween := create_tween()
+	tween.parallel().tween_property(drill_durability, "global_position", durability_final_pos, 0.25).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(perks_container, "global_position", Vector2(1950, 20), 0.25).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(inventory, "global_position", Vector2(-100, 20), 0.25).set_ease(Tween.EASE_IN)
 	recap_menu.show_recap(build_recap_data())
 
 
@@ -184,3 +304,11 @@ func _on_drill_durability_changed(_current: float, _max_value: float) -> void:
 func _on_drill_durability_depleted() -> void:
 	print("ended")
 	end_run()
+
+
+func _on_perk_mine_display_tooltip(display: PerkMineDisplay) -> void:
+	show_perk_tooltip(display)
+
+
+func _on_perk_mine_display_tooltip_hide() -> void:
+	hide_perk_tooltip()

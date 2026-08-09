@@ -17,6 +17,12 @@
 [ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="12_dpy17"]
 [ext_resource type="Material" uid="uid://cbpjar43wpa2" path="res://resources/crt_01.tres" id="12_o6jf1"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_asai8"]
+size = Vector2(2140, 154)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yu1jf"]
+size = Vector2(86, 1482)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ad6r8"]
 size = Vector2(517, 132)
 
@@ -39,10 +45,15 @@ size = Vector2(950, 180)
 size = Vector2(942, 280)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_etp80"]
-size = Vector2(256, 137)
+size = Vector2(256, 207)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o6jf1"]
-size = Vector2(302, 140)
+size = Vector2(302, 189)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2dcdp"]
+shader = ExtResource("9_4vgyc")
+shader_parameter/outerRadius = 5.0
+shader_parameter/MainAlpha = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mngwo"]
 bg_color = Color(0.18039216, 0.18039216, 0.18039216, 1)
@@ -51,15 +62,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_2dcdp"]
-shader = ExtResource("9_4vgyc")
-shader_parameter/outerRadius = 5.0
-shader_parameter/MainAlpha = 1.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5gdsq"]
-shader = ExtResource("9_4vgyc")
-shader_parameter/outerRadius = 4.00000019
-shader_parameter/MainAlpha = 0.50000002375
+[sub_resource type="Environment" id="Environment_ad6r8"]
 
 [node name="BaseZone" type="Node2D" unique_id=1296669802 node_paths=PackedStringArray("player")]
 script = ExtResource("1_wrtbe")
@@ -74,6 +77,42 @@ zoom = Vector2(0.9, 0.9)
 script = ExtResource("4_yu1jf")
 
 [node name="Border" type="Node2D" parent="." unique_id=1510669431]
+
+[node name="Wall" type="StaticBody2D" parent="." unique_id=1694002302]
+position = Vector2(960, -92)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall" unique_id=10363050]
+position = Vector2(0, -47)
+shape = SubResource("RectangleShape2D_asai8")
+debug_color = Color(0.8097515, 0.24802345, 0, 0.41960785)
+
+[node name="Wall2" type="StaticBody2D" parent="." unique_id=1139835036]
+position = Vector2(960, 1204)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall2" unique_id=1508678622]
+position = Vector2(0, -47)
+shape = SubResource("RectangleShape2D_asai8")
+debug_color = Color(0.8097515, 0.24802345, 0, 0.41960785)
+
+[node name="Wall3" type="StaticBody2D" parent="." unique_id=1342461488]
+position = Vector2(-41, 540)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall3" unique_id=561057352]
+position = Vector2(0, -47)
+shape = SubResource("RectangleShape2D_yu1jf")
+debug_color = Color(0.8097515, 0.24802345, 0, 0.41960785)
+
+[node name="Wall4" type="StaticBody2D" parent="." unique_id=2066539153]
+position = Vector2(1963, 540)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall4" unique_id=1911263056]
+position = Vector2(0, -47)
+shape = SubResource("RectangleShape2D_yu1jf")
+debug_color = Color(0.8097515, 0.24802345, 0, 0.41960785)
 
 [node name="YSort" type="Node2D" parent="." unique_id=889396918]
 y_sort_enabled = true
@@ -210,19 +249,31 @@ texture = ExtResource("2_2e3ff")
 collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/MineDoor/StaticBody2D2" unique_id=409380003]
-position = Vector2(0, -187.5)
+position = Vector2(0, -152.5)
 shape = SubResource("RectangleShape2D_etp80")
 
 [node name="MineDoorArea" type="Area2D" parent="YSort/MineDoor" unique_id=1695713536]
 collision_layer = 0
 
 [node name="CollisionPolygon2D" type="CollisionShape2D" parent="YSort/MineDoor/MineDoorArea" unique_id=1718184526]
-position = Vector2(0, -49)
+position = Vector2(0, -24.5)
 shape = SubResource("RectangleShape2D_o6jf1")
 debug_color = Color(0.78039217, 0.5529412, 0.46666667, 0.23529412)
 
 [node name="GUI" type="CanvasLayer" parent="." unique_id=879557558]
 script = ExtResource("4_2dcdp")
+
+[node name="Vignette" type="ColorRect" parent="GUI" unique_id=1631264448]
+material = SubResource("ShaderMaterial_2dcdp")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.78431374)
+
+[node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("12_dpy17")]
 
 [node name="UpgradeTree" parent="GUI" unique_id=357573059 instance=ExtResource("2_m1t7q")]
 visible = false
@@ -428,30 +479,7 @@ visible = false
 [node name="SettingsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("5_2dcdp")]
 visible = false
 
-[node name="Inventory" parent="GUI" unique_id=1580823554 instance=ExtResource("12_dpy17")]
-
-[node name="Vignette" type="ColorRect" parent="GUI" unique_id=1631264448]
-material = SubResource("ShaderMaterial_2dcdp")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(1, 1, 1, 0.78431374)
-
-[node name="Vignette2" type="ColorRect" parent="GUI" unique_id=612238448]
-visible = false
-material = SubResource("ShaderMaterial_5gdsq")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1077753099]
-visible = false
 material = ExtResource("12_o6jf1")
 anchors_preset = 15
 anchor_right = 1.0
@@ -459,6 +487,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1994372675]
+environment = SubResource("Environment_ad6r8")
 
 [connection signal="body_entered" from="YSort/RefineryBench/PlayerDetector" to="YSort/RefineryBench" method="_on_player_detector_body_entered"]
 [connection signal="body_exited" from="YSort/RefineryBench/PlayerDetector" to="YSort/RefineryBench" method="_on_player_detector_body_exited"]

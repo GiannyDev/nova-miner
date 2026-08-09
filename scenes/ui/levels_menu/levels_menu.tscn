@@ -232,6 +232,7 @@ texture = ExtResource("4_bd5to")
 expand_mode = 1
 
 [node name="Label3" type="Label" parent="Margin/VBoxContainer/Levels/Level1/Floor3Button" unique_id=1266465299]
+visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -244,6 +245,36 @@ grow_vertical = 0
 text = "300m"
 label_settings = SubResource("LabelSettings_m156b")
 horizontal_alignment = 1
+
+[node name="BlockPanel2" type="Panel" parent="Margin/VBoxContainer/Levels/Level1/Floor3Button" unique_id=1729064977]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_spt12")
+
+[node name="TextureRect" type="TextureRect" parent="Margin/VBoxContainer/Levels/Level1/Floor3Button/BlockPanel2" unique_id=804874097]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_115ed")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Level2" type="HBoxContainer" parent="Margin/VBoxContainer/Levels" unique_id=270750450 node_paths=PackedStringArray("floor_1_button", "floor_2_button", "floor_3_button", "completion_next_level")]
 layout_mode = 2

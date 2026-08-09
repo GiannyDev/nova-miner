@@ -16,3 +16,7 @@ signal run_ore_destroyed(ore: Ore)
 ## Durabilidad de la perforadora (HUD + fin de run).
 signal drill_durability_changed(current: float, max_value: float)
 signal drill_durability_depleted
+
+## Tooltip de perk en mina (hover display).
+signal on_perk_mine_display_tooltip(display: PerkMineDisplay)
+signal on_perk_mine_display_tooltip_hide

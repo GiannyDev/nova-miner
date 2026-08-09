@@ -1,11 +1,8 @@
 extends Node2D
 class_name Ore
-## Bloque minable individual y reciclable por el OrePool.
-## Solo se mueve este nodo padre; Visuals/collider quedan fijos como en ore.tscn.
 
 signal destroyed(ore: Ore)
 
-# --- Exports ---
 @export_group("Combat")
 @export var max_hp: float = 30.0
 @export var ore_size: OreDefinition.OreSize = OreDefinition.OreSize.SMALL
@@ -16,12 +13,17 @@ signal destroyed(ore: Ore)
 ## Apaga el collider al salir de pantalla. Ojo: un taladro fuera de vista tampoco podra golpearlo.
 @export var cull_collision_offscreen: bool = false
 
-# --- Onready / cached ---
+@export_category("Images")
+@export var texture_100: Texture2D
+@export var texture_75: Texture2D
+@export var texture_50: Texture2D
+@export var texture_25: Texture2D
+
 @onready var visuals: Node2D = $Visuals
 @onready var sprite: Sprite2D = %Sprite
 @onready var collision_shape: CollisionShape2D = $StaticBody2D/CollisionShape2D
+@onready var damage_marker: Marker2D = $DamageMarker
 
-# --- Runtime ---
 var current_hp: float = 30.0
 var grid: MineGrid
 var grid_cell: Vector2i = Vector2i.ZERO
@@ -31,13 +33,12 @@ var spawn_tween: Tween
 var screen_notifier: VisibleOnScreenNotifier2D
 
 
-# --- Built-ins ---
 func _ready() -> void:
 	current_hp = max_hp
+	refresh_hp_sprite()
 	ensure_screen_notifier()
 
 
-# --- Public API ---
 ## Configura HP, size, celda, stack y OreData al spawnear.
 func setup(
 	hp: float,
@@ -55,6 +56,7 @@ func setup(
 	stack_index = stack
 	if data != null:
 		ore_data = data
+	refresh_hp_sprite()
 
 
 func take_damage(amount: float) -> void:
@@ -63,6 +65,7 @@ func take_damage(amount: float) -> void:
 
 	current_hp -= amount
 	show_mine_animation()
+	refresh_hp_sprite()
 
 	if current_hp <= 0.0:
 		destroy()
@@ -70,6 +73,19 @@ func take_damage(amount: float) -> void:
 
 func show_mine_animation() -> void:
 	Springer.squash(visuals, 0.1, -0.1)
+
+
+## Cambia el sprite segun el % de HP restante (100 / 75 / 50 / 25).
+func refresh_hp_sprite() -> void:
+	var ratio := current_hp / maxf(max_hp, 0.001)
+	if ratio > 0.75:
+		sprite.texture = texture_100
+	elif ratio > 0.5:
+		sprite.texture = texture_75
+	elif ratio > 0.25:
+		sprite.texture = texture_50
+	else:
+		sprite.texture = texture_25
 
 
 ## Marca el bloque como minado, suelta drops y avisa. El pool decide cuando reciclarlo.
@@ -93,6 +109,7 @@ func on_spawned() -> void:
 	visible = true
 	scale = Vector2.ONE
 	visuals.scale = Vector2.ONE
+	refresh_hp_sprite()
 	set_collision_enabled(true)
 
 
@@ -104,7 +121,7 @@ func on_despawned() -> void:
 	grid = null
 
 
-## "Plop" de aparicion. El tween vive en el bloque para poder matarlo al reciclarlo.
+## "Plop" de aparicion mid-run. El tween vive en el bloque para poder matarlo al reciclarlo.
 func play_spawn_animation(duration: float) -> void:
 	kill_spawn_tween()
 
@@ -115,6 +132,22 @@ func play_spawn_animation(duration: float) -> void:
 	scale = Vector2.ZERO
 	spawn_tween = create_tween()
 	spawn_tween.tween_property(self, "scale", Vector2.ONE, duration)\
+		.set_trans(Tween.TRANS_BACK)\
+		.set_ease(Tween.EASE_OUT)
+
+
+## Deja el bloque aplastado en Y (crece desde el piso en la intro).
+func prepare_intro_collapsed() -> void:
+	kill_spawn_tween()
+	scale = Vector2(1.0, 0.0)
+
+
+## Crece de abajo hacia arriba (origen del ore = pies).
+func play_rise_animation(duration: float) -> void:
+	kill_spawn_tween()
+	scale = Vector2(1.0, 0.0)
+	spawn_tween = create_tween()
+	spawn_tween.tween_property(self, "scale:y", 1.0, duration)\
 		.set_trans(Tween.TRANS_BACK)\
 		.set_ease(Tween.EASE_OUT)
 

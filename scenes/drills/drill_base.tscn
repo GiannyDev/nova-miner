@@ -2,6 +2,23 @@
 
 [ext_resource type="Texture2D" uid="uid://b56d4hf7k8m1i" path="res://sprites/right.png" id="1_gfyls"]
 [ext_resource type="Script" uid="uid://ki2oq0gdjqc7" path="res://scenes/player/drill_weapon.gd" id="2_drill"]
+[ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="3_a83v2"]
+
+[sub_resource type="Curve" id="Curve_ayft4"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.4594405, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_kp7pv"]
+curve = SubResource("Curve_ayft4")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_a83v2"]
+particle_flag_disable_z = true
+initial_velocity_min = -1000.0
+initial_velocity_max = -900.0
+gravity = Vector3(0, 98, 0)
+scale_min = 0.02
+scale_max = 0.06
+scale_curve = SubResource("CurveTexture_kp7pv")
 
 [node name="DrillBase" type="Node2D" unique_id=1538618923]
 script = ExtResource("2_drill")
@@ -13,6 +30,13 @@ contact_path = NodePath("Pivot/ContactArea")
 position = Vector2(80, 0)
 scale = Vector2(4, 1.5)
 texture = ExtResource("1_gfyls")
+
+[node name="DrillVFX" type="GPUParticles2D" parent="Pivot" unique_id=1038405519]
+unique_name_in_owner = true
+self_modulate = Color(0.49354547, 0.49354553, 0.49354553, 1)
+position = Vector2(170, 0)
+texture = ExtResource("3_a83v2")
+process_material = SubResource("ParticleProcessMaterial_a83v2")
 
 [node name="ContactArea" type="Area2D" parent="Pivot" unique_id=767797025]
 collision_layer = 8

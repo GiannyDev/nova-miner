@@ -24,12 +24,18 @@ var refill_timer: float = 0.0
 var window_connected: bool = false
 ## cell -> expire_msec. Evita respawn inmediato en celdas minadas.
 var banned_cells: Dictionary = {}
+## Si true, los ores salen colapsados para la animacion de intro.
+var intro_spawn_mode: bool = false
 
 
 # --- Built-ins ---
 func _process(delta: float) -> void:
 	drain_spawn_queue()
 	expire_banned_cells()
+
+	# Refill solo cuando la run ya arranco.
+	if GameManager.curr_state != GameManager.GameStates.PLAYING:
+		return
 
 	refill_timer -= delta
 	if refill_timer <= 0.0:
@@ -68,6 +74,20 @@ func spawn_initial_batch() -> void:
 		return
 
 	enqueue_scatter(count)
+
+
+## Vacia la cola de golpe (intro: todos listos antes de la animacion).
+func flush_spawn_queue() -> void:
+	while not spawn_queue.is_empty():
+		spawn_queued_block(spawn_queue.pop_back())
+
+
+## Todos los ores activos crecen a la vez desde abajo.
+func play_intro_rise_all(duration: float) -> void:
+	for ore in active_ores.keys():
+		if is_instance_valid(ore):
+			(ore as Ore).play_rise_animation(duration)
+	await get_tree().create_timer(duration).timeout
 
 
 ## Extras al destruir: scatter en el chunk (no anclados a la celda rota).
@@ -317,7 +337,10 @@ func spawn_ore_at_cell(cell: Vector2i, stack_index: int = 0) -> Ore:
 		ore_data
 	)
 	ore.on_spawned()
-	ore.play_spawn_animation(profile.spawn_animation_time)
+	if intro_spawn_mode:
+		ore.prepare_intro_collapsed()
+	else:
+		ore.play_spawn_animation(profile.spawn_animation_time)
 
 	if not ore.destroyed.is_connected(_on_ore_destroyed):
 		ore.destroyed.connect(_on_ore_destroyed)

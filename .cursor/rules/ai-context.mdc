@@ -32,6 +32,7 @@ Current docs:
 - Never prefix custom private helpers with `_`. Leading `_` on funcs is only for signal callbacks (`_on_*`) and Godot virtuals (`_ready`, …).
 - Diagnose before patching: identify the real failing layer before adding code.
 - Godot-only stack: use `addons/godot_mcp_toolkit` / `godot-mcp-toolkit` MCP for editor/runtime verification when applying important changes.
+- Scene-wired controls (`@onready`, `%Name`, `$Path`) always exist — never null-check them; fix the scene if a ref is wrong (`04_Configuraciones.md`, `Godot_Main_Guideline.md`).
 
 ## Nova Miner specifically
 

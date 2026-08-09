@@ -9,10 +9,16 @@ signal dealt_damage(amount: float)
 @export var idle_animation: String = "idle"
 @export var weapon_mount_offset: Vector2 = Vector2(0, -80)
 
+@export_group("Dust VFX")
+@export var dust_move_threshold: float = 1.0
+@export var dust_trail_offset: float = 7.0
+@export var dust_y_bias: float = 3.0
+
 @onready var movement_component: MovementComponent = $MovementComponent
 @onready var spine_sprite: SpineSprite = $SpineSprite
 @onready var weapon_mount: Node2D = $Weapon
 @onready var drill_weapon: DrillWeapon = %DrillBase
+@onready var dust_vfx: GPUParticles2D = $DustVFX
 
 var input_direction: Vector2 = Vector2.ZERO
 var facing_direction: Vector2 = Vector2.RIGHT
@@ -28,6 +34,8 @@ func _ready() -> void:
 	apply_equipped_weapon()
 	connect_drill_damage_tracking()
 	play_animation(idle_animation, true)
+	if dust_vfx != null:
+		dust_vfx.emitting = false
 
 
 func connect_drill_damage_tracking() -> void:
@@ -43,6 +51,7 @@ func _physics_process(delta: float) -> void:
 		move_player(delta)
 	else:
 		move_player(delta, true)
+	update_dust_vfx()
 	update_animation()
 
 
@@ -60,6 +69,25 @@ func move_player(delta: float, decelerate_only: bool = false) -> void:
 		return
 
 	movement_component.move(self, direction, delta, get_move_speed())
+
+
+## Polvo detras del player mientras hay velocity; se apaga al perforar / idle.
+func update_dust_vfx() -> void:
+	if dust_vfx == null:
+		return
+
+	var moving := velocity.length() > dust_move_threshold and not is_drill_engaged()
+	dust_vfx.emitting = moving
+	if not moving:
+		return
+
+	var move_dir := velocity.normalized()
+	var trail_dir := -move_dir
+	# Material apunta a -X local: rotar con move_dir hace que el polvo salga detras.
+	dust_vfx.rotation = move_dir.angle()
+	dust_vfx.position = Vector2(dust_trail_offset, 0.0).rotated(trail_dir.angle())
+	dust_vfx.position.y += trail_dir.y * dust_y_bias
+	dust_vfx.show_behind_parent = trail_dir.y < 0.3
 
 
 func update_facing() -> void:
@@ -208,5 +236,7 @@ func can_move() -> bool:
 	return GameManager.curr_state == GameManager.GameStates.PLAYING
 
 
-func _on_drill_ore_hit(_ore: Ore, damage: float) -> void:
+func _on_drill_ore_hit(ore: Ore, damage: float) -> void:
 	dealt_damage.emit(damage)
+	# Sale del marker del ore y flota en direccion opuesta a donde miramos.
+	Feedbacks.spawn_damage_text(damage, ore.damage_marker.global_position, aim_direction)

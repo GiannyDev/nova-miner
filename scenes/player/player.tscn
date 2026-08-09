@@ -5,7 +5,28 @@
 [ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="3_75vfm"]
 [ext_resource type="SpineSkeletonFileResource" uid="uid://br5cdou7odk7g" path="res://spine/Hero_1.skel.skel" id="3_bhlit"]
 [ext_resource type="Script" uid="uid://dtoupnroybw1g" path="res://scenes/player/movement_component.gd" id="4_movement"]
+[ext_resource type="Texture2D" uid="uid://4bc3c6sankrf" path="res://sprites/cloud_2x2_hard_softshadow.png" id="4_qek5x"]
 [ext_resource type="PackedScene" uid="uid://dru37w53vj3w7" path="res://scenes/drills/drill_base.tscn" id="7_0owmy"]
+[ext_resource type="Texture2D" uid="uid://caunw8y7wm4dg" path="res://sprites/light_point_shadow.webp" id="7_qek5x"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_0owmy"]
+particles_animation = true
+particles_anim_h_frames = 2
+particles_anim_v_frames = 2
+particles_anim_loop = false
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ad6r8"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 15.0
+direction = Vector3(-1, 0, 0)
+spread = 10.0
+initial_velocity_min = 20.0
+initial_velocity_max = 70.0
+gravity = Vector3(0, 0, 0)
+scale_max = 1.5
+anim_speed_min = 1.0
+anim_speed_max = 1.0
 
 [sub_resource type="SpineSkeletonDataResource" id="SpineSkeletonDataResource_ad6r8"]
 atlas_res = ExtResource("2_vh40f")
@@ -14,22 +35,6 @@ skeleton_file_res = ExtResource("3_bhlit")
 [sub_resource type="CircleShape2D" id="CircleShape2D_1xuby"]
 radius = 38.0
 
-[sub_resource type="Curve" id="Curve_75vfm"]
-_data = [Vector2(0, 0), 0.0, 1.4, 0, 0, Vector2(1e-05, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.3028026, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_m156b"]
-curve = SubResource("Curve_75vfm")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_0owmy"]
-particle_flag_disable_z = true
-initial_velocity_min = -500.0
-initial_velocity_max = -400.0
-gravity = Vector3(0, 98, 0)
-scale_min = 0.01
-scale_max = 0.049999997
-scale_curve = SubResource("CurveTexture_m156b")
-
 [node name="Player" type="CharacterBody2D" unique_id=1596606917]
 collision_mask = 6
 script = ExtResource("1_fmv3f")
@@ -37,6 +42,18 @@ script = ExtResource("1_fmv3f")
 [node name="MovementComponent" type="Node" parent="." unique_id=1452342139]
 script = ExtResource("4_movement")
 acceleration = 36.0
+
+[node name="DustVFX" type="GPUParticles2D" parent="." unique_id=1158652842]
+physics_interpolation_mode = 2
+self_modulate = Color(1, 1, 1, 0.11764706)
+z_index = -1
+material = SubResource("CanvasItemMaterial_0owmy")
+position = Vector2(0, -18)
+amount = 10
+texture = ExtResource("4_qek5x")
+lifetime = 0.25
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_ad6r8")
 
 [node name="Shadow" type="Sprite2D" parent="." unique_id=573872449]
 self_modulate = Color(0, 0, 0, 0.23529412)
@@ -65,11 +82,9 @@ position = Vector2(0, -80)
 unique_name_in_owner = true
 position = Vector2(33, 0)
 
-[node name="DrillVFX" type="GPUParticles2D" parent="Weapon/DrillBase" unique_id=135186339]
-unique_name_in_owner = true
-position = Vector2(176, -1)
-texture = ExtResource("3_75vfm")
-preprocess = 1.05
-randomness = 1.0
-fixed_fps = 60
-process_material = SubResource("ParticleProcessMaterial_0owmy")
+[node name="Light" type="PointLight2D" parent="." unique_id=1985472502]
+position = Vector2(0, -80)
+scale = Vector2(3, 3)
+color = Color(0.85490197, 0.5137255, 0.12156863, 1)
+energy = 0.25
+texture = ExtResource("7_qek5x")

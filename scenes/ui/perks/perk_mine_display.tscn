@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://csmcrehd0wad2"]
+
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="1_fi622"]
+[ext_resource type="Script" uid="uid://cr6kbqfx1pqx0" path="res://scenes/ui/perks/perk_mine_display.gd" id="2_kxkth"]
+
+[node name="PerkMineDisplay" type="TextureRect" unique_id=129287234]
+custom_minimum_size = Vector2(80, 80)
+custom_maximum_size = Vector2(80, -1)
+texture = ExtResource("1_fi622")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_kxkth")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

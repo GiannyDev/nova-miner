@@ -108,7 +108,8 @@ Never dump code without explanation.
 * Built-ins (`_ready`, `_enter_tree`, `_process`, …) go near the **top** (after exports / onready / vars).
 * Prefer bool helpers when logic exceeds one line: `can_pickup_item()`, `can_move()`, `is_player_grounded()`, `is_alive()`, `has_target()`.
 * **Function signatures on one line** — keep the full signature on a single line even when long; wrap only the body when needed.
-* **Juice / UI feel** — reusable animation helpers live under `res://scripts/juice/` (e.g. `UIJuice`, `JuicePreset`). Scene scripts call those helpers; do not copy tween blocks inline.
+* **Juice / UI feel** — reusable animation helpers live under `res://scripts/juice/` (e.g. `UIJuice`, `JuicePreset`). Scene scripts call those helpers when shared; simple one-off sequences (Recap) stay local and tiny.
+* **Scene controls always exist** — `@onready` / `%Name` / `$Path` nodes wired in the `.tscn` are guaranteed. Do **not** null-check them or early-return “por si no existen”. Fix the scene if a reference is wrong.
 
 ### Inline comments
 
