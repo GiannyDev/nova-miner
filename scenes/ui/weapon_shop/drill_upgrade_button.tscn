@@ -2,8 +2,18 @@
 
 [ext_resource type="Script" uid="uid://5a8h0jqyrt3g" path="res://scenes/ui/weapon_shop/drill_upgrade_button.gd" id="1_ia4fm"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ad6r8"]
+bg_color = Color(0.12591085, 0.12591085, 0.12591082, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [node name="DrillUpgradeButton" type="Button" unique_id=1386201721]
 custom_minimum_size = Vector2(704, 140)
+theme_override_styles/normal = SubResource("StyleBoxFlat_ad6r8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ad6r8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ad6r8")
 script = ExtResource("1_ia4fm")
 
 [node name="Margin" type="MarginContainer" parent="." unique_id=746555731]

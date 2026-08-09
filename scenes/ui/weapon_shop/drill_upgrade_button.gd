@@ -12,9 +12,9 @@ func _ready() -> void:
 
 
 func _on_pressed() -> void:
-	Springer.scale(self, -0.05)
+	Springer.scale(self, -0.03)
 
 
 func _on_mouse_entered() -> void:
 	pivot_offset = size / 2
-	Springer.rotate(self, 1.5)
+	Springer.rotate(self, 1.2)

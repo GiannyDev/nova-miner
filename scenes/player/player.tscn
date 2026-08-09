@@ -15,6 +15,19 @@ particles_anim_h_frames = 2
 particles_anim_v_frames = 2
 particles_anim_loop = false
 
+[sub_resource type="Gradient" id="Gradient_qek5x"]
+colors = PackedColorArray(1, 1, 1, 0.5882353, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_qek5x"]
+gradient = SubResource("Gradient_qek5x")
+
+[sub_resource type="Curve" id="Curve_qek5x"]
+_data = [Vector2(0, 0.79999995), 0.0, 0.0, 0, 0, Vector2(0.49822062, 0.5142857), -2.2644677, -2.2644677, 0, 0, Vector2(1, 0.3142857), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_qek5x"]
+curve = SubResource("Curve_qek5x")
+
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ad6r8"]
 particle_flag_disable_z = true
 emission_shape = 1
@@ -24,7 +37,10 @@ spread = 10.0
 initial_velocity_min = 20.0
 initial_velocity_max = 70.0
 gravity = Vector3(0, 0, 0)
+scale_min = 0.7
 scale_max = 1.5
+scale_curve = SubResource("CurveTexture_qek5x")
+color_ramp = SubResource("GradientTexture1D_qek5x")
 anim_speed_min = 1.0
 anim_speed_max = 1.0
 
@@ -45,7 +61,6 @@ acceleration = 36.0
 
 [node name="DustVFX" type="GPUParticles2D" parent="." unique_id=1158652842]
 physics_interpolation_mode = 2
-self_modulate = Color(1, 1, 1, 0.11764706)
 z_index = -1
 material = SubResource("CanvasItemMaterial_0owmy")
 position = Vector2(0, -18)
