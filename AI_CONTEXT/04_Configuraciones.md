@@ -13,6 +13,7 @@ Nuestros proyectos siempre tiene Godot MCP enabled, usalo cuando aplicas algo im
 * Maps → `Resource` con array[submine], name, banner, etc.
 * UpgradeTree → cada `UpgradeNode` lleva un `StatUpgrade` con `id` unico (save + stat), `costs[]` y `values[]` paralelos. Reveal ShellDiver: cascada BFS (linea crece → nodo pop), timings en categoria Reveal Animation.
 * RecapMenu → secuencia simple en Inspector (`Sequence`): paneles juntos sin texto → delay → textos en cadena (stagger) → delay → `records_panel`. Sin presets ShellDiver/Forager en el recap.
+* SaveData → `user://nova_miner_save.json` (upgrades, stats, records). Antes de sobrescribir copia a `nova_miner_save.bak.json`. Si el save principal falla al cargar, usa el backup. Records: blocks / damage / distance; el Recap aplica y muestra `NEW` si se rompe la marca.
 * Weapons → `WeaponData` en `data/weapons/` (`drill_hit_delay`, `damage_multiplier`, `drill_spin_speed`, etc.). El player carga por `weapon_id` via `WeaponData.load_by_id()`.
 * Recap → `RunRecapData` + `StatDisplay`; textos con `tr("KEY")` desde `translations/translations.csv`.
 * DamageText → `scenes/ui/damage_text/`; spawn via `Feedbacks.spawn_damage_text(amount, world_pos, mine_dir)` (pop gordo → stretch en direccion de minado).

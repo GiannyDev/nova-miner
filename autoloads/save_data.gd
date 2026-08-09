@@ -1,13 +1,19 @@
 extends Node
-## Persistencia minima: niveles de upgrade + snapshot de stats.
-## user://nova_miner_save.json
+## Persistencia: upgrades, stats, records de run + backup del JSON.
+## user://nova_miner_save.json (+ .bak.json)
 
 const SAVE_PATH := "user://nova_miner_save.json"
+const SAVE_BACKUP_PATH := "user://nova_miner_save.bak.json"
 
 ## upgrade.id -> level
 var upgrade_levels: Dictionary = {}
 ## Stats enum int (como String key en JSON) -> float
 var stat_values: Dictionary = {}
+
+## Mejores marcas de run (records del recap).
+var record_blocks_mined: int = 0
+var record_damage_dealt: float = 0.0
+var record_distance_traveled: float = 0.0
 
 
 func _ready() -> void:
@@ -19,9 +25,16 @@ func save_progress() -> void:
 		stat_values = capture_stats(GameManager.player_stats)
 	upgrade_levels = UpgradeManager.levels.duplicate()
 
+	backup_existing_save()
+
 	var payload := {
 		"upgrade_levels": upgrade_levels,
 		"stat_values": stringify_keys(stat_values),
+		"records": {
+			"blocks_mined": record_blocks_mined,
+			"damage_dealt": record_damage_dealt,
+			"distance_traveled": record_distance_traveled,
+		},
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -32,25 +45,77 @@ func save_progress() -> void:
 
 
 func load_progress() -> void:
+	if not try_load_from(SAVE_PATH):
+		try_load_from(SAVE_BACKUP_PATH)
+
+
+## Copia el save actual a .bak antes de sobrescribir.
+func backup_existing_save() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
-
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
-	if file == null:
+	var src := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if src == null:
 		return
+	var dst := FileAccess.open(SAVE_BACKUP_PATH, FileAccess.WRITE)
+	if dst == null:
+		return
+	dst.store_string(src.get_as_text())
+
+
+func try_load_from(path: String) -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return false
 
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	if typeof(parsed) != TYPE_DICTIONARY:
-		return
+		push_warning("SaveData: JSON invalido en %s" % path)
+		return false
 
-	var data: Dictionary = parsed
+	apply_payload(parsed)
+	return true
+
+
+func apply_payload(data: Dictionary) -> void:
 	upgrade_levels = data.get("upgrade_levels", {})
 	stat_values = parse_stat_keys(data.get("stat_values", {}))
+
+	var records: Dictionary = data.get("records", {})
+	record_blocks_mined = int(records.get("blocks_mined", 0))
+	record_damage_dealt = float(records.get("damage_dealt", 0.0))
+	record_distance_traveled = float(records.get("distance_traveled", 0.0))
 
 	UpgradeManager.load_levels(upgrade_levels)
 	if GameManager.player_stats != null and not stat_values.is_empty():
 		apply_stats(GameManager.player_stats, stat_values)
 		GameManager.repair_drill_full()
+
+
+## Compara la run vs records; si hay mejora, guarda. Devuelve que marcas se rompieron.
+func apply_run_records(blocks_mined: int, damage_dealt: float, distance_traveled: float) -> Dictionary:
+	var beaten := {
+		"blocks": false,
+		"damage": false,
+		"distance": false,
+	}
+
+	if blocks_mined > record_blocks_mined:
+		record_blocks_mined = blocks_mined
+		beaten.blocks = true
+	if damage_dealt > record_damage_dealt:
+		record_damage_dealt = damage_dealt
+		beaten.damage = true
+	if distance_traveled > record_distance_traveled:
+		record_distance_traveled = distance_traveled
+		beaten.distance = true
+
+	if beaten.blocks or beaten.damage or beaten.distance:
+		save_progress()
+
+	return beaten
 
 
 func capture_stats(stats: StatsData) -> Dictionary:

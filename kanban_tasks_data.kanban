@@ -18,9 +18,8 @@
 				"1bd93972-0248-471f-8bbe-d1e7994d9e0f",
 				"3e76a719-8c3e-46c6-b159-270cf18726bb",
 				"fa224f31-293d-4fc9-8a10-3c3174f90288",
-				"49f5ad05-f41a-43a7-aa19-eaa01185d495",
 				"159e05c2-98a8-486a-8c24-94a911083de6",
-				"8e620b42-c806-4906-a584-dfe8500b4982"
+				"f0c1ad46-f0a0-45eb-ab75-f15d2c8e46b7"
 			]
 		},
 		{
@@ -37,7 +36,9 @@
 				"7898c728-b1d3-4f9b-910f-0c8a1904d4ff",
 				"adc3642f-82d7-4b37-a9d7-ce274a508131",
 				"ffc0c436-702e-48be-989e-8d9d368188f7",
-				"ae0a3d65-b163-43f8-a578-869fb2556c6b"
+				"ae0a3d65-b163-43f8-a578-869fb2556c6b",
+				"8e620b42-c806-4906-a584-dfe8500b4982",
+				"49f5ad05-f41a-43a7-aa19-eaa01185d495"
 			]
 		}
 	],
@@ -148,6 +149,13 @@
 		{
 			"uuid": "8e620b42-c806-4906-a584-dfe8500b4982",
 			"title": "Crear animacion de candado romperse para desbloquear floor",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "f0c1ad46-f0a0-45eb-ab75-f15d2c8e46b7",
+			"title": "Agregar marcadores en pantalla donde estan puntos de interes",
 			"description": "",
 			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
 			"steps": []

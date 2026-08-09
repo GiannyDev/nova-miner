@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cqgd72ccgl2iy" path="res://scenes/ui/damage_text/damage_text.gd" id="1_dmg"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
-font_size = 64
+font_size = 72
 font_color = Color(1, 0.24169937, 0.32159248, 1)
 shadow_color = Color(0.19972259, 0, 0.02167229, 1)
 shadow_offset = Vector2(2, 2)
@@ -12,6 +12,8 @@ shadow_offset = Vector2(2, 2)
 physics_interpolation_mode = 2
 z_index = 20
 script = ExtResource("1_dmg")
+min_float_distance = 64.0
+max_float_distance = 128.0
 
 [node name="Label" type="Label" parent="." unique_id=1890158793]
 anchors_preset = 8

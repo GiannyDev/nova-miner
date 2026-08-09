@@ -10,7 +10,6 @@ corner_radius_bottom_right = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_etp80"]
 bg_color = Color(0, 0.52108747, 0.45511442, 1)
-corner_radius_top_left = 8
 corner_radius_top_right = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_33wub"]
@@ -91,28 +90,32 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.3137255)
 
-[node name="RecordsPanel" type="Panel" parent="." unique_id=58154952]
+[node name="RecordsPanel" type="PanelContainer" parent="." unique_id=2001167216]
 layout_mode = 0
-offset_left = 1000.0
+offset_left = 1300.0
 offset_top = 510.0
-offset_right = 1299.0
+offset_right = 1599.0
 offset_bottom = 767.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_fqte1")
 
-[node name="RecordsTitle" type="RichTextLabel" parent="RecordsPanel" unique_id=947835579]
+[node name="VBoxContainer" type="VBoxContainer" parent="RecordsPanel" unique_id=938618848]
+layout_mode = 2
+
+[node name="RecordsTitleBg" type="Panel" parent="RecordsPanel/VBoxContainer" unique_id=608754591]
 unique_name_in_owner = true
+show_behind_parent = true
+custom_minimum_size = Vector2(0, 61)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_etp80")
+
+[node name="RecordsTitle" type="RichTextLabel" parent="RecordsPanel/VBoxContainer/RecordsTitleBg" unique_id=76480148]
 layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -299.0
-offset_top = -257.0
-offset_bottom = -197.0
-grow_horizontal = 0
-grow_vertical = 0
-size_flags_horizontal = 3
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/normal_font_size = 32
 bbcode_enabled = true
@@ -123,30 +126,18 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Panel" type="Panel" parent="RecordsPanel/RecordsTitle" unique_id=1852649943]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_etp80")
+[node name="MarginContainer" type="MarginContainer" parent="RecordsPanel/VBoxContainer" unique_id=270706490]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
 
-[node name="RecordLineBlocks" type="RichTextLabel" parent="RecordsPanel" unique_id=536467620]
+[node name="VBoxContainer" type="VBoxContainer" parent="RecordsPanel/VBoxContainer/MarginContainer" unique_id=1771416630]
+layout_mode = 2
+
+[node name="RecordLineBlocks" type="RichTextLabel" parent="RecordsPanel/VBoxContainer/MarginContainer/VBoxContainer" unique_id=1893588803]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -298.0
-offset_top = -191.0
-offset_right = 1.0
-offset_bottom = -131.0
-grow_horizontal = 0
-grow_vertical = 0
+custom_minimum_size = Vector2(0, 61)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/default_color = Color(0.9520332, 0.5965468, 0.25099286, 1)
 theme_override_font_sizes/normal_font_size = 32
@@ -158,19 +149,10 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RecordLineDamage" type="RichTextLabel" parent="RecordsPanel" unique_id=1231232828]
+[node name="RecordLineDamage" type="RichTextLabel" parent="RecordsPanel/VBoxContainer/MarginContainer/VBoxContainer" unique_id=648917283]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -299.0
-offset_top = -125.0
-offset_bottom = -65.0
-grow_horizontal = 0
-grow_vertical = 0
+custom_minimum_size = Vector2(0, 61)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/default_color = Color(0.9520332, 0.5965468, 0.25099286, 1)
 theme_override_font_sizes/normal_font_size = 32
@@ -182,19 +164,10 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RecordLineDistance" type="RichTextLabel" parent="RecordsPanel" unique_id=2066484485]
+[node name="RecordLineDistance" type="RichTextLabel" parent="RecordsPanel/VBoxContainer/MarginContainer/VBoxContainer" unique_id=307047090]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -299.0
-offset_top = -59.0
-offset_bottom = 1.0
-grow_horizontal = 0
-grow_vertical = 0
+custom_minimum_size = Vector2(0, 61)
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/default_color = Color(0.9520332, 0.5965468, 0.25099286, 1)
 theme_override_font_sizes/normal_font_size = 32

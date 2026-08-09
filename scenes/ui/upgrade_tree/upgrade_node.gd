@@ -198,7 +198,7 @@ func can_purchase() -> bool:
 func format_ore_cost(amount: int) -> String:
 	if upgrade == null:
 		return str(amount)
-	return "%d %s" % [amount, Ores.get_id(upgrade.cost_ore)]
+	return "%s" % [amount]
 
 
 func get_safe_level_index(level_index: int) -> int:

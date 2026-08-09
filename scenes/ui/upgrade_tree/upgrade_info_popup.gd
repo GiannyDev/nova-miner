@@ -85,7 +85,7 @@ func setup_skill_text(
 	if is_maxed:
 		cost_label.text = "[center][color=#8bff8d]MAXED[/color][/center]"
 	else:
-		cost_label.text = "[center][color=#8bff8d]%s[/color][/center]" % upgrade_cost
+		cost_label.text = "[center][img=40]sprites/coin.png[/img]%s[/center]" % upgrade_cost
 
 	_update_popup_size(upgrade_title)
 

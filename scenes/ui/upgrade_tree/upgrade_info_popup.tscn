@@ -186,9 +186,9 @@ custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 28
+theme_override_font_sizes/normal_font_size = 30
 bbcode_enabled = true
-text = "100"
+text = "[img=40]sprites/coin.png[/img]100"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0

@@ -34,8 +34,11 @@ texture = ExtResource("1_gfyls")
 [node name="DrillVFX" type="GPUParticles2D" parent="Pivot" unique_id=1038405519]
 unique_name_in_owner = true
 self_modulate = Color(0.49354547, 0.49354553, 0.49354553, 1)
+z_index = 1
 position = Vector2(170, 0)
+amount = 24
 texture = ExtResource("3_a83v2")
+lifetime = 0.6
 process_material = SubResource("ParticleProcessMaterial_a83v2")
 
 [node name="ContactArea" type="Area2D" parent="Pivot" unique_id=767797025]

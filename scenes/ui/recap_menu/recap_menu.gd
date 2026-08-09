@@ -18,7 +18,8 @@ class_name RecapMenu
 
 @onready var bg: ColorRect = $BG
 @onready var title: Label = %Title
-@onready var records_panel: Panel = $RecordsPanel
+@onready var records_panel: PanelContainer = $RecordsPanel
+@onready var records_title_bg: Panel = %RecordsTitleBg
 @onready var record_line_distance: RichTextLabel = %RecordLineDistance
 @onready var record_line_blocks: RichTextLabel = %RecordLineBlocks
 @onready var record_line_damage: RichTextLabel = %RecordLineDamage
@@ -30,12 +31,17 @@ class_name RecapMenu
 var records_panel_init_pos := Vector2(1000, 510)
 var records_panel_final_pos := Vector2(1300, 510)
 var current_recap: RunRecapData
+var has_new_record: bool = false
+var last_records_panel_size := Vector2.ZERO
+
+const RECORDS_TITLE_BG_HEIGHT := 61.0
 
 
 func _ready() -> void:
 	reset_menu()
 	home_button.text = tr("BTN_BASE")
 	play_button.text = tr("BTN_PLAY")
+	records_panel.resized.connect(sync_records_title_bg)
 
 
 func reset_menu() -> void:
@@ -45,6 +51,8 @@ func reset_menu() -> void:
 	play_button.modulate.a = 0.0
 	records_panel.modulate.a = 0.0
 	records_panel.position = records_panel_init_pos
+	records_panel.scale = Vector2.ONE
+	has_new_record = false
 	for display in all_stat_displays():
 		display.modulate.a = 0.0
 
@@ -55,7 +63,7 @@ func show_recap(recap_data: RunRecapData = null) -> void:
 	GameManager.curr_state = GameManager.GameStates.PAUSED
 	await get_tree().process_frame
 	populate_stats(current_recap)
-	populate_records_panel(current_recap)
+	await populate_records_panel(current_recap)
 	prepare_hidden_state()
 	await animate_recap_sequence()
 
@@ -71,9 +79,48 @@ func populate_stats(recap_data: RunRecapData) -> void:
 
 
 func populate_records_panel(recap_data: RunRecapData) -> void:
-	record_line_damage.text = "[wave]Damage: %s" % StatDisplay.format_compact(recap_data.damage_dealt)
-	record_line_blocks.text = "[wave]Blocks: %d" % recap_data.blocks_mined
-	record_line_distance.text = "[wave]Distance: %.0fm" % recap_data.distance_traveled
+	var beaten := SaveData.apply_run_records(
+		recap_data.blocks_mined,
+		recap_data.damage_dealt,
+		recap_data.distance_traveled
+	)
+	has_new_record = beaten.blocks or beaten.damage or beaten.distance
+	record_line_blocks.text = format_record_line(
+		"Blocks",
+		str(SaveData.record_blocks_mined),
+		beaten.blocks
+	)
+	record_line_damage.text = format_record_line(
+		"Damage",
+		StatDisplay.format_compact(SaveData.record_damage_dealt),
+		beaten.damage
+	)
+	record_line_distance.text = format_record_line(
+		"Distance",
+		"%.0fm" % SaveData.record_distance_traveled,
+		beaten.distance
+	)
+	# El PanelContainer puede cambiar de ancho con textos NEW; sincroniza el bg.
+	last_records_panel_size = Vector2.ZERO
+	await get_tree().process_frame
+	sync_records_title_bg()
+
+
+## Si el PanelContainer cambio de size, el title bg toma todo el ancho del VBox y alto fijo 61.
+func sync_records_title_bg() -> void:
+	if records_panel.size.is_equal_approx(last_records_panel_size):
+		return
+	last_records_panel_size = records_panel.size
+	var width = records_title_bg.get_parent().size.x
+	var target := Vector2(width, RECORDS_TITLE_BG_HEIGHT)
+	records_title_bg.custom_minimum_size = target
+	records_title_bg.size = target
+
+
+func format_record_line(label: String, value_text: String, is_new: bool) -> String:
+	if is_new:
+		return "[wave][color=#f2c14e]NEW[/color] - %s: %s" % [label, value_text]
+	return "[wave]%s: %s" % [label, value_text]
 
 
 func all_stat_displays() -> Array[StatDisplay]:
@@ -92,6 +139,7 @@ func prepare_hidden_state() -> void:
 	play_button.disabled = true
 	records_panel.modulate.a = 0.0
 	records_panel.position = records_panel_init_pos
+	records_panel.scale = Vector2.ONE
 	for display in all_stat_displays():
 		display.reset_hidden()
 
@@ -130,10 +178,20 @@ func fade_in(control: CanvasItem, duration: float) -> void:
 func animate_records_panel() -> void:
 	records_panel.position = records_panel_init_pos
 	records_panel.modulate.a = 0.0
+	records_panel.scale = Vector2.ONE
+	await get_tree().process_frame
+	records_panel.pivot_offset = Vector2(0.0, records_panel.size.y * 0.5)
+
 	var tween := get_tree().create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(records_panel, "position", records_panel_final_pos, records_in_duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(records_panel, "modulate:a", 1.0, records_in_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+	# Solo con record nuevo: crece de izquierda a derecha.
+	if has_new_record:
+		records_panel.scale = Vector2(0.0, 1.0)
+		tween.tween_property(records_panel, "scale:x", 1.0, records_in_duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
 	await tween.finished
 
 
