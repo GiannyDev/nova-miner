@@ -9,10 +9,14 @@ signal ore_hit(ore: Ore, damage: float)
 @export var sprite_path: NodePath = ^"Pivot/Sprite"
 @export var contact_path: NodePath = ^"ContactArea"
 @onready var drill_vfx: GPUParticles2D = %DrillVFX
-## Distancia tip→ore para soltar el latch si el Area2D ya no reporta overlap.
+## Segundos entre golpes mientras hay contacto. Editable en Inspector.
+@export var hit_delay: float = 0.3
+## Distancia tip→ore para soltar el latch si ya no hay overlap.
 @export var latch_break_distance: float = 160.0
-## Freno breve solo si no hay siguiente ore en contacto (cadena continua no lo usa).
+## Freno breve tras romper un multi-hit (evita teleporte al hueco). Oneshots no lo usan.
 @export var hold_grace: float = 0.08
+## Duracion del burst de particulas al romper oneshot sin latch.
+@export var oneshot_vfx_duration: float = 0.15
 ## Offset local del tip del drill (along +X del pivot).
 @export var tip_local_offset: Vector2 = Vector2(80.0, 0.0)
 
@@ -22,11 +26,14 @@ var bit_sprite: Sprite2D
 var contact_area: Area2D
 
 var overlapping_ores: Array[Ore] = []
+var body_push_ores: Array[Ore] = []
 var latched_ore: Ore
+## Cooldown global de ataque. Nunca se resetea al (re)latchear.
 var hit_timer: float = 0.0
 var aim_direction: Vector2 = Vector2.RIGHT
 var was_drilling: bool = false
 var hold_timer: float = 0.0
+var oneshot_vfx_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -37,37 +44,26 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	# Resync: si el drill ya esta dentro de un ore (p.ej. stack vertical tras romper el de abajo),
-	# body_entered no vuelve a disparar — hay que leer overlaps actuales del Area2D.
-	sync_overlapping_from_area()
+	sync_contacts()
 	tick_hold_timer(delta)
+	tick_oneshot_vfx(delta)
 	update_drill_rotation(delta)
 	update_drilling_state()
 
 
-## Avanza el timer de golpes y aplica dano cuando toca (llamado desde Player con attack actual).
-func tick(base_attack: float, delta: float) -> void:
-	if GameManager.get_drill_durability() <= 0.0:
-		return
-	if not is_drilling():
-		return
-
-	hit_timer -= delta
-	if hit_timer > 0.0:
-		return
-
-	apply_damage_tick(base_attack)
-	hit_timer = get_hit_delay()
-
-
 func setup(data: WeaponData) -> void:
 	weapon_data = data
+	if data != null:
+		hit_delay = data.drill_hit_delay
 
 
-## Direccion hacia donde debe apuntar el drill (normalizada). El player la setea cada frame.
 func set_aim_direction(direction: Vector2) -> void:
 	if direction.length_squared() > 0.0001:
 		aim_direction = direction.normalized()
+
+
+func set_body_push_ores(ores: Array[Ore]) -> void:
+	body_push_ores = ores
 
 
 func is_drilling() -> bool:
@@ -79,17 +75,13 @@ func get_latched_ore() -> Ore:
 
 
 func get_hit_delay() -> float:
-	if weapon_data != null:
-		return maxf(weapon_data.drill_hit_delay, 0.05)
-	return 0.2
+	return maxf(hit_delay, 0.05)
 
 
 func get_damage(base_attack: float) -> float:
 	return base_attack
 
 
-## True solo si hay latch multi-hit activo o grace tras soltar un multi-hit.
-## One-shots no frenan al player (sigue corriendo mientras destroza).
 func should_hold_player() -> bool:
 	return is_drilling() or hold_timer > 0.0
 
@@ -110,120 +102,129 @@ func tick_hold_timer(delta: float) -> void:
 		hold_timer = maxf(hold_timer - delta, 0.0)
 
 
-func has_contact_ores() -> bool:
-	return not overlapping_ores.is_empty()
-
-
 func can_oneshot(ore: Ore, base_attack: float) -> bool:
 	if ore == null or not is_instance_valid(ore) or not ore.is_alive():
 		return false
 	return get_damage(base_attack) >= ore.current_hp
 
 
-## Latch sticky multi-hit. One-shots se rompen al paso sin detener al player.
+## Contacto = tip Area2D ∪ body slide.
+func sync_contacts() -> void:
+	overlapping_ores.clear()
+	if contact_area != null:
+		for body in contact_area.get_overlapping_bodies():
+			track_ore(body)
+	for ore in body_push_ores:
+		if ore == null or not is_instance_valid(ore) or ore.is_destroyed or not ore.is_alive():
+			continue
+		if overlapping_ores.has(ore):
+			continue
+		overlapping_ores.append(ore)
+	clean_overlapping_ores()
+
+
+## Solo engancha multi-hit. Oneshots nunca frenan al player.
 func update_latching(has_move_intent: bool, base_attack: float) -> void:
 	if GameManager.get_drill_durability() <= 0.0:
 		release_latch()
 		clear_hold()
 		return
 
-	sync_overlapping_from_area()
+	sync_contacts()
 
-	if latched_ore != null:
-		if not is_instance_valid(latched_ore) or latched_ore.is_destroyed or not latched_ore.is_alive():
-			release_latch()
-			try_chain_latch(has_move_intent, base_attack)
-			return
-		if not has_move_intent:
+	if not has_move_intent:
+		release_latch()
+		clear_hold()
+		return
+
+	if is_drilling():
+		if not is_ore_in_drill_reach(latched_ore) or can_oneshot(latched_ore, base_attack):
+			# Si ahora one-shottea, suelta el hold: tick lo rompera sin frenar.
 			release_latch()
 			clear_hold()
+		else:
+			refresh_hold()
 			return
-		if not is_ore_in_drill_reach(latched_ore):
-			release_latch()
-			try_chain_latch(has_move_intent, base_attack)
-			return
-		# Si el ATK subio y ahora one-shotea el latched, rompelo y sigue.
-		if can_oneshot(latched_ore, base_attack):
-			smash_ore(latched_ore, base_attack)
-			release_latch()
-			try_chain_latch(has_move_intent, base_attack)
-			return
+
+	var next := find_best_multihit_ore(base_attack)
+	if next != null:
+		latch_ore(next)
 		refresh_hold()
+
+
+## Oneshots al contacto (sin cooldown/hold). Multi-hit respeta hit_delay.
+func tick(base_attack: float, delta: float, has_move_intent: bool = true) -> void:
+	hit_timer = maxf(hit_timer - delta, 0.0)
+
+	if GameManager.get_drill_durability() <= 0.0:
 		return
-
-	if not has_move_intent:
-		clear_hold()
-		return
-
-	try_chain_latch(true, base_attack)
-
-
-func try_chain_latch(has_move_intent: bool, base_attack: float) -> void:
 	if not has_move_intent:
 		return
 
-	sync_overlapping_from_area()
-	# Primero destroza todo lo one-shotteable en contacto (sin hold).
+	sync_contacts()
+
+	# Oneshots: rompe al tocar. Sin hold, con VFX — movimiento caotico fluido.
 	smash_oneshot_contacts(base_attack)
-	sync_overlapping_from_area()
 
-	var ore := find_best_multihit_ore(base_attack)
-	if ore != null:
-		latch_ore(ore, true)
-		refresh_hold()
-	else:
-		# Solo one-shots o nada: no frenes, sigue corriendo.
-		clear_hold()
+	if hit_timer > 0.0:
+		return
+	if not is_drilling():
+		return
+	if not is_ore_in_drill_reach(latched_ore):
+		release_latch()
+		return
+
+	hit_timer = get_hit_delay()
+	deal_multihit(latched_ore, base_attack)
 
 
-## Rompe en el acto todos los ores de contacto que mueren de un golpe.
-func smash_oneshot_contacts(base_attack: float) -> void:
+## Rompe todos los oneshots en contacto. True si rompio al menos uno.
+func smash_oneshot_contacts(base_attack: float) -> bool:
+	var smashed := false
 	var contacts := overlapping_ores.duplicate()
 	for ore in contacts:
 		if not can_oneshot(ore, base_attack):
 			continue
-		if not is_ore_in_front(ore):
-			continue
-		smash_ore(ore, base_attack)
-	clean_overlapping_ores()
+		deal_oneshot(ore, get_damage(base_attack))
+		smashed = true
+	return smashed
 
 
-func smash_ore(ore: Ore, base_attack: float) -> void:
+## Oneshot: un ore_hit + VFX + destroy. Nunca refresh_hold (movimiento caotico).
+func deal_oneshot(ore: Ore, damage: float) -> void:
 	if ore == null or not is_instance_valid(ore) or not ore.is_alive():
 		return
+	ore_hit.emit(ore, damage)
+	pulse_drill_vfx()
+	ore.destroy_instant()
+	if latched_ore == ore:
+		release_latch()
+	clear_hold()
+
+
+## Multi-hit latcheado: chips con squash, o golpe final letal.
+func deal_multihit(ore: Ore, base_attack: float) -> void:
+	if ore == null or not is_instance_valid(ore) or not ore.is_alive():
+		release_latch()
+		return
+
 	var damage := get_damage(base_attack)
+
+	if can_oneshot(ore, base_attack):
+		# Ultimo golpe de un grind: VFX + destroy. Grace breve anti-teleporte.
+		ore_hit.emit(ore, damage)
+		pulse_drill_vfx()
+		ore.destroy_instant()
+		release_latch()
+		refresh_hold()
+		return
+
 	ore.take_damage(damage)
 	ore_hit.emit(ore, damage)
 
-
-func is_ore_in_front(ore: Ore) -> bool:
-	var to_ore := ore.global_position - global_position
-	if to_ore.length_squared() < 0.01:
-		return true
-	return aim_direction.dot(to_ore.normalized()) >= -0.15
-
-
-func apply_damage_tick(base_attack: float) -> void:
-	if not is_drilling():
-		return
-
-	var target := latched_ore
-	var damage := get_damage(base_attack)
-	target.take_damage(damage)
-	ore_hit.emit(target, damage)
-
-	if not is_instance_valid(target) or target.is_destroyed or not target.is_alive():
+	if not is_instance_valid(ore) or ore.is_destroyed or not ore.is_alive():
 		release_latch()
-		sync_overlapping_from_area()
-		# Tras romper multi-hit: encadena. One-shots no activan hold.
-		smash_oneshot_contacts(base_attack)
-		sync_overlapping_from_area()
-		var next := find_best_multihit_ore(base_attack)
-		if next != null:
-			latch_ore(next, true)
-			refresh_hold()
-		else:
-			clear_hold()
+		refresh_hold()
 
 
 func clean_overlapping_ores() -> void:
@@ -231,25 +232,6 @@ func clean_overlapping_ores() -> void:
 		var ore := overlapping_ores[i]
 		if ore == null or not is_instance_valid(ore) or ore.is_destroyed:
 			overlapping_ores.remove_at(i)
-
-
-## Fuente de verdad de contacto: lee bodies actuales del Area2D (no solo signals enter/exit).
-func sync_overlapping_from_area() -> void:
-	overlapping_ores.clear()
-	if contact_area == null:
-		return
-	for body in contact_area.get_overlapping_bodies():
-		track_ore(body)
-	clean_overlapping_ores()
-
-
-## ContactArea sigue el aim sin heredar scale del pivot.
-func sync_contact_to_aim() -> void:
-	if contact_area == null:
-		return
-	contact_area.rotation = aim_direction.angle()
-	contact_area.position = Vector2.ZERO
-	contact_area.scale = Vector2.ONE
 
 
 func update_drill_rotation(delta: float) -> void:
@@ -262,7 +244,6 @@ func update_drill_rotation(delta: float) -> void:
 	pivot.scale = Vector2.ONE
 
 
-## Spin siempre activo: el drill no "asienta" al romper un bloque.
 func update_drill_spin(delta: float) -> void:
 	if bit_sprite == null:
 		return
@@ -278,27 +259,42 @@ func update_drilling_state() -> void:
 		set_drill_vfx_emitting(true)
 	elif not drilling_now and was_drilling:
 		drilling_stopped.emit()
-		set_drill_vfx_emitting(false)
+		# No apagues si hay burst oneshot activo.
+		if oneshot_vfx_timer <= 0.0:
+			set_drill_vfx_emitting(false)
 	was_drilling = drilling_now
 
 
-## Particles bajo Pivot: velocity local -X = opuesto al aim (+X del drill).
 func set_drill_vfx_emitting(active: bool) -> void:
 	if drill_vfx == null:
 		return
 	drill_vfx.emitting = active
 
 
-## preserve_hit_timer: al encadenar ores mantiene el ritmo de golpe (cadena fluida).
-func latch_ore(ore: Ore, preserve_hit_timer: bool = false) -> void:
+## Burst corto al picar oneshot (sin latch continuo).
+func pulse_drill_vfx() -> void:
+	if drill_vfx == null:
+		return
+	drill_vfx.emitting = true
+	drill_vfx.restart()
+	oneshot_vfx_timer = maxf(oneshot_vfx_timer, oneshot_vfx_duration)
+
+
+func tick_oneshot_vfx(delta: float) -> void:
+	if oneshot_vfx_timer <= 0.0:
+		return
+	oneshot_vfx_timer = maxf(oneshot_vfx_timer - delta, 0.0)
+	if oneshot_vfx_timer <= 0.0 and not is_drilling():
+		set_drill_vfx_emitting(false)
+
+
+## Cambia el target. NO toca hit_timer (el cooldown es global).
+func latch_ore(ore: Ore) -> void:
 	if ore == null or ore.is_destroyed:
 		return
 	if latched_ore == ore:
 		return
-
 	latched_ore = ore
-	if not preserve_hit_timer:
-		hit_timer = 0.0
 
 
 func release_latch() -> void:
@@ -321,34 +317,20 @@ func get_drill_tip_global() -> Vector2:
 	return global_position + aim_direction * tip_local_offset.x
 
 
-func find_best_contact_ore() -> Ore:
-	return find_best_ore_from_contacts(false, 0.0)
-
-
-## Solo ores que requieren varios golpes (ATK < HP actual).
+## Solo ores multi-hit (ATK < HP). Oneshots no se latchan.
 func find_best_multihit_ore(base_attack: float) -> Ore:
-	return find_best_ore_from_contacts(true, base_attack)
-
-
-func find_best_ore_from_contacts(multihit_only: bool, base_attack: float) -> Ore:
 	var best: Ore = null
-	var best_score := -INF
+	var best_dist_sq := INF
+	var tip := get_drill_tip_global()
 
 	for ore in overlapping_ores:
 		if ore == null or ore.is_destroyed or not ore.is_alive():
 			continue
-		if multihit_only and can_oneshot(ore, base_attack):
+		if can_oneshot(ore, base_attack):
 			continue
-
-		var to_ore := ore.global_position - global_position
-		var dist_sq := to_ore.length_squared()
-		if dist_sq < 0.01:
-			return ore
-
-		var alignment := aim_direction.dot(to_ore.normalized())
-		var score := alignment * 2.0 - sqrt(dist_sq) * 0.001
-		if score > best_score:
-			best_score = score
+		var dist_sq := tip.distance_squared_to(ore.global_position)
+		if dist_sq < best_dist_sq:
+			best_dist_sq = dist_sq
 			best = ore
 
 	return best

@@ -22,6 +22,7 @@ signal destroyed(ore: Ore)
 @onready var visuals: Node2D = $Visuals
 @onready var sprite: Sprite2D = %Sprite
 @onready var collision_shape: CollisionShape2D = $StaticBody2D/CollisionShape2D
+@onready var collision_shape_top: CollisionShape2D = $StaticBody2D2/CollisionShape2D
 @onready var damage_marker: Marker2D = $DamageMarker
 
 var current_hp: float = 30.0
@@ -41,13 +42,7 @@ func _ready() -> void:
 
 ## Configura HP, size, celda, stack y OreData al spawnear.
 func setup(
-	hp: float,
-	mine_grid: MineGrid,
-	cell: Vector2i,
-	size: OreDefinition.OreSize = OreDefinition.OreSize.SMALL,
-	stack: int = 0,
-	data: OreData = null
-) -> void:
+	hp: float, mine_grid: MineGrid, cell: Vector2i, size: OreDefinition.OreSize = OreDefinition.OreSize.SMALL, stack: int = 0, data: OreData = null) -> void:
 	max_hp = hp
 	current_hp = hp
 	grid = mine_grid
@@ -59,16 +54,26 @@ func setup(
 	refresh_hp_sprite()
 
 
+## Golpe no letal: squash + sprite. Letal → destroy sin FX.
 func take_damage(amount: float) -> void:
 	if is_destroyed or amount <= 0.0:
 		return
 
 	current_hp -= amount
+	if current_hp <= 0.0:
+		destroy()
+		return
+
 	show_mine_animation()
 	refresh_hp_sprite()
 
-	if current_hp <= 0.0:
-		destroy()
+
+## Kill instantaneo (oneshot): sin squash, sin cambio de sprite.
+func destroy_instant() -> void:
+	if is_destroyed:
+		return
+	current_hp = 0.0
+	destroy()
 
 
 func show_mine_animation() -> void:
@@ -94,6 +99,11 @@ func destroy() -> void:
 		return
 	is_destroyed = true
 
+	# Hide YA (mid-squash). Nunca resetear scale a 1 mientras es visible — eso causaba el flick.
+	Springer.kill_on(visuals)
+	visible = false
+	set_collision_enabled(false)
+
 	if grid != null:
 		grid.remove_stack_occupation(grid_cell)
 
@@ -108,7 +118,8 @@ func on_spawned() -> void:
 	current_hp = max_hp
 	visible = true
 	scale = Vector2.ONE
-	visuals.scale = Vector2.ONE
+	if visuals != null:
+		visuals.scale = Vector2.ONE
 	refresh_hp_sprite()
 	set_collision_enabled(true)
 
@@ -167,11 +178,19 @@ func spawn_ore_drops() -> void:
 
 
 # --- Private helpers (no leading _) ---
-## set_deferred porque el bloque puede apagarse dentro de un callback de fisica.
+## Disable inmediato al destruir (anti-teleporte). Enable deferred es seguro al reciclar.
 func set_collision_enabled(enabled: bool) -> void:
-	if collision_shape == null:
+	set_shape_enabled(collision_shape, enabled)
+	set_shape_enabled(collision_shape_top, enabled)
+
+
+func set_shape_enabled(shape: CollisionShape2D, enabled: bool) -> void:
+	if shape == null:
 		return
-	collision_shape.set_deferred(&"disabled", not enabled)
+	if enabled:
+		shape.set_deferred(&"disabled", false)
+	else:
+		shape.disabled = true
 
 
 func kill_spawn_tween() -> void:

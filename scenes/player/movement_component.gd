@@ -23,7 +23,12 @@ func stop(entity: CharacterBody2D, delta: float) -> void:
 	entity.move_and_slide()
 
 
-## Corte seco de velocidad: evita el tira-y-afloja contra colliders al perforar.
+## Solo mata velocity. No llama move_and_slide (evita nudge/flicker por doble slide).
+func clear_velocity(entity: CharacterBody2D) -> void:
+	entity.velocity = Vector2.ZERO
+
+
+## Frena y resuelve un slide (usar como unico move del frame mientras perforas).
 func hard_stop(entity: CharacterBody2D) -> void:
 	entity.velocity = Vector2.ZERO
 	entity.move_and_slide()

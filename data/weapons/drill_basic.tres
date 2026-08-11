@@ -9,7 +9,6 @@ weapon_id = "drill_basic"
 weapon_name = "Basic Drill"
 sprite = ExtResource("2")
 description = "Standard drill. Locks on ores and grinds them down."
-drill_hit_delay = 0.18
 drill_spin_speed = 16.0
 rotation_smoothing = 18.0
 hit_squash_amount = 0.12

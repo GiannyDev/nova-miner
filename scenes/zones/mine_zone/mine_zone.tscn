@@ -235,6 +235,7 @@ label_settings = SubResource("LabelSettings_ln1sk")
 horizontal_alignment = 1
 
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1463877075]
+visible = false
 material = ExtResource("14_riejj")
 anchors_preset = 15
 anchor_right = 1.0

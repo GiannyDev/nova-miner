@@ -22,6 +22,7 @@ scale_curve = SubResource("CurveTexture_kp7pv")
 
 [node name="DrillBase" type="Node2D" unique_id=1538618923]
 script = ExtResource("2_drill")
+hit_delay = 0.3
 contact_path = NodePath("Pivot/ContactArea")
 
 [node name="Pivot" type="Node2D" parent="." unique_id=577946126]

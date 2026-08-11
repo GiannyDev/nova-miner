@@ -111,6 +111,23 @@ stiffness: float = 250, dampening: float = 12) -> void:
 	spring_property(target, "scale:x", x_force, x, stiffness, dampening)
 	spring_property(target, "scale:y", y_force, x, stiffness, dampening)
 
+## Mata todos los springs atados a un target (p.ej. al destruir un ore mid-squash).
+func kill_on(target: Object) -> void:
+	if target == null:
+		return
+	if target_springs.has(target):
+		var property_dict: Dictionary = target_springs[target]
+		for property: NodePath in property_dict.keys():
+			var spr: Spring = property_dict[property]
+			if spr != null:
+				spr.kill()
+		target_springs.erase(target)
+	if scale_springs.has(target):
+		var scale_spr: Spring = scale_springs[target]
+		if scale_spr != null:
+			scale_spr.kill()
+		scale_springs.erase(target)
+
 func cleanup() -> void:
 	scale_springs.clear()
 	springs_list.clear()

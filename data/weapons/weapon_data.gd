@@ -32,7 +32,7 @@ enum WeaponUpgradeType {
 
 @export_category("Drill")
 ## Segundos entre cada tick de dano mientras el drill esta enganchado a un ore.
-@export var drill_hit_delay: float = 0.2
+@export var drill_hit_delay: float = 0.3
 ## Giro visual del bit mientras perfora (rad/s).
 @export var drill_spin_speed: float = 14.0
 ## Factor de suavizado al rotar el drill hacia la direccion de movimiento.

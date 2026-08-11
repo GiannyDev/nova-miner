@@ -47,8 +47,12 @@ func _physics_process(delta: float) -> void:
 	if can_move():
 		get_input_direction()
 		update_facing()
-		update_drill_weapon(delta)
+		# Un solo move_and_slide por frame; el drill lee esos slides como contacto.
 		move_player(delta)
+		update_drill_weapon(delta)
+		# Primer frame de latch: matar velocity residual sin segundo slide (evita teleporte).
+		if is_drill_engaged():
+			movement_component.clear_velocity(self)
 	else:
 		move_player(delta, true)
 	update_dust_vfx()
@@ -108,8 +112,22 @@ func update_drill_weapon(delta: float) -> void:
 	var drill_aim := get_drill_aim_direction()
 	aim_direction = drill_aim
 	drill_weapon.set_aim_direction(drill_aim)
+	drill_weapon.set_body_push_ores(get_body_push_ores())
 	drill_weapon.update_latching(has_move_intent, attack)
-	drill_weapon.tick(attack, delta)
+	drill_weapon.tick(attack, delta, has_move_intent)
+
+
+## Cualquier ore que el body este tocando via slide cuenta como contacto de minado.
+func get_body_push_ores() -> Array[Ore]:
+	var ores: Array[Ore] = []
+	for i in range(get_slide_collision_count()):
+		var collision := get_slide_collision(i)
+		if collision == null:
+			continue
+		var ore := drill_weapon.resolve_ore(collision.get_collider())
+		if ore != null and not ores.has(ore):
+			ores.append(ore)
+	return ores
 
 
 ## Solo movimiento / ultimo facing. Nunca apunta al ore (evita flick al destruir).
