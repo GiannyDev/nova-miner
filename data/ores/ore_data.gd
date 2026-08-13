@@ -7,3 +7,5 @@ class_name OreData
 @export var currency_sprite: Texture2D
 @export var definitions: Array[OreDefinition]
 @export var refine_wait_time: float = 6.0
+## True = lingote / moneda de upgrade. El bag guarda raw y refined por id.
+@export var is_refined: bool = false

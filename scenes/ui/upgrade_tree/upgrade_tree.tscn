@@ -1,41 +1,64 @@
-[gd_scene format=3 uid="uid://dvkowrqhi4chd"]
+[gd_scene format=3 uid="uid://dhx5jhuthqkk5"]
 
-[ext_resource type="Script" uid="uid://xco5eao12nrc" path="res://scenes/ui/upgrade_tree/upgrade_tree.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://nxf1kqkc2c2v" path="res://resources/fonts/04B_03__.TTF" id="2"]
-[ext_resource type="Shader" uid="uid://dvb4h7p2m56ij" path="res://resources/shaders/background.gdshader" id="2_efcpf"]
-[ext_resource type="Texture2D" uid="uid://bleo2wqnhhy68" path="res://sprites/background_tiled.png" id="3_k2ohx"]
-[ext_resource type="Texture2D" uid="uid://bv6jpettv5mpl" path="res://sprites/ui/mouse_right_click.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://b6om5jx1x555e" path="res://sprites/ui/mouse_middle_click.png" id="5"]
-[ext_resource type="PackedScene" uid="uid://d0nrrh8k2pww" path="res://scenes/ui/upgrade_tree/upgrade_node.tscn" id="6"]
+[ext_resource type="Script" uid="uid://cbbgqepr6gq23" path="res://scenes/ui/upgrade_tree/upgrade_tree.gd" id="1"]
+[ext_resource type="Script" uid="uid://b4jk1vgho8equ" path="res://scenes/ui/upgrade_tree/upgrade_tree_world.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="2_oh35i"]
+[ext_resource type="PackedScene" uid="uid://bam1co12smhwc" path="res://scenes/ui/upgrade_tree/upgrade_node.tscn" id="6"]
+[ext_resource type="Script" uid="uid://pxlo28r4xsd" path="res://scenes/ui/upgrade_tree/recalculate_neighbors.gd" id="8_neighbors"]
 [ext_resource type="Resource" uid="uid://bb3nk6ie5ijb5" path="res://data/upgrades/stat_spawn_extra_on_destroy.tres" id="8_spawn"]
 [ext_resource type="Resource" uid="uid://c4vhblohn7gl2" path="res://data/upgrades/stat_attack_right.tres" id="9_attack_r"]
 [ext_resource type="Resource" uid="uid://c4vhblohn7gl3" path="res://data/upgrades/stat_attack_left.tres" id="10_attack_l"]
 [ext_resource type="Resource" uid="uid://bsbmugjtt6lc7" path="res://data/upgrades/stat_starting_ore_amount.tres" id="11_ore_amt"]
-[ext_resource type="PackedScene" uid="uid://df8opq5yf5pv8" path="res://scenes/ui/upgrade_tree/upgrade_info_popup.tscn" id="12_0meom"]
-[ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="13_efcpf"]
 [ext_resource type="Resource" uid="uid://b1cxjsvb1n73u" path="res://data/upgrades/stat_speed.tres" id="14_speed"]
 [ext_resource type="Resource" uid="uid://b65wydb8gm7ea" path="res://data/upgrades/stat_drill_durability.tres" id="15_drill_dur"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
-shader = ExtResource("2_efcpf")
-shader_parameter/speed = 0.35
+[sub_resource type="Gradient" id="Gradient_0meom"]
+colors = PackedColorArray(0.08468992, 0.08468994, 0.08468989, 1, 0.11119685, 0.11119685, 0.11119681, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ogihg"]
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_oh35i"]
+gradient = SubResource("Gradient_0meom")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_llooo"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(960, 540, 1)
+spread = 180.0
+initial_velocity_min = 20.0
+initial_velocity_max = 40.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.02
+scale_max = 0.06
+color_ramp = SubResource("GradientTexture1D_oh35i")
+
+[sub_resource type="LabelSettings" id="LabelSettings_47oi6"]
+font_size = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_47oi6"]
+bg_color = Color(0.20339167, 0.06081015, 0.0061959377, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74ix2"]
+bg_color = Color(0.93734556, 0.4260571, 0.19440195, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_74ix2"]
+font_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_close"]
 bg_color = Color(0.29586652, 0.29586652, 0.29586637, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_efcpf"]
-bg_color = Color(0.15487584, 0.15487605, 0.15487596, 1)
-draw_center = false
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[node name="UpgradeTree" type="Control" unique_id=1365475181 node_paths=PackedStringArray("content", "lines_container")]
+[node name="UpgradeTree" type="Control" unique_id=1887225941]
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,74 +66,106 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
-content = NodePath("TreeViewport/Content")
-lines_container = NodePath("TreeViewport/Content/Lines")
-line_width = 10.0
-line_color_owned = Color(0.20392157, 0.20392157, 0.20392157, 1)
-node_reveal_duration = 0.1
-line_grow_duration = 0.05
-root_stagger = 0.03
-node_start_rotation_deg = -10.0
-node_reveal_spring = 0.2
-node_flash_peak = 1.0
-node_flash_duration = 0.1
-unpurchased_dim = 0.5
 
-[node name="BackBackground" type="ColorRect" parent="." unique_id=2138438461]
+[node name="Background" type="ColorRect" parent="." unique_id=379445368]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.13725491, 0.13725491, 0.13725491, 1)
+mouse_filter = 2
+color = Color(0.09239709, 0.09239706, 0.09239706, 1)
 
-[node name="Background" type="TextureRect" parent="." unique_id=1637663157]
-self_modulate = Color(1, 1, 1, 0.5882353)
-texture_filter = 1
-material = SubResource("ShaderMaterial_ad6r8")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("3_k2ohx")
-stretch_mode = 1
+[node name="GPUParticles" type="GPUParticles2D" parent="." unique_id=1500187167]
+position = Vector2(960, 540)
+amount = 24
+texture = ExtResource("2_oh35i")
+lifetime = 10.0
+process_material = SubResource("ParticleProcessMaterial_llooo")
 
-[node name="TreeViewport" type="Control" parent="." unique_id=1239101654]
-clip_contents = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 32.0
-offset_top = 72.0
-offset_right = -32.0
-offset_bottom = -72.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Content" type="Control" parent="TreeViewport" unique_id=1768616368]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -468.75
-offset_top = -468.75
-offset_right = 781.25
-offset_bottom = 781.25
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.75, 0.75)
-
-[node name="Lines" type="Node2D" parent="TreeViewport/Content" unique_id=1256006653]
-
-[node name="Buttons" type="Control" parent="TreeViewport/Content" unique_id=837430198]
+[node name="World" type="Node2D" parent="." unique_id=1044303364]
 unique_name_in_owner = true
-clip_children = 1
+position = Vector2(960, 540)
+script = ExtResource("2")
+default_zoom = 3.0
+
+[node name="Nodes" type="Node2D" parent="World" unique_id=1672611528]
+unique_name_in_owner = true
+script = ExtResource("8_neighbors")
+
+[node name="Attack1" parent="World/Nodes" unique_id=698692302 node_paths=PackedStringArray("left_neighbor", "top_neighbor", "right_neighbor", "bottom_neighbor") instance=ExtResource("6")]
+unique_name_in_owner = true
+upgrade = ExtResource("9_attack_r")
+upgrade_key = "AttackRight"
+popup_title = "Attack Right"
+popup_description = "Increase drill damage by {stat_amount}."
+left_neighbor = NodePath("../Attack3")
+top_neighbor = NodePath("../SpawnOnDestroy")
+right_neighbor = NodePath("../Attack2")
+bottom_neighbor = NodePath("../StartingOreAmount")
+
+[node name="Attack2" parent="World/Nodes" unique_id=404939488 node_paths=PackedStringArray("node1", "left_neighbor", "bottom_neighbor") instance=ExtResource("6")]
+position = Vector2(75, 0)
+upgrade = ExtResource("9_attack_r")
+upgrade_key = "AttackRight2"
+popup_title = "Attack Right"
+popup_description = "Increase drill damage by {stat_amount}."
+node1 = NodePath("../Attack1")
+left_neighbor = NodePath("../Attack1")
+bottom_neighbor = NodePath("../DrillDurability")
+
+[node name="Attack3" parent="World/Nodes" unique_id=2014035277 node_paths=PackedStringArray("node1", "right_neighbor", "bottom_neighbor") instance=ExtResource("6")]
+position = Vector2(-75, 0)
+upgrade = ExtResource("10_attack_l")
+upgrade_key = "AttackLeft"
+popup_title = "Attack Left"
+popup_description = "Increase drill damage by {stat_amount}."
+node1 = NodePath("../Attack1")
+right_neighbor = NodePath("../Attack1")
+bottom_neighbor = NodePath("../Speed")
+
+[node name="SpawnOnDestroy" parent="World/Nodes" unique_id=2035450125 node_paths=PackedStringArray("node1", "bottom_neighbor") instance=ExtResource("6")]
+position = Vector2(0, -75)
+upgrade = ExtResource("8_spawn")
+upgrade_key = "ExtraSpawn"
+popup_title = "Extra Spawn"
+popup_description = "Spawn {stat_amount} extra ore when you destroy one."
+node1 = NodePath("../Attack1")
+bottom_neighbor = NodePath("../Attack1")
+
+[node name="StartingOreAmount" parent="World/Nodes" unique_id=1533894802 node_paths=PackedStringArray("node1", "left_neighbor", "top_neighbor", "right_neighbor") instance=ExtResource("6")]
+position = Vector2(0, 75)
+upgrade = ExtResource("11_ore_amt")
+upgrade_key = "OreDensity"
+popup_title = "Ore Density"
+popup_description = "Spawn {stat_amount} more ores near you in the mine."
+node1 = NodePath("../Attack1")
+left_neighbor = NodePath("../Speed")
+top_neighbor = NodePath("../Attack1")
+right_neighbor = NodePath("../DrillDurability")
+
+[node name="DrillDurability" parent="World/Nodes" unique_id=231663141 node_paths=PackedStringArray("node1", "left_neighbor", "top_neighbor") instance=ExtResource("6")]
+position = Vector2(75, 75)
+upgrade = ExtResource("15_drill_dur")
+upgrade_key = "DrillDurability"
+popup_title = "Drill Durability"
+popup_description = "Increase max drill durability by {stat_amount}."
+node1 = NodePath("../StartingOreAmount")
+left_neighbor = NodePath("../StartingOreAmount")
+top_neighbor = NodePath("../Attack2")
+
+[node name="Speed" parent="World/Nodes" unique_id=1538912029 node_paths=PackedStringArray("node1", "top_neighbor", "right_neighbor") instance=ExtResource("6")]
+position = Vector2(-75, 75)
+upgrade = ExtResource("14_speed")
+upgrade_key = "Speed"
+popup_title = "Speed"
+popup_description = "Move {stat_amount} faster while mining."
+node1 = NodePath("../StartingOreAmount")
+top_neighbor = NodePath("../Attack3")
+right_neighbor = NodePath("../StartingOreAmount")
+
+[node name="HUD" type="Control" parent="." unique_id=804636700]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -119,232 +174,66 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Attack1" parent="TreeViewport/Content/Buttons" unique_id=1970078329 instance=ExtResource("6")]
+[node name="PrestigeProgress" type="HBoxContainer" parent="HUD" unique_id=1481578745]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -60.0
-offset_top = -60.0
-offset_right = 60.0
-offset_bottom = 60.0
+offset_left = -148.0
+offset_top = 24.0
+offset_right = 148.0
+offset_bottom = 91.0
 grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("9_attack_r")
-popup_title = "Attack Right"
-popup_description = "Increase drill damage by {stat_amount}."
+mouse_filter = 2
 
-[node name="Attack2" parent="TreeViewport/Content/Buttons" unique_id=1364061289 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 190.0
-offset_top = -60.0
-offset_right = 310.0
-offset_bottom = 60.0
-grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("9_attack_r")
-previous_skills = [NodePath("../Attack1")]
-popup_title = "Attack Right"
-popup_description = "Increase drill damage by {stat_amount}."
-
-[node name="Attack3" parent="TreeViewport/Content/Buttons" unique_id=894184850 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -310.0
-offset_top = -60.0
-offset_right = -190.0
-offset_bottom = 60.0
-grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("10_attack_l")
-previous_skills = [NodePath("../Attack1")]
-popup_title = "Attack Left"
-popup_description = "Increase drill damage by {stat_amount}."
-
-[node name="SpawnOnDestroy" parent="TreeViewport/Content/Buttons" unique_id=1613322259 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -60.0
-offset_top = -310.0
-offset_right = 60.0
-offset_bottom = -190.0
-grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("8_spawn")
-previous_skills = [NodePath("../Attack1")]
-popup_title = "Extra Spawn"
-popup_description = "Spawn {stat_amount} extra ore when you destroy one."
-
-[node name="StartingOreAmount" parent="TreeViewport/Content/Buttons" unique_id=2100000001 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -60.0
-offset_top = 190.0
-offset_right = 60.0
-offset_bottom = 310.0
-grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("11_ore_amt")
-previous_skills = [NodePath("../Attack1")]
-popup_title = "Ore Density"
-popup_description = "Spawn {stat_amount} more ores near you in the mine."
-
-[node name="DrillDurability" parent="TreeViewport/Content/Buttons" unique_id=2100000002 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 190.0
-offset_top = 190.0
-offset_right = 310.0
-offset_bottom = 310.0
-grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("15_drill_dur")
-previous_skills = [NodePath("../StartingOreAmount")]
-popup_title = "Drill Durability"
-popup_description = "Increase max drill durability by {stat_amount}."
-
-[node name="Speed" parent="TreeViewport/Content/Buttons" unique_id=2100000003 node_paths=PackedStringArray("previous_skills") instance=ExtResource("6")]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -310.0
-offset_top = 190.0
-offset_right = -190.0
-offset_bottom = 310.0
-grow_horizontal = 2
-grow_vertical = 2
-upgrade = ExtResource("14_speed")
-previous_skills = [NodePath("../StartingOreAmount")]
-popup_title = "Speed"
-popup_description = "Move {stat_amount} faster while mining."
-
-[node name="Hints" type="HBoxContainer" parent="." unique_id=638364553]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 32.0
-offset_top = -56.0
-offset_right = -32.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 0
-alignment = 1
-
-[node name="ZoomHint" type="Label" parent="Hints" unique_id=868412011]
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/PrestigeProgress" unique_id=62748117]
 layout_mode = 2
-text = "SCROLL: ZOOM"
+mouse_filter = 2
+theme_override_constants/separation = 8
 
-[node name="Spacer" type="Control" parent="Hints" unique_id=351376499]
-custom_minimum_size = Vector2(24, 0)
+[node name="PrestigeTitle" type="Label" parent="HUD/PrestigeProgress/VBoxContainer" unique_id=720521485]
 layout_mode = 2
-
-[node name="DragHint" type="HBoxContainer" parent="Hints" unique_id=1351813954]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="Hints/DragHint" unique_id=706952750]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-texture = ExtResource("4")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label" type="Label" parent="Hints/DragHint" unique_id=162832142]
-layout_mode = 2
-text = "DRAG"
-
-[node name="Spacer2" type="Control" parent="Hints" unique_id=262586110]
-custom_minimum_size = Vector2(24, 0)
-layout_mode = 2
-
-[node name="PanHint" type="HBoxContainer" parent="Hints" unique_id=658039526]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="Hints/PanHint" unique_id=266477017]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-texture = ExtResource("5")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label" type="Label" parent="Hints/PanHint" unique_id=1446329726]
-layout_mode = 2
-text = "ZOOM AT CURSOR"
-
-[node name="MaxedMessage" type="PanelContainer" parent="." unique_id=2005736288]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -30.0
-offset_right = 180.0
-offset_bottom = 30.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="MaxedMessage" unique_id=37067513]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("2")
-theme_override_font_sizes/font_size = 18
-text = "ALL UPGRADES MAXED!"
+text = "UPGRADES"
+label_settings = SubResource("LabelSettings_47oi6")
 horizontal_alignment = 1
 
-[node name="UpgradeInfoPopup" parent="." unique_id=2041815122 instance=ExtResource("12_0meom")]
-visible = false
-layout_mode = 0
+[node name="PrestigeBar" type="ProgressBar" parent="HUD/PrestigeProgress/VBoxContainer" unique_id=1117699972]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 24)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_47oi6")
+theme_override_styles/fill = SubResource("StyleBoxFlat_74ix2")
+max_value = 1.0
+step = 0.001
+show_percentage = false
 
-[node name="CloseButton" type="Button" parent="." unique_id=513142081]
-custom_minimum_size = Vector2(120, 60)
+[node name="PrestigeAmount" type="Label" parent="HUD/PrestigeProgress/VBoxContainer/PrestigeBar" unique_id=1749803124]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0 / 0"
+label_settings = SubResource("LabelSettings_74ix2")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CloseButton" type="Button" parent="HUD" unique_id=176668274]
+custom_minimum_size = Vector2(140, 56)
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -150.0
-offset_top = 30.0
-offset_right = -30.0
-offset_bottom = 90.0
+offset_left = -180.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 80.0
 grow_horizontal = 0
-theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_ogihg")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_close")
 text = "CLOSE"
 
-[node name="Inventory" parent="." unique_id=1580823554 instance=ExtResource("13_efcpf")]
-layout_mode = 0
-offset_left = 30.0
-offset_top = 30.0
-offset_right = 175.0
-offset_bottom = 95.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_efcpf")
-
-[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="pressed" from="HUD/CloseButton" to="." method="_on_close_pressed"]

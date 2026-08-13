@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dqvaq2wpkd12e" path="res://scenes/zones/mine_zone/mine_grid.gd" id="4_grid"]
 [ext_resource type="Script" uid="uid://besp4muqiv5ox" path="res://scenes/zones/mine_zone/ore_spawner.gd" id="5_spwn"]
 [ext_resource type="PackedScene" uid="uid://dcfiugihmklr0" path="res://scenes/ui/recap_menu/recap_menu.tscn" id="6_7yl0r"]
-[ext_resource type="Script" uid="uid://bavo0br8jb0pp" path="res://scripts/custom_camera.gd" id="8_0fijc"]
+[ext_resource type="Script" uid="uid://btf4px38l0p02" path="res://scenes/player/camera_rig.gd" id="8_0fijc"]
 [ext_resource type="Resource" uid="uid://b6om4ui0righ0" path="res://data/mines/default_block_layout.tres" id="8_layout"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_1xuby"]
 [ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="9_3eek8"]
@@ -235,7 +235,6 @@ label_settings = SubResource("LabelSettings_ln1sk")
 horizontal_alignment = 1
 
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1463877075]
-visible = false
 material = ExtResource("14_riejj")
 anchors_preset = 15
 anchor_right = 1.0

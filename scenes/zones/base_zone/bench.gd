@@ -2,7 +2,7 @@ extends Node2D
 class_name Bench
 
 @export var player_area: Area2D
-@export var panel_to_open: Control
+@export var panel_to_open: Node
 
 var is_player_colliding: bool
 
@@ -13,6 +13,7 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact") and is_player_colliding:
+		SFX.play(Sound.UI_PANEL_POP)
 		panel_to_open.show_panel()
 
 func _on_player_entered(body: Node2D) -> void:

@@ -4,12 +4,12 @@
 [ext_resource type="Script" uid="uid://dmbt68v0i6g4b" path="res://scenes/zones/base_zone/base_zone.gd" id="1_wrtbe"]
 [ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_2e3ff"]
 [ext_resource type="Script" uid="uid://dsckmmpo34hbe" path="res://data/levels/level_data.gd" id="2_5gdsq"]
-[ext_resource type="PackedScene" uid="uid://dvkowrqhi4chd" path="res://scenes/ui/upgrade_tree/upgrade_tree.tscn" id="2_m1t7q"]
+[ext_resource type="PackedScene" uid="uid://dhx5jhuthqkk5" path="res://scenes/ui/upgrade_tree/upgrade_tree.tscn" id="2_m1t7q"]
 [ext_resource type="PackedScene" uid="uid://cfyfnd1x504br" path="res://scenes/ui/weapon_shop/weapon_shop.tscn" id="3_2e3ff"]
 [ext_resource type="Script" uid="uid://q5ew6j4wae2h" path="res://scenes/zones/base_zone/bench.gd" id="3_mngwo"]
 [ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://data/levels/mine_01.tres" id="3_yu1jf"]
 [ext_resource type="Script" uid="uid://dgkgkuwla3cgp" path="res://scenes/zones/base_zone/gui.gd" id="4_2dcdp"]
-[ext_resource type="Script" uid="uid://bavo0br8jb0pp" path="res://scripts/custom_camera.gd" id="4_yu1jf"]
+[ext_resource type="Script" uid="uid://btf4px38l0p02" path="res://scenes/player/camera_rig.gd" id="4_yu1jf"]
 [ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="5_2dcdp"]
 [ext_resource type="Script" uid="uid://1r7rqkf01cc3" path="res://scenes/zones/base_zone/refinery_bench.gd" id="5_la2ei"]
 [ext_resource type="Shader" uid="uid://1qk0gok0yle2" path="res://resources/shaders/vignette.gdshader" id="9_4vgyc"]
@@ -239,6 +239,19 @@ position = Vector2(488, 14)
 position = Vector2(181, 0)
 scale = Vector2(-0.402, 0.27)
 texture = ExtResource("9_r5241")
+
+[node name="OreProgress" type="RichTextLabel" parent="YSort/RefineryBench" unique_id=1314920375]
+custom_minimum_size = Vector2(200, 0)
+offset_left = 84.0
+offset_top = -164.0
+offset_right = 284.0
+offset_bottom = -115.0
+theme_override_font_sizes/normal_font_size = 30
+bbcode_enabled = true
+text = "[img=48]sprites/coin.png[/img]20"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
 
 [node name="MineDoor" type="Node2D" parent="YSort" unique_id=39020944 node_paths=PackedStringArray("player_area", "panel_to_open")]
 position = Vector2(960, 132)

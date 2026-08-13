@@ -4,7 +4,6 @@ class_name StatsData
 
 var attack: float = 8.0
 var attack_cooldown: float = 0.5
-var fuel: float = 100.0
 var speed: float = 350.0
 var pickup_radius: float = 50.0
 var helpers_unlocked: int = 0
@@ -32,42 +31,23 @@ var drill_durability_max: float = 40.0
 func get_stat(stat_id: Variant) -> float:
 	var id := int(stat_id)
 	match id:
-		Stats.PLAYER_DMG:
-			return attack
-		Stats.PLAYER_ATTACK_COOLDOWN:
-			return attack_cooldown
-		Stats.FUEL:
-			return fuel
-		Stats.DEPOSIT_TIME:
-			return deposit_time
-		Stats.REFINEMENT_TIME:
-			return refiniment_time
-		Stats.INVENTORY_SIZE:
-			return float(inventory_size)
-		Stats.PLAYER_SPEED:
-			return speed
-		Stats.PICKUP_RADIUS:
-			return pickup_radius
-		Stats.HELPERS_UNLOCKED:
-			return float(helpers_unlocked)
-		Stats.STARTING_ORE_AMOUNT:
-			return float(starting_ore_amount)
-		Stats.SPAWN_ON_DESTROY_CHANCE:
-			return spawn_on_destroy_chance
-		Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT:
-			return spawn_extra_on_destroy
-		Stats.SPAWN_CLUSTER_CHANCE:
-			return destroy_cluster_chance
-		Stats.SPAWN_CLUSTER_SIZE:
-			return float(destroy_cluster_size)
-		Stats.DRILL_DURABILITY_MAX:
-			return drill_durability_max
-		Stats.UNLOCK_WEAPON_SHOP:
-			return 1.0 if unlock_weapon_shop else 0.0
-		Stats.UNLOCK_REFINEMENT:
-			return 1.0 if unlock_refinement else 0.0
-		Stats.UNLOCK_WORKSHOP:
-			return 1.0 if unlock_workshop else 0.0
+		Stats.PLAYER_DMG: return attack
+		Stats.PLAYER_ATTACK_COOLDOWN: return attack_cooldown
+		Stats.DEPOSIT_TIME: return deposit_time
+		Stats.REFINEMENT_TIME: return refiniment_time
+		Stats.INVENTORY_SIZE: return float(inventory_size)
+		Stats.PLAYER_SPEED: return speed
+		Stats.PICKUP_RADIUS: return pickup_radius
+		Stats.HELPERS_UNLOCKED: return float(helpers_unlocked)
+		Stats.STARTING_ORE_AMOUNT: return float(starting_ore_amount)
+		Stats.SPAWN_ON_DESTROY_CHANCE: return spawn_on_destroy_chance
+		Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT: return spawn_extra_on_destroy
+		Stats.SPAWN_CLUSTER_CHANCE: return destroy_cluster_chance
+		Stats.SPAWN_CLUSTER_SIZE: return float(destroy_cluster_size)
+		Stats.DRILL_DURABILITY_MAX: return drill_durability_max
+		Stats.UNLOCK_WEAPON_SHOP: return 1.0 if unlock_weapon_shop else 0.0
+		Stats.UNLOCK_REFINEMENT: return 1.0 if unlock_refinement else 0.0
+		Stats.UNLOCK_WORKSHOP: return 1.0 if unlock_workshop else 0.0
 		_:
 			push_warning("Unknown stat id: %d (%s)" % [id, Stats.get_name(id)])
 			return 0.0
@@ -80,8 +60,6 @@ func set_stat(stat_id: Variant, value: float) -> void:
 			attack = value
 		Stats.PLAYER_ATTACK_COOLDOWN:
 			attack_cooldown = value
-		Stats.FUEL:
-			fuel = value
 		Stats.DEPOSIT_TIME:
 			deposit_time = value
 		Stats.REFINEMENT_TIME:

@@ -327,7 +327,9 @@ func spawn_ore_at_cell(cell: Vector2i, stack_index: int = 0) -> Ore:
 		return null
 
 	var ore_data := profile.pick_ore_data()
+	ore.visible = false
 	ore.global_position = grid.get_ore_world_position(cell, stack_index)
+	ore.reset_physics_interpolation()
 	ore.setup(
 		profile.get_ore_hp(ore_data, OreDefinition.OreSize.SMALL),
 		grid,

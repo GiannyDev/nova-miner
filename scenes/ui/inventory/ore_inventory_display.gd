@@ -53,3 +53,4 @@ func refresh_visuals() -> void:
 		return
 	if ore_data != null and ore_data.currency_sprite != null:
 		ore_icon.texture = ore_data.currency_sprite
+	ore_icon.modulate = Color(1.15, 1.08, 0.75) if ore_data != null and ore_data.is_refined else Color.WHITE

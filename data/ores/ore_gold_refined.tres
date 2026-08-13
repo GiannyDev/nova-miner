@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="OreData" format=3 uid="uid://c55twfl0oteqq"]
+
+[ext_resource type="Script" uid="uid://b252iw7cblwlw" path="res://data/ores/ore_data.gd" id="1_ore"]
+[ext_resource type="Texture2D" uid="uid://b2s2xahq7w4r8" path="res://sprites/coin.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_ore")
+id = "gold_refined"
+ore_type = 3
+currency_sprite = ExtResource("2_icon")
+is_refined = true

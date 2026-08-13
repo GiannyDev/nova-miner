@@ -6,6 +6,5 @@
 script = ExtResource("1")
 id = "spawn_extra_on_destroy"
 stat_id = 4
-cost_ore = null
 costs = Array[int]([5, 25, 45])
 values = Array[float]([1.0, 1.0, 2.0])

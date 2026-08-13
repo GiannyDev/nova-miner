@@ -1,60 +1,133 @@
-[gd_scene format=3 uid="uid://d0nrrh8k2pww"]
+[gd_scene format=3 uid="uid://bam1co12smhwc"]
 
-[ext_resource type="Script" uid="uid://nw8dyfw836ag" path="res://scenes/ui/upgrade_tree/upgrade_node.gd" id="2"]
+[ext_resource type="Script" uid="uid://dscgxwxshsbn7" path="res://scenes/ui/upgrade_tree/upgrade_node.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://66ny2e0jk6kh" path="res://scenes/ui/upgrade_tree/tooltip_2d.tscn" id="2_itpq3"]
 [ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_jtecs"]
-[ext_resource type="Script" uid="uid://75xwv0bxg78s" path="res://data/upgrades/stat_upgrade.gd" id="2_tmjhs"]
+[ext_resource type="PackedScene" uid="uid://brjm8rdokwo0m" path="res://scenes/ui/upgrade_tree/button_2d.tscn" id="3_m4w7h"]
+[ext_resource type="Script" uid="uid://dgrsenrp10yn6" path="res://scripts/juice/damped_spring_data.gd" id="4_h4xu6"]
+[ext_resource type="FontFile" uid="uid://dn842kj2hni4p" path="res://resources/fonts/FredokaOne-Regular.ttf" id="6_yv7me"]
 
-[sub_resource type="Resource" id="Resource_jtecs"]
-script = ExtResource("2_tmjhs")
-costs = Array[int]([0, 0])
-metadata/_custom_type_script = "uid://75xwv0bxg78s"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v5fde"]
+resource_local_to_scene = true
+content_margin_top = 4.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.866667, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 1
+shadow_offset = Vector2(2, 2)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tmjhs"]
-bg_color = Color(0.24705882, 0.54901963, 0.48235294, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itpq3"]
+resource_local_to_scene = true
+content_margin_top = 4.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.866667, 0, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 1
+shadow_offset = Vector2(2, 2)
 
-[node name="UpgradeNode" type="Button" unique_id=1970078329]
-custom_minimum_size = Vector2(120, 120)
-offset_right = 20.0
-offset_bottom = 20.0
-toggle_mode = true
-flat = true
+[sub_resource type="Resource" id="Resource_l3wd4"]
+script = ExtResource("4_h4xu6")
+intensity = 0.25
+
+[sub_resource type="Resource" id="Resource_k47y4"]
+script = ExtResource("4_h4xu6")
+damping_ratio = 0.25
+intensity = 0.25
+
+[sub_resource type="Resource" id="Resource_c64ur"]
+script = ExtResource("4_h4xu6")
+damping_ratio = 0.25
+intensity = 30.0
+
+[node name="UpgradeNode" type="Node2D" unique_id=716396488]
 script = ExtResource("2")
-upgrade = SubResource("Resource_jtecs")
 
-[node name="Background" type="Panel" parent="." unique_id=372291933]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset_ratio = Vector2(0.5, 0.5)
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_tmjhs")
+[node name="Tooltip" parent="." unique_id=1587152840 instance=ExtResource("2_itpq3")]
+visible = false
+z_index = 2
+z_as_relative = false
+position = Vector2(0, -64)
+title = ""
+description = ""
 
-[node name="NodeIcon" type="TextureRect" parent="Background" unique_id=369956107]
+[node name="Button" parent="." unique_id=1270974886 instance=ExtResource("3_m4w7h")]
+button_text = ""
+normal_color = Color(0, 0, 0, 1)
+disabled_color = Color(0, 0, 0, 1)
+border_color = Color(1, 0.866667, 0, 1)
+border_width = 2.0
+
+[node name="Button" parent="Button" index="0" unique_id=1695782264]
+texture_filter = 1
+custom_minimum_size = Vector2(32, 32)
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_v5fde")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_itpq3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_itpq3")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_itpq3")
+
+[node name="Label" parent="Button/Button" index="0" unique_id=523616715]
+visible = false
+texture_filter = 1
+text = ""
+
+[node name="Juice" parent="Button" index="1" unique_id=2011387995]
+animate_position = false
+animate_rotation = false
+animate_spawn = true
+jiggle_animation = SubResource("Resource_l3wd4")
+squash_animation = SubResource("Resource_k47y4")
+spawn_animation = SubResource("Resource_c64ur")
+
+[node name="Icon" type="Sprite2D" parent="Button" unique_id=1510368021]
+modulate = Color(0.5, 0.5, 0.5, 1)
+texture_filter = 2
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_jtecs")
+
+[node name="TierLabel" type="Label" parent="Button" unique_id=845247307]
 unique_name_in_owner = true
-layout_mode = 1
+visible = false
+texture_filter = 2
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -40.0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 1.0
+offset_top = 3.0
+offset_right = 16.0
+offset_bottom = 14.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("2_jtecs")
-expand_mode = 1
-stretch_mode = 4
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("6_yv7me")
+theme_override_font_sizes/font_size = 16
+text = "I"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
-[connection signal="pressed" from="." to="." method="_on_pressed"]
+[connection signal="mouse_entered" from="Button" to="." method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Button" to="." method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+
+[editable path="Button"]

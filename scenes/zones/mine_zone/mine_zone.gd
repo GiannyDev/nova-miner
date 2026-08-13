@@ -269,6 +269,7 @@ func end_run() -> void:
 	run_ended = true
 	EventBus.on_run_ended.emit()
 	GameManager.curr_state = GameManager.GameStates.PAUSED
+	SaveData.save_progress()
 	var tween := create_tween()
 	tween.parallel().tween_property(drill_durability, "global_position", durability_final_pos, 0.25).set_ease(Tween.EASE_IN)
 	tween.parallel().tween_property(perks_container, "global_position", Vector2(1950, 20), 0.25).set_ease(Tween.EASE_IN)

@@ -1,323 +1,252 @@
 @tool
-extends Button
+extends Node2D
 class_name UpgradeNode
-## Boton del arbol de mejoras. Solo necesitas: upgrade (StatUpgrade), icono, popup y previous_skills.
-## Encuentra el UpgradeTree y el contenedor de lineas solo subiendo por el arbol de nodos.
+## Nodo YKTD: tooltip hijo, node1/node2, compra via UpgradeManager.
 
-const INFO_POPUP := preload("res://scenes/ui/upgrade_tree/upgrade_info_popup.tscn")
-const BUTTON_LINE := preload("res://scenes/ui/upgrade_tree/upgrade_line.tscn")
+signal first_purchase
+signal maxed_purchase
+signal purchased(node)
 
-signal skill_leveled
+static var show_all := false
 
-## Definicion de la mejora (.tres o sub-recurso inline con costs[] y values[]).
+const UNKNOWN_ICON = 99
+
+const GREEN_COLOR = Color("00e641")
+const YELLOW_COLOR = Color("ffdd00")
+const RED_COLOR = Color("ff4242")
+
+enum VariableType { Integer, Float, Percentage, Money }
+
 @export var upgrade: StatUpgrade
-
-@export_category("Tree")
-## Nodos que deben tener al menos 1 nivel antes de mostrar este boton.
-@export var previous_skills: Array[UpgradeNode] = []
-
-@export_category("Display")
-@export var icon_tex: Texture2D:
-	set(value):
-		icon_tex = value
-		apply_icon_texture()
-
-@export_category("Popup")
+@export_multiline var upgrade_key: String = ""
 @export var popup_title: String = ""
 @export_multiline var popup_description: String = ""
-@export var highlight_word: String = ""
+@export var disabled: bool = false
+@export var upgrade_variable: String = ""
+@export var rate_variable: String = ""
+@export var tier: int = 0
+@export var variable_type := VariableType.Integer
+@export var icon_index: int = 0
+@export var current_level: int = 0
+@export var maximum_level: int = 10
+@export var cost_ore: int = Ores.GOLD
+@export var upgrade_price: UpgradePrice
+@export var node1: UpgradeNode
+@export var node1_max_level := false
+@export var node2: UpgradeNode
+@export var node2_max_level := false
+@export var left_neighbor: UpgradeNode
+@export var top_neighbor: UpgradeNode
+@export var right_neighbor: UpgradeNode
+@export var bottom_neighbor: UpgradeNode
 
-@onready var node_icon: TextureRect = %NodeIcon
-@onready var background: Panel = $Background
-
-var hover_tween: Tween
-var level: int = 0
-var max_level: int = 0
-var connection_lines: Array[UpgradeLine] = []
-
-
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings := PackedStringArray()
-
-	if upgrade == null:
-		warnings.append("Asigna un StatUpgrade (id + costs + values).")
-	elif upgrade.get_max_level() <= 0:
-		warnings.append("El StatUpgrade no tiene niveles: rellena costs y values.")
-
-	if popup_title.is_empty():
-		warnings.append("popup_title vacio: el hover no mostrara titulo.")
-
-	return warnings
-
-
-func apply_icon_texture() -> void:
-	var icon_node := get_node_or_null("TextureRect")
-	if icon_node != null and icon_tex != null:
-		icon_node.texture = icon_tex
+@onready var tooltip = $Tooltip
+@onready var button = $Button
+@onready var icon = $Button / Icon
+@onready var tier_label = %TierLabel
 
 
-func get_owner_tree() -> UpgradeTree:
-	var current: Node = self
-	while current != null:
-		if current is UpgradeTree:
-			return current as UpgradeTree
-		current = current.get_parent()
-	return null
+func _ready():
+	if not Engine.is_editor_hint():
+		tooltip.visible = true
+		if upgrade != null:
+			maximum_level = upgrade.get_max_level()
+			current_level = UpgradeManager.get_level(upgrade.id)
 
 
-func get_lines_container() -> Node2D:
-	var owner_tree := get_owner_tree()
-	if owner_tree != null:
-		return owner_tree.lines_container
-	return null
-
-
-func on_prerequisite_leveled() -> void:
-	# Unlock lo anima UpgradeTree en EventBus.upgrade_purchased (si mostramos aqui, no hay cascada).
-	if visible:
-		update_line()
-
-
-## True si este nodo deberia estar disponible (todos los previous comprados al menos 1 vez).
-func are_prerequisites_met() -> bool:
-	if previous_skills.is_empty():
-		return true
-	for prev in previous_skills:
-		if prev != null and prev.level <= 0:
-			return false
-	return true
-
-
-## Desbloqueo progresivo: visible solo si are_prerequisites_met(). Devuelve true si acaba de mostrarse.
-func check_prerequisites() -> bool:
-	var was_visible := visible
-
-	if are_prerequisites_met():
-		show()
-		disabled = false
-		apply_availability_visual()
-		return not was_visible
-
-	hide()
-	disabled = true
-	return false
-
-
-## Comprados a brillo normal; disponibles aun no comprados mas oscuros.
-func apply_availability_visual() -> void:
-	if not visible:
+func _process(_delta):
+	if icon.hframes * icon.vframes <= 1:
 		return
-	var owner_tree := get_owner_tree()
-	var dim := 0.55
-	if owner_tree != null:
-		dim = owner_tree.unpurchased_dim
-	if level > 0:
-		modulate = Color(1.0, 1.0, 1.0, 1.0)
+	if not Engine.is_editor_hint():
+		icon.frame = UNKNOWN_ICON if is_previewed() else icon_index
 	else:
-		modulate = Color(dim, dim, dim, 1.0)
+		icon.frame = icon_index
 
 
-func set_level(value: int) -> void:
-	level = clampi(value, 0, max_level)
-	apply_availability_visual()
-	if level > 0:
-		skill_leveled.emit()
-	update_line()
+## Gamepad: vecinos a 75px, cableados por RecalculateNeighbors.
+func setup_neighbors():
+	if left_neighbor:
+		button.button.set_focus_neighbor(SIDE_LEFT, button.button.get_path_to(left_neighbor.button.button))
+	if top_neighbor:
+		button.button.set_focus_neighbor(SIDE_TOP, button.button.get_path_to(top_neighbor.button.button))
+	if right_neighbor:
+		button.button.set_focus_neighbor(SIDE_RIGHT, button.button.get_path_to(right_neighbor.button.button))
+	if bottom_neighbor:
+		button.button.set_focus_neighbor(SIDE_BOTTOM, button.button.get_path_to(bottom_neighbor.button.button))
 
 
-## Crea las lineas de conexion si faltan (sin tocar visibilidad/color de gameplay).
-func ensure_connection_lines() -> void:
-	var lines_parent := get_lines_container()
-	if lines_parent == null or previous_skills.is_empty():
-		return
-	if not connection_lines.is_empty():
-		return
+## Visibilidad, colores (verde/rojo/amarillo) y texto del tooltip hijo.
+func update_status():
+	visible = (not disabled and (is_shown() or is_previewed())) or show_all
 
-	for prev in previous_skills:
-		if prev == null:
-			continue
-		var new_line: UpgradeLine = BUTTON_LINE.instantiate()
-		new_line.from_button = prev
-		new_line.to_button = self
-		lines_parent.add_child(new_line)
-		connection_lines.append(new_line)
+	tier_label.visible = tier > 0 and is_shown()
+	tier_label.text = get_roman_numeral(tier)
 
+	var title_text = popup_title if popup_title != "" else upgrade_key
+	var desc_text = popup_description
+	var progress_text = " (%d/%d)" % [current_level, maximum_level]
 
-func update_line() -> void:
-	var lines_parent := get_lines_container()
-	if lines_parent == null:
-		return
+	if is_shown():
+		tooltip.title = title_text + progress_text
+	else:
+		tooltip.title = title_text
 
-	var owner_tree := get_owner_tree()
-	if owner_tree != null and owner_tree.is_revealing:
-		return
+	var current_upgrade = get_current_upgrade()
+	var rate_value = get_rate_value()
+	if rate_value != 0.0 or current_upgrade != 0.0:
+		var future_upgrade = current_upgrade + rate_value
+		var current_upgrade_text = format_variable(current_upgrade)
+		var rate_value_text = format_variable(rate_value)
+		var future_upgrade_text = format_variable(future_upgrade)
 
-	ensure_connection_lines()
-	apply_tree_line_style(owner_tree)
+		current_upgrade_text = current_upgrade_text.replace("-", "")
+		rate_value_text = rate_value_text.replace("-", "")
+		future_upgrade_text = future_upgrade_text.replace("-", "")
 
-	var is_maxed := level >= max_level
-	var has_points := level > 0
-	var can_afford := false
+		if desc_text.contains("{stat_amount}"):
+			desc_text = desc_text.replace("{stat_amount}", rate_value_text)
+		elif desc_text.contains("%s"):
+			desc_text = desc_text % rate_value_text
 
-	if not is_maxed and upgrade != null:
-		can_afford = can_purchase()
-
-	for i in range(previous_skills.size()):
-		if i >= connection_lines.size():
-			break
-		var prev := previous_skills[i]
-		var current_line := connection_lines[i]
-		if prev != null and prev.level > 0 and is_visible_in_tree() and owner_tree != null:
-			current_line.visible = current_line.grow_progress >= 1.0
-			current_line.apply_style(owner_tree.line_width, resolve_line_color(is_maxed, can_afford, has_points), owner_tree.line_cap_mode)
+		if current_level < maximum_level:
+			desc_text += "\n%s > %s" % [current_upgrade_text, future_upgrade_text]
 		else:
-			current_line.hide()
+			desc_text += "\n%s" % [current_upgrade_text]
+
+	if current_level < maximum_level:
+		var owned = CurrencyManager.get_ore_amount(Ores.get_id(get_cost_ore()))
+		desc_text += "\n%d/%d" % [owned, get_current_price()]
+	else:
+		desc_text += "\n[color=ffe524]MAXED[/color]"
+
+	if is_shown():
+		tooltip.description = desc_text
+	elif node1 != null and node1_max_level:
+		tooltip.description = "Requires maxed %s" % [node1.popup_title if node1.popup_title != "" else node1.upgrade_key]
+
+	button.modulate = Color("404040") if current_level == 0 else Color.WHITE
+	icon.modulate = Color("c0c0c0") if current_level == 0 else Color("808080")
+
+	if current_level == maximum_level:
+		button.disabled = true
+		button.set_border_color(YELLOW_COLOR)
+	elif can_afford() and not is_locked():
+		button.disabled = false
+		button.set_border_color(GREEN_COLOR)
+	else:
+		button.disabled = true
+		button.set_border_color(RED_COLOR)
 
 
-func apply_tree_line_style(owner_tree: UpgradeTree) -> void:
-	if owner_tree == null:
-		return
-	for line in connection_lines:
-		line.apply_style(owner_tree.line_width, owner_tree.line_color_locked, owner_tree.line_cap_mode)
-
-
-func resolve_line_color(is_maxed: bool, can_afford: bool, has_points: bool) -> Color:
-	var owner_tree := get_owner_tree()
-	if owner_tree == null:
-		return Color.WHITE
-	if is_maxed:
-		return owner_tree.line_color_owned
-	return owner_tree.line_color_owned
-
-
-func can_purchase() -> bool:
-	return UpgradeManager.can_purchase(upgrade)
-
-
-## Texto de costo para el popup: "12 gold".
-func format_ore_cost(amount: int) -> String:
-	if upgrade == null:
-		return str(amount)
-	return "%s" % [amount]
-
-
-func get_safe_level_index(level_index: int) -> int:
-	if max_level <= 0:
-		return 0
-	return clampi(level_index, 0, max_level - 1)
-
-
-func get_level_value(level_index: int) -> float:
-	if upgrade == null:
-		return 0.0
-	return upgrade.get_value(get_safe_level_index(level_index))
-
-
-func format_stat_value(raw_value: float) -> String:
-	if upgrade == null:
-		return str(raw_value)
-
-	var type := upgrade.display_type
-	if type == StatUpgrade.OperationMode.PERCENT:
-		return str(int(round(abs(raw_value) * 100.0))) + "%"
-	if type == StatUpgrade.OperationMode.MULTIPLIER:
-		return "x" + format_number(raw_value)
-	return format_number(raw_value)
-
-
-func format_number(value: float) -> String:
-	if is_equal_approx(value, round(value)):
-		return str(int(value))
+func format_variable(value: float) -> String:
+	if variable_type == VariableType.Integer:
+		return "%d" % value
+	if variable_type == VariableType.Float:
+		return "%.1f" % value
+	if variable_type == VariableType.Percentage:
+		return str(int(round(abs(value) * 100.0))) + "%"
 	return str(value)
 
 
-func get_popup_description(level_index: int) -> String:
-	var safe_index := get_safe_level_index(level_index)
-	var description_text := popup_description
-	var amount_str := format_stat_value(get_level_value(safe_index))
-	description_text = description_text.replace("{stat_amount}", amount_str)
-	if highlight_word != "":
-		description_text = description_text.replace("{highlight_word}", highlight_word)
-	return description_text
+func get_current_upgrade():
+	if upgrade != null:
+		var accumulated := 0.0
+		for i in range(current_level):
+			accumulated += upgrade.get_value(i)
+		return accumulated
+	return 0.0
 
 
-func update_skill_info() -> void:
-	var owner_tree := get_owner_tree()
-	if owner_tree == null or upgrade == null:
+func get_rate_value():
+	if upgrade != null and current_level < maximum_level:
+		return upgrade.get_value(current_level)
+	return 0.0
+
+
+func get_cost_ore() -> int:
+	if upgrade != null:
+		return upgrade.cost_ore
+	return cost_ore
+
+
+func can_afford() -> bool:
+	return CurrencyManager.can_afford_ore_type(get_cost_ore(), get_current_price())
+
+
+func at_max():
+	return current_level == maximum_level
+
+
+func is_previewed():
+	return is_locked() and ((node1 != null and node1.current_level > 0 and node1_max_level) or (node2 != null and node2.current_level > 0 and node2_max_level))
+
+
+func is_shown():
+	return not is_locked()
+
+
+func is_locked():
+	var locked = false
+	locked = locked or (node1 != null and node1.current_level < (node1.maximum_level if node1_max_level else 1))
+	locked = locked or (node2 != null and node2.current_level < (node2.maximum_level if node2_max_level else 1))
+	return locked
+
+
+func grab_focus():
+	button.grab_focus()
+
+
+func get_progress():
+	return float(current_level) / float(maximum_level)
+
+
+func get_current_price():
+	if upgrade != null:
+		return upgrade.get_cost(current_level)
+	if upgrade_price != null:
+		return upgrade_price.calculate(current_level)
+	return 0
+
+
+func spawn():
+	button.spawn()
+
+
+func get_roman_numeral(n: int) -> String:
+	const NUMERALS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+	if n >= 0 and n < NUMERALS.size():
+		return NUMERALS[n]
+	return str(n)
+
+
+func _on_button_pressed():
+	if upgrade != null:
+		if not UpgradeManager.purchase(upgrade):
+			return
+		var previous_level = current_level
+		current_level = UpgradeManager.get_level(upgrade.id)
+		purchased.emit(self)
+		if previous_level == 0:
+			first_purchase.emit()
+		if current_level == maximum_level:
+			maxed_purchase.emit()
 		return
 
-	var accumulated := 0.0
-	for i in range(level):
-		accumulated += get_level_value(i)
-
-	var first_stat := get_level_value(0)
-	var has_stats := first_stat != 0.0
-	var stat_1 := format_stat_value(accumulated)
-	var stat_2 := ""
-	var upgrade_cost := ""
-
-	if level < max_level:
-		var next_value := accumulated + get_level_value(level)
-		upgrade_cost = format_ore_cost(upgrade.get_cost(level))
-		stat_2 = format_stat_value(next_value)
-	else:
-		upgrade_cost = "MAXED"
-		stat_2 = "MAXED"
-
-	var skill_description := get_popup_description(level)
-	var global_canvas_pos := get_global_transform_with_canvas().origin
-
-	owner_tree.upgrade_popup.setup_skill_text(
-		popup_title,
-		skill_description,
-		has_stats,
-		stat_1,
-		stat_2,
-		upgrade_cost,
-		str(level),
-		str(max_level),
-		highlight_word
-	)
-	owner_tree.upgrade_popup.show_panel(global_canvas_pos, size, owner_tree)
-	owner_tree.upgrade_popup.show()
+	var current_price = get_current_price()
+	if CurrencyManager.can_afford_ore_type(get_cost_ore(), current_price):
+		CurrencyManager.spend_ore_type(get_cost_ore(), current_price)
+		var previous_level = current_level
+		current_level = clamp(current_level + 1, 0, maximum_level)
+		purchased.emit(self)
+		if previous_level == 0:
+			first_purchase.emit()
+		if current_level == maximum_level:
+			maxed_purchase.emit()
 
 
-func animate_hover() -> void:
-	if hover_tween != null:
-		hover_tween.kill()
-
-	hover_tween = create_tween()
-	hover_tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	hover_tween.tween_property(background, "rotation_degrees", 10.0, 0.1)
-	hover_tween.chain()
-	hover_tween.tween_property(background, "rotation_degrees", 0.0, 0.6).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+func _on_button_mouse_entered():
+	tooltip.open()
 
 
-func animate_click_impact() -> void:
-	if hover_tween != null:
-		hover_tween.kill()
-	Springer.scale(background, -0.2)
-
-
-func _on_pressed() -> void:
-	if upgrade == null or not can_purchase():
-		return
-
-	animate_click_impact()
-	if not UpgradeManager.purchase(upgrade):
-		return
-
-	level = UpgradeManager.get_level(upgrade.id)
-	set_level(level)
-	update_skill_info()
-
-
-func _on_mouse_entered() -> void:
-	animate_hover()
-	update_skill_info()
-
-
-func _on_mouse_exited() -> void:
-	var owner_tree := get_owner_tree()
-	if owner_tree != null and owner_tree.upgrade_popup != null:
-		owner_tree.upgrade_popup.hide_panel()
+func _on_button_mouse_exited():
+	tooltip.close()

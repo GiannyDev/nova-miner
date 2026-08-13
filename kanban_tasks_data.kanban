@@ -40,6 +40,19 @@
 				"8e620b42-c806-4906-a584-dfe8500b4982",
 				"49f5ad05-f41a-43a7-aa19-eaa01185d495"
 			]
+		},
+		{
+			"uuid": "fe474f1d-7ea2-4d4c-bb8a-b47c39cb81b3",
+			"title": "Bugs",
+			"tasks": []
+		},
+		{
+			"uuid": "964e1dcd-d889-4717-b0ff-8ad0bd36fb3e",
+			"title": "Ideas",
+			"tasks": [
+				"06af1893-3cbc-41aa-9d37-e41b4d347fbe",
+				"7370d978-aca6-42ca-af72-3a91ae441d9f"
+			]
 		}
 	],
 	"tasks": [
@@ -159,6 +172,20 @@
 			"description": "",
 			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
 			"steps": []
+		},
+		{
+			"uuid": "06af1893-3cbc-41aa-9d37-e41b4d347fbe",
+			"title": "Bombas que destruyen zonas de bloques",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "7370d978-aca6-42ca-af72-3a91ae441d9f",
+			"title": "Perk: Iman",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
 		}
 	],
 	"layout": {
@@ -167,10 +194,12 @@
 				"5b43021f-a0da-4ef7-bd66-30f358f62a89"
 			],
 			[
-				"340c1644-7e07-49ee-9705-d2ea81711e9f"
+				"340c1644-7e07-49ee-9705-d2ea81711e9f",
+				"fe474f1d-7ea2-4d4c-bb8a-b47c39cb81b3"
 			],
 			[
-				"abd85776-6a27-4e7a-8995-6ab711bedb19"
+				"abd85776-6a27-4e7a-8995-6ab711bedb19",
+				"964e1dcd-d889-4717-b0ff-8ad0bd36fb3e"
 			]
 		]
 	}

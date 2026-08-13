@@ -11,3 +11,7 @@ func _ready() -> void:
 	Refs.gui = gui
 	Refs.inventory = gui.inventory
 	GameManager.curr_state = GameManager.GameStates.PLAYING
+
+
+func _exit_tree() -> void:
+	SaveData.save_progress()

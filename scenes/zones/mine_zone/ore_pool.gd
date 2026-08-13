@@ -39,6 +39,8 @@ func acquire(parent: Node) -> Ore:
 			ore.get_parent().remove_child(ore)
 		parent.add_child(ore)
 
+	ore.visible = false
+	ore.reset_physics_interpolation()
 	return ore
 
 

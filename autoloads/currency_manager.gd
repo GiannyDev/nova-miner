@@ -137,3 +137,23 @@ func has_ore_data(ore_id: String) -> bool:
 ## Snapshot para sync de UI (id -> amount) sin exponer el dict mutable.
 func get_ore_amounts_snapshot() -> Dictionary:
 	return ore_amounts.duplicate()
+
+
+## Restaura el bag desde save. No emite eventos (la UI hace sync al nacer).
+func apply_ore_amounts(saved: Dictionary) -> void:
+	ore_amounts.clear()
+	for ore_id in saved.keys():
+		var amount := int(saved[ore_id])
+		if ore_id.is_empty() or amount <= 0:
+			continue
+		ore_amounts[String(ore_id)] = amount
+
+
+## Solo ids con amount > 0, listos para JSON.
+func capture_ore_amounts() -> Dictionary:
+	var result := {}
+	for ore_id in ore_amounts.keys():
+		var amount := int(ore_amounts[ore_id])
+		if amount > 0:
+			result[String(ore_id)] = amount
+	return result

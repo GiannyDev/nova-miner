@@ -6,6 +6,6 @@
 script = ExtResource("1")
 id = "starting_ore_amount"
 stat_id = 0
-cost_ore = null
+cost_ore = 0
 costs = Array[int]([10, 20, 35, 55])
 values = Array[float]([4.0, 6.0, 8.0, 10.0])

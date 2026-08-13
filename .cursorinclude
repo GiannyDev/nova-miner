@@ -1,0 +1,2 @@
+# Indexar referencias locales aunque estén en .gitignore
+REFERENCIA/**

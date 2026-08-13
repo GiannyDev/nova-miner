@@ -1,0 +1,2 @@
+# Godot ignora esta carpeta: no importa, no parsea GDScript, no registra class_name.
+# El agente igual puede leerla por path absoluto. Ver .cursor/rules/ai-context.mdc

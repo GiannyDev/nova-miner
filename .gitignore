@@ -15,5 +15,7 @@ export_credentials.cfg
 data_*/
 mono_crash.*.json
 
-# Referencias y proyectos externos
-REFERENCIA/
+# Juegos de terceros (no commitear). El agente SÍ debe leerlos: ver .cursor/rules/ai-context.mdc
+# Godot NO debe compilarlos: REFERENCIA/.gdignore (si no, class_name de YKTD pisan los nuestros).
+REFERENCIA/**
+!REFERENCIA/.gdignore

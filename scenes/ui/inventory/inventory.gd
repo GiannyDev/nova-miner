@@ -32,13 +32,17 @@ func _exit_tree() -> void:
 		EventBus.ore_amount_changed.disconnect(_on_ore_amount_changed)
 
 
-## Reconstruye filas desde el bag del CurrencyManager (safe si UI nace tarde).
+## Reconstruye filas desde el bag, en el orden del catalogo (raw luego refined).
 func sync_from_currency_manager() -> void:
 	var snapshot := CurrencyManager.get_ore_amounts_snapshot()
+	for ore_data in CurrencyManager.currency_data.get_catalog_ores():
+		if ore_data == null or ore_data.id.is_empty():
+			continue
+		var amount := int(snapshot.get(ore_data.id, 0))
+		snapshot.erase(ore_data.id)
+		apply_ore_amount(ore_data, ore_data.id, amount)
 	for ore_id in snapshot.keys():
-		var amount: int = int(snapshot[ore_id])
-		var ore_data: OreData = CurrencyManager.get_ore_data(ore_id)
-		apply_ore_amount(ore_data, ore_id, amount)
+		apply_ore_amount(CurrencyManager.get_ore_data(String(ore_id)), String(ore_id), int(snapshot[ore_id]))
 	update_panel_visibility()
 
 

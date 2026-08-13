@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://doo84wqhoahuw" path="res://scenes/ui/levels_menu/level_card.gd" id="2_j3bhq"]
 [ext_resource type="Resource" uid="uid://bbt1ycabk7f3n" path="res://data/levels/mine_01.tres" id="3_s5ev8"]
 [ext_resource type="Texture2D" uid="uid://cesirwjp1rny6" path="res://sprites/Selector.png" id="4_bd5to"]
+[ext_resource type="PackedScene" uid="uid://bvlljbcp5vqru" path="res://scenes/ui/levels_menu/floor_button.tscn" id="4_spt12"]
 [ext_resource type="Texture2D" uid="uid://ceja5kmm0ebic" path="res://sprites/ShopLock.png" id="5_115ed"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
@@ -103,43 +104,8 @@ custom_minimum_size = Vector2(420, 170)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ad6r8")
 
-[node name="Floor1Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=2061901643]
-custom_minimum_size = Vector2(150, 150)
+[node name="Floor1Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=688503878 instance=ExtResource("4_spt12")]
 layout_mode = 2
-size_flags_horizontal = 10
-size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_m156b")
-
-[node name="Selector" type="TextureRect" parent="Margin/VBoxContainer/Levels/Level1/Floor1Button" unique_id=678825578]
-visible = false
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -11.0
-offset_top = -12.0
-offset_right = 11.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("4_bd5to")
-expand_mode = 1
-
-[node name="Label" type="Label" parent="Margin/VBoxContainer/Levels/Level1/Floor1Button" unique_id=1549216779]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -35.0
-offset_bottom = -5.5
-grow_horizontal = 2
-grow_vertical = 0
-text = "100m"
-label_settings = SubResource("LabelSettings_m156b")
-horizontal_alignment = 1
 
 [node name="Floor2Button" type="Button" parent="Margin/VBoxContainer/Levels/Level1" unique_id=424240464]
 custom_minimum_size = Vector2(150, 150)

@@ -212,6 +212,7 @@ func animate_buttons_in() -> void:
 
 
 func _on_home_button_pressed() -> void:
+	SaveData.save_progress()
 	await Transition.fade_out(1.0)
 	get_tree().change_scene_to_file("res://scenes/zones/base_zone/base_zone.tscn")
 	await Transition.fade_in(1.0)
@@ -223,6 +224,7 @@ func _on_home_button_mouse_entered() -> void:
 
 
 func _on_play_button_pressed() -> void:
+	SaveData.save_progress()
 	await Transition.fade_out(1.0)
 	get_tree().change_scene_to_file("res://scenes/zones/mine_zone/mine_zone.tscn")
 	await Transition.fade_in(1.0)

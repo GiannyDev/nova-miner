@@ -5,6 +5,5 @@
 [resource]
 script = ExtResource("1")
 id = "attack_left"
-cost_ore = null
 costs = Array[int]([10, 20, 35])
 values = Array[float]([2.0, 3.0, 5.0])

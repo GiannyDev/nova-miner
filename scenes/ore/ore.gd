@@ -64,7 +64,7 @@ func take_damage(amount: float) -> void:
 		destroy()
 		return
 
-	show_mine_animation()
+	Springer.squash(visuals, 0.1, -0.1)
 	refresh_hp_sprite()
 
 
@@ -74,10 +74,6 @@ func destroy_instant() -> void:
 		return
 	current_hp = 0.0
 	destroy()
-
-
-func show_mine_animation() -> void:
-	Springer.squash(visuals, 0.1, -0.1)
 
 
 ## Cambia el sprite segun el % de HP restante (100 / 75 / 50 / 25).
@@ -95,14 +91,16 @@ func refresh_hp_sprite() -> void:
 
 ## Marca el bloque como minado, suelta drops y avisa. El pool decide cuando reciclarlo.
 func destroy() -> void:
-	if is_destroyed:
-		return
+	if is_destroyed: return
 	is_destroyed = true
 
-	# Hide YA (mid-squash). Nunca resetear scale a 1 mientras es visible — eso causaba el flick.
+	# Hide + cortar tweens YA. Si el pool reusa esta instancia, no debe interpolar desde aqui.
+	kill_spawn_tween()
 	Springer.kill_on(visuals)
+	Springer.kill_on(self)
 	visible = false
 	set_collision_enabled(false)
+	reset_physics_interpolation()
 
 	if grid != null:
 		grid.remove_stack_occupation(grid_cell)
@@ -112,35 +110,43 @@ func destroy() -> void:
 	destroyed.emit(self)
 
 
-## Contrato de pool: deja el bloque listo para volver a minarse.
+## Contrato de pool: stats/colliders listos. Visible lo pone el spawner DESPUES de teleportear.
 func on_spawned() -> void:
 	is_destroyed = false
 	current_hp = max_hp
-	visible = true
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	visible = false
 	scale = Vector2.ONE
 	if visuals != null:
 		visuals.scale = Vector2.ONE
 	refresh_hp_sprite()
 	set_collision_enabled(true)
+	reset_physics_interpolation()
 
 
 ## Contrato de pool: lo apaga sin liberarlo (lo saca de vista y de la fisica).
 func on_despawned() -> void:
 	kill_spawn_tween()
+	Springer.kill_on(visuals)
+	Springer.kill_on(self)
 	visible = false
 	set_collision_enabled(false)
+	reset_physics_interpolation()
 	grid = null
 
 
-## "Plop" de aparicion mid-run. El tween vive en el bloque para poder matarlo al reciclarlo.
+## "Plop" de aparicion mid-run. Visible recien en scale 0 para no mostrar un frame a size completo.
 func play_spawn_animation(duration: float) -> void:
 	kill_spawn_tween()
+	reset_physics_interpolation()
 
 	if duration <= 0.0:
 		scale = Vector2.ONE
+		visible = true
 		return
 
 	scale = Vector2.ZERO
+	visible = true
 	spawn_tween = create_tween()
 	spawn_tween.tween_property(self, "scale", Vector2.ONE, duration)\
 		.set_trans(Tween.TRANS_BACK)\
@@ -151,6 +157,8 @@ func play_spawn_animation(duration: float) -> void:
 func prepare_intro_collapsed() -> void:
 	kill_spawn_tween()
 	scale = Vector2(1.0, 0.0)
+	visible = true
+	reset_physics_interpolation()
 
 
 ## Crece de abajo hacia arriba (origen del ore = pies).

@@ -14,7 +14,6 @@ enum {
 	DRILL_DURABILITY_MAX,
 	PICKUP_RADIUS,
 	INVENTORY_SIZE,
-	FUEL,
 	DEPOSIT_TIME,
 	REFINEMENT_TIME,
 	HELPERS_UNLOCKED,
@@ -49,8 +48,6 @@ static func get_name(stat_id: int) -> String:
 			return "pickup_radius"
 		INVENTORY_SIZE:
 			return "inventory_size"
-		FUEL:
-			return "fuel"
 		DEPOSIT_TIME:
 			return "deposit_time"
 		REFINEMENT_TIME:
@@ -81,7 +78,6 @@ static func all_ids() -> Array[int]:
 		DRILL_DURABILITY_MAX,
 		PICKUP_RADIUS,
 		INVENTORY_SIZE,
-		FUEL,
 		DEPOSIT_TIME,
 		REFINEMENT_TIME,
 		HELPERS_UNLOCKED,

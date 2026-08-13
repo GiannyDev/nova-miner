@@ -23,7 +23,6 @@ var drill_durability_drain_per_frame: float = 5.0
 
 var player_stats_base: StatsData
 
-
 func _ready() -> void:
 	init_locale()
 	init_player_stats()
@@ -107,6 +106,9 @@ func get_refined_id(raw_ore_id: String) -> String:
 
 
 func is_refined_id(ore_id: String) -> bool:
+	var ore_data := CurrencyManager.get_ore_data(ore_id)
+	if ore_data != null:
+		return ore_data.is_refined
 	return ore_id.ends_with(REFINED_ORE_SUFFIX)
 
 

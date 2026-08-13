@@ -1,0 +1,8 @@
+class_name Sound
+
+enum {
+	BUTTON_HOVER,
+	BUTTON_CLICK,
+	PLAYER_DRILL,
+	UI_PANEL_POP
+}

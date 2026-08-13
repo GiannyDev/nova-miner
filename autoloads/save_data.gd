@@ -1,5 +1,5 @@
 extends Node
-## Persistencia: upgrades, stats, records de run + backup del JSON.
+## Persistencia: upgrades, stats, bag de ores, records de run + backup del JSON.
 ## user://nova_miner_save.json (+ .bak.json)
 
 const SAVE_PATH := "user://nova_miner_save.json"
@@ -9,6 +9,8 @@ const SAVE_BACKUP_PATH := "user://nova_miner_save.bak.json"
 var upgrade_levels: Dictionary = {}
 ## Stats enum int (como String key en JSON) -> float
 var stat_values: Dictionary = {}
+## ore_id -> amount (raw y refined).
+var ore_amounts: Dictionary = {}
 
 ## Mejores marcas de run (records del recap).
 var record_blocks_mined: int = 0
@@ -24,12 +26,14 @@ func save_progress() -> void:
 	if GameManager.player_stats != null:
 		stat_values = capture_stats(GameManager.player_stats)
 	upgrade_levels = UpgradeManager.levels.duplicate()
+	ore_amounts = CurrencyManager.capture_ore_amounts()
 
 	backup_existing_save()
 
 	var payload := {
 		"upgrade_levels": upgrade_levels,
 		"stat_values": stringify_keys(stat_values),
+		"ores": ore_amounts.duplicate(),
 		"records": {
 			"blocks_mined": record_blocks_mined,
 			"damage_dealt": record_damage_dealt,
@@ -82,6 +86,7 @@ func try_load_from(path: String) -> bool:
 func apply_payload(data: Dictionary) -> void:
 	upgrade_levels = data.get("upgrade_levels", {})
 	stat_values = parse_stat_keys(data.get("stat_values", {}))
+	ore_amounts = parse_ore_amounts(data.get("ores", {}))
 
 	var records: Dictionary = data.get("records", {})
 	record_blocks_mined = int(records.get("blocks_mined", 0))
@@ -89,6 +94,7 @@ func apply_payload(data: Dictionary) -> void:
 	record_distance_traveled = float(records.get("distance_traveled", 0.0))
 
 	UpgradeManager.load_levels(upgrade_levels)
+	CurrencyManager.apply_ore_amounts(ore_amounts)
 	if GameManager.player_stats != null and not stat_values.is_empty():
 		apply_stats(GameManager.player_stats, stat_values)
 		GameManager.repair_drill_full()
@@ -128,6 +134,16 @@ func capture_stats(stats: StatsData) -> Dictionary:
 func apply_stats(stats: StatsData, values: Dictionary) -> void:
 	for key in values.keys():
 		stats.set_stat(int(key), float(values[key]))
+
+
+func parse_ore_amounts(source: Dictionary) -> Dictionary:
+	var result := {}
+	for key in source.keys():
+		var amount := int(source[key])
+		if String(key).is_empty() or amount <= 0:
+			continue
+		result[String(key)] = amount
+	return result
 
 
 ## JSON solo soporta keys string.

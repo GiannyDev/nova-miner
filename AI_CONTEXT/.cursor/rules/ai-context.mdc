@@ -40,3 +40,9 @@ Current docs:
 - Infinite mine generation: ores spawn in a radius near the player while moving — optimize for this hot path.
 - UpgradeTree, WeaponShop, CompanionWorkshop — upgrades configurable via Resources (speed, dash, ore count, spawn-on-destroy, etc.).
 - Use Godot MCP to verify functionality or failures after significant changes (`04_Configuraciones.md`).
+
+## Referencia local (gitignored, SIEMPRE legible)
+
+`REFERENCIA/` está en `.gitignore` para no commitear juegos de terceros. Eso **no** restringe al agente: leé esa carpeta (path absoluto o shell) cuando compares sistemas, feel o upgrades. Hoy: `REFERENCIA/You Know the Drill! Demo/`.
+
+Godot **no** debe importar ni parsear esa carpeta (chocan `class_name`). Hay `REFERENCIA/.gdignore`. Nunca copies scripts de REFERENCIA al proyecto sin renombrar classes.

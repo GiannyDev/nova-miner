@@ -8,7 +8,6 @@ var levels: Dictionary = {}
 func _ready() -> void:
 	pass
 
-
 ## Nivel actual de un upgrade por su id de save.
 func get_level(upgrade_id: String) -> int:
 	return int(levels.get(upgrade_id, 0))

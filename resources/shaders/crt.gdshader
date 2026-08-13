@@ -47,7 +47,7 @@ vec2 distort(vec2 p)
 
 float filmGrainNoise(in float time, in vec2 uv)
 {
-    return fract(sin(dot(uv, vec2(12.9898, 78.233) * time)) * 43758.5453);
+	return fract(sin(dot(uv, vec2(12.9898, 78.233) * time)) * 43758.5453);
 }
 
 float v2random(vec2 uv) {
@@ -55,28 +55,28 @@ float v2random(vec2 uv) {
 }
 
 float onOff(float a, float b, float c, float framecount) {
-    return step(c, sin((framecount * 0.001) + a * cos((framecount * 0.001) * b)));
+	return step(c, sin((framecount * 0.001) + a * cos((framecount * 0.001) * b)));
 }
 
 vec2 Circle(float Start, float Points, float Point) {
-    float Rad = (3.141592 * 2.0 * (1.0 / Points)) * (Point + Start);
-    return vec2(-(.3 + Rad), cos(Rad));
+	float Rad = (3.141592 * 2.0 * (1.0 / Points)) * (Point + Start);
+	return vec2(-(.3 + Rad), cos(Rad));
 }
 
 vec3 rgb2yiq(vec3 c) {
-    return vec3(
-        (0.2989 * c.x + 0.5959 * c.y + 0.2115 * c.z),
-        (0.5870 * c.x - 0.2744 * c.y - 0.5229 * c.z),
-        (0.1140 * c.x - 0.3216 * c.y + 0.3114 * c.z)
-    );
+	return vec3(
+		(0.2989 * c.x + 0.5959 * c.y + 0.2115 * c.z),
+		(0.5870 * c.x - 0.2744 * c.y - 0.5229 * c.z),
+		(0.1140 * c.x - 0.3216 * c.y + 0.3114 * c.z)
+	);
 }
 
 vec3 yiq2rgb(vec3 c) {
-    return vec3(
-        (1.0 * c.x + 1.0 * c.y + 1.0 * c.z),
-        (0.956 * c.x - 0.2720 * c.y - 1.1060 * c.z),
-        (0.6210 * c.x - 0.6474 * c.y + 1.7046 * c.z)
-    );
+	return vec3(
+		(1.0 * c.x + 1.0 * c.y + 1.0 * c.z),
+		(0.956 * c.x - 0.2720 * c.y - 1.1060 * c.z),
+		(0.6210 * c.x - 0.6474 * c.y + 1.7046 * c.z)
+	);
 }
 
 vec3 Blur(vec2 uv, float d, int samples) {
@@ -88,14 +88,14 @@ vec3 Blur(vec2 uv, float d, int samples) {
 
 		t = 0.0;
 		vec2 PixelOffset = vec2(d + 0.0005 * t, 0);
-        
+		
 		float Start = 2.0 / float(samples);
 		vec2 Scale = 0.66 * 4.0 * 2.0 * PixelOffset.xy;
-        
+		
 		vec3 N = texture(screen_texture, uv + Circle(Start, float(samples), float(i)) * Scale).rgb;
 		sum += N * W;
-    }
-    return sum;
+	}
+	return sum;
 }
 
 void fragment()
