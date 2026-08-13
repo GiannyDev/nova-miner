@@ -1,5 +1,6 @@
 @tool
 extends Node2D
+class_name NodeButton
 
 signal pressed
 signal mouse_entered

@@ -4,15 +4,21 @@
 [ext_resource type="Script" uid="uid://dshslb6vna04q" path="res://scripts/juice/juice_2d.gd" id="3"]
 [ext_resource type="Script" uid="uid://dgrsenrp10yn6" path="res://scripts/juice/damped_spring_data.gd" id="4"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b5j4s"]
-bg_color = Color(0, 0, 0, 0.882353)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xonjq"]
+bg_color = Color(0.2520276, 0.25202766, 0.25202763, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5689727, 0.56897277, 0.56897265, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_ojklw"]
-color = Color(0.295867, 0.295866, 0.295866, 1)
+[sub_resource type="LabelSettings" id="LabelSettings_47oi6"]
+font_color = Color(0.3647059, 0.627451, 0.9764706, 1)
+shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
 
 [sub_resource type="Resource" id="Resource_ojklw"]
 script = ExtResource("4")
@@ -41,16 +47,19 @@ script = ExtResource("1")
 title = "Sharpness I (1/20)"
 description = "+5 sharpness
 1000/20"
+price = "20"
 
 [node name="Panel" type="PanelContainer" parent="." unique_id=604226434]
-offset_left = -86.5
-offset_top = -44.5
-offset_right = 86.5
-offset_bottom = 44.5
+z_index = 5
+offset_left = -89.5
+offset_top = -94.0
+offset_right = 89.5
+offset_bottom = 54.0
+pivot_offset_ratio = Vector2(0.5, 0.5)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_b5j4s")
+theme_override_styles/panel = SubResource("StyleBoxFlat_xonjq")
 
 [node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=348545008]
 layout_mode = 2
@@ -63,44 +72,53 @@ theme_override_constants/margin_bottom = 8
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=949598162]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = 6
 
-[node name="Title" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=1994467697]
+[node name="Title" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=1065361283]
 unique_name_in_owner = true
 texture_filter = 2
-clip_contents = false
 layout_mode = 2
-mouse_filter = 2
-bbcode_enabled = true
 text = "Sharpness I (1/20)"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
+label_settings = SubResource("LabelSettings_47oi6")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Separator" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=781448748]
+[node name="Separator" type="ColorRect" parent="Panel/MarginContainer/VBoxContainer" unique_id=1365963065]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 3)
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 1
-theme_override_styles/separator = SubResource("StyleBoxLine_ojklw")
+color = Color(0.29954743, 0.29954746, 0.29954734, 1)
 
-[node name="Description" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=277934649]
+[node name="Description" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=234504048]
 unique_name_in_owner = true
-texture_filter = 2
-clip_contents = false
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/line_separation = 2
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 text = "+5 sharpness
 1000/20"
 fit_content = true
 scroll_active = false
-autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
-visible_characters_behavior = 1
+
+[node name="Price" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=1354884026]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 20
+bbcode_enabled = true
+text = "[img=20]sprites/coin.png[/img] 20"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
 
 [node name="Juice" type="Node2D" parent="." unique_id=454331045 node_paths=PackedStringArray("target_node")]
 script = ExtResource("3")

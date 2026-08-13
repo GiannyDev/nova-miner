@@ -1,13 +1,30 @@
 [gd_scene format=3 uid="uid://bam1co12smhwc"]
 
 [ext_resource type="Script" uid="uid://dscgxwxshsbn7" path="res://scenes/ui/upgrade_tree/upgrade_node.gd" id="2"]
-[ext_resource type="PackedScene" uid="uid://66ny2e0jk6kh" path="res://scenes/ui/upgrade_tree/tooltip_2d.tscn" id="2_itpq3"]
 [ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2_jtecs"]
-[ext_resource type="PackedScene" uid="uid://brjm8rdokwo0m" path="res://scenes/ui/upgrade_tree/button_2d.tscn" id="3_m4w7h"]
-[ext_resource type="Script" uid="uid://dgrsenrp10yn6" path="res://scripts/juice/damped_spring_data.gd" id="4_h4xu6"]
+[ext_resource type="AudioStream" uid="uid://chkex35lvyuc0" path="res://resources/audio/ButtonHover.ogg" id="3_80vox"]
+[ext_resource type="AudioStream" uid="uid://brbhb2vqy5c61" path="res://resources/audio/ButtonClick.ogg" id="4_v5fde"]
 [ext_resource type="FontFile" uid="uid://dn842kj2hni4p" path="res://resources/fonts/FredokaOne-Regular.ttf" id="6_yv7me"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v5fde"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_47oi6"]
+bg_color = Color(0.2520276, 0.25202766, 0.25202763, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5689727, 0.56897277, 0.56897265, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_2kpl2"]
+font_size = 24
+font_color = Color(0.36458418, 0.6271512, 0.97514755, 1)
+shadow_color = Color(0.22670749, 0.22670752, 0.22670743, 1)
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itpq3"]
 resource_local_to_scene = true
 content_margin_top = 4.0
 bg_color = Color(0, 0, 0, 1)
@@ -24,7 +41,7 @@ shadow_color = Color(0, 0, 0, 0.5)
 shadow_size = 1
 shadow_offset = Vector2(2, 2)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itpq3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m4w7h"]
 resource_local_to_scene = true
 content_margin_top = 4.0
 bg_color = Color(0, 0, 0, 1)
@@ -41,82 +58,163 @@ shadow_color = Color(0, 0, 0, 0.5)
 shadow_size = 1
 shadow_offset = Vector2(2, 2)
 
-[sub_resource type="Resource" id="Resource_l3wd4"]
-script = ExtResource("4_h4xu6")
-intensity = 0.25
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h4xu6"]
+resource_local_to_scene = true
+content_margin_top = 4.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.866667, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 1
+shadow_offset = Vector2(2, 2)
 
-[sub_resource type="Resource" id="Resource_k47y4"]
-script = ExtResource("4_h4xu6")
-damping_ratio = 0.25
-intensity = 0.25
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yv7me"]
+resource_local_to_scene = true
+content_margin_top = 4.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.866667, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 1
+shadow_offset = Vector2(2, 2)
 
-[sub_resource type="Resource" id="Resource_c64ur"]
-script = ExtResource("4_h4xu6")
-damping_ratio = 0.25
-intensity = 30.0
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_tplvl"]
+random_pitch = 1.1
+streams_count = 1
+stream_0/stream = ExtResource("4_v5fde")
 
 [node name="UpgradeNode" type="Node2D" unique_id=716396488]
 script = ExtResource("2")
+upgrade_key = "AttackRight"
+popup_title = "AttackRight"
+popup_description = "Increase drill damage by {stat_amount}."
+tooltip_lift = 120.0
 
-[node name="Tooltip" parent="." unique_id=1587152840 instance=ExtResource("2_itpq3")]
-visible = false
-z_index = 2
-z_as_relative = false
-position = Vector2(0, -64)
-title = ""
-description = ""
+[node name="TooltipHost" type="Node2D" parent="." unique_id=1667975177]
+unique_name_in_owner = true
+z_index = 5
+position = Vector2(0, -80)
 
-[node name="Button" parent="." unique_id=1270974886 instance=ExtResource("3_m4w7h")]
-button_text = ""
-normal_color = Color(0, 0, 0, 1)
-disabled_color = Color(0, 0, 0, 1)
-border_color = Color(1, 0.866667, 0, 1)
-border_width = 2.0
+[node name="Tooltip" type="PanelContainer" parent="TooltipHost" unique_id=280358847]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(200, 0)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_47oi6")
 
-[node name="Button" parent="Button" index="0" unique_id=1695782264]
-texture_filter = 1
+[node name="MarginContainer" type="MarginContainer" parent="TooltipHost/Tooltip" unique_id=1147231602]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TooltipHost/Tooltip/MarginContainer" unique_id=1623625522]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="TooltipHost/Tooltip/MarginContainer/VBoxContainer" unique_id=239243343]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player Speed"
+label_settings = SubResource("LabelSettings_2kpl2")
+horizontal_alignment = 1
+
+[node name="Separator" type="ColorRect" parent="TooltipHost/Tooltip/MarginContainer/VBoxContainer" unique_id=590350617]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.29954743, 0.29954746, 0.29954734, 1)
+
+[node name="Description" type="RichTextLabel" parent="TooltipHost/Tooltip/MarginContainer/VBoxContainer" unique_id=103180230]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_font_sizes/normal_font_size = 20
+bbcode_enabled = true
+text = "Esta es una descripcion 
+de prueba"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Price" type="RichTextLabel" parent="TooltipHost/Tooltip/MarginContainer/VBoxContainer" unique_id=2084737752]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "[img=32]sprites/coin.png[/img] 20"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="." unique_id=327377704]
 custom_minimum_size = Vector2(32, 32)
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
 offset_bottom = 16.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_v5fde")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_itpq3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_itpq3")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_itpq3")
+pivot_offset = Vector2(16, 16)
+theme_override_styles/normal = SubResource("StyleBoxFlat_itpq3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_m4w7h")
+theme_override_styles/hover = SubResource("StyleBoxFlat_h4xu6")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_yv7me")
 
-[node name="Label" parent="Button/Button" index="0" unique_id=523616715]
-visible = false
-texture_filter = 1
-text = ""
-
-[node name="Juice" parent="Button" index="1" unique_id=2011387995]
-animate_position = false
-animate_rotation = false
-animate_spawn = true
-jiggle_animation = SubResource("Resource_l3wd4")
-squash_animation = SubResource("Resource_k47y4")
-spawn_animation = SubResource("Resource_c64ur")
-
-[node name="Icon" type="Sprite2D" parent="Button" unique_id=1510368021]
-modulate = Color(0.5, 0.5, 0.5, 1)
-texture_filter = 2
-scale = Vector2(0.2, 0.2)
+[node name="Icon" type="Sprite2D" parent="Button" unique_id=1014599213]
+unique_name_in_owner = true
+self_modulate = Color(0.5019608, 0.5019608, 0.5019608, 1)
+position = Vector2(15.999999, 15.900001)
+scale = Vector2(0.2, 0.20156248)
 texture = ExtResource("2_jtecs")
+
+[node name="Hover" type="AudioStreamPlayer" parent="Button" unique_id=864945108]
+stream = ExtResource("3_80vox")
+volume_db = 12.0
+bus = &"SFX"
+
+[node name="Click" type="AudioStreamPlayer" parent="Button" unique_id=885904997]
+stream = SubResource("AudioStreamRandomizer_tplvl")
+bus = &"SFX"
 
 [node name="TierLabel" type="Label" parent="Button" unique_id=845247307]
 unique_name_in_owner = true
 visible = false
 texture_filter = 2
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = 1.0
-offset_top = 3.0
+offset_top = -1.333333
 offset_right = 16.0
-offset_bottom = 14.0
+offset_bottom = 18.333332
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/outline_size = 4
@@ -129,5 +227,3 @@ vertical_alignment = 1
 [connection signal="mouse_entered" from="Button" to="." method="_on_button_mouse_entered"]
 [connection signal="mouse_exited" from="Button" to="." method="_on_button_mouse_exited"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-
-[editable path="Button"]

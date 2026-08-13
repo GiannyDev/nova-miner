@@ -50,7 +50,7 @@ func load_node_levels() -> void:
 
 
 func update_tree():
-	for upgrade_node in upgrade_nodes.get_children():
+	for upgrade_node: UpgradeNode in upgrade_nodes.get_children():
 		upgrade_node.update_status()
 	update_progress()
 	world.queue_redraw()
@@ -83,8 +83,9 @@ func play_intro_spawn() -> void:
 		if depth > 0:
 			await get_tree().create_timer(0.05 * depth).timeout
 		var nodes = depth_map[depth]
-		for node in nodes:
-			node.spawn()
+		for node: UpgradeNode in nodes:
+			Springer.rotate(node, -12)
+			Springer.scale(node, 1.3)
 	is_spawning = false
 
 

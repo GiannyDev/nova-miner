@@ -68,11 +68,8 @@ func take_damage(amount: float) -> void:
 	refresh_hp_sprite()
 
 
-## Kill instantaneo (oneshot): sin squash, sin cambio de sprite.
+## Kill sin squash (mismo destroy; el squash solo ocurre en chips no letales).
 func destroy_instant() -> void:
-	if is_destroyed:
-		return
-	current_hp = 0.0
 	destroy()
 
 

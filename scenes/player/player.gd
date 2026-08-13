@@ -32,31 +32,27 @@ func _ready() -> void:
 	y_sort_enabled = true
 	weapon_mount.position = weapon_mount_offset
 	apply_equipped_weapon()
-	connect_drill_damage_tracking()
-	play_animation(idle_animation, true)
-	if dust_vfx != null:
-		dust_vfx.emitting = false
-
-
-func connect_drill_damage_tracking() -> void:
-	if drill_weapon != null and not drill_weapon.ore_hit.is_connected(_on_drill_ore_hit):
+	if not drill_weapon.ore_hit.is_connected(_on_drill_ore_hit):
 		drill_weapon.ore_hit.connect(_on_drill_ore_hit)
+	play_animation(idle_animation, true)
+	dust_vfx.emitting = false
 
 
 func _physics_process(delta: float) -> void:
 	if can_move():
 		get_input_direction()
 		update_facing()
-		# Un solo move_and_slide por frame; el drill lee esos slides como contacto.
-		move_player(delta)
-		update_drill_weapon(delta)
-		# Primer frame de latch: matar velocity residual sin segundo slide (evita teleporte).
-		if is_drill_engaged():
-			movement_component.clear_velocity(self)
 	else:
-		move_player(delta, true)
+		input_direction = Vector2.ZERO
+	move_player(delta)
+	update_drill_weapon(delta)
 	update_dust_vfx()
 	update_animation()
+
+
+#func _input(event: InputEvent) -> void:
+	#if event.is_action_pressed("ui_accept"):
+		#Feedbacks.do_horizontal_squash(self)
 
 
 func get_input_direction() -> void:
@@ -65,22 +61,13 @@ func get_input_direction() -> void:
 		input_direction = input_direction.normalized()
 
 
-func move_player(delta: float, decelerate_only: bool = false) -> void:
-	var direction := Vector2.ZERO if decelerate_only else input_direction
-
-	if is_drill_engaged():
-		movement_component.hard_stop(self)
-		return
-
-	movement_component.move(self, direction, delta, get_move_speed())
+func move_player(delta: float) -> void:
+	movement_component.move(self, input_direction, delta, get_move_speed())
 
 
-## Polvo detras del player mientras hay velocity; se apaga al perforar / idle.
+## Polvo detras del player mientras hay velocity.
 func update_dust_vfx() -> void:
-	if dust_vfx == null:
-		return
-
-	var moving := velocity.length() > dust_move_threshold and not is_drill_engaged()
+	var moving := velocity.length() > dust_move_threshold
 	dust_vfx.emitting = moving
 	if not moving:
 		return
@@ -104,17 +91,11 @@ func update_facing() -> void:
 
 
 func update_drill_weapon(delta: float) -> void:
-	if drill_weapon == null:
-		return
-
 	var has_move_intent := input_direction.length_squared() > 0.01
 	var attack := get_attack_damage()
-	var drill_aim := get_drill_aim_direction()
-	aim_direction = drill_aim
-	drill_weapon.set_aim_direction(drill_aim)
-	drill_weapon.set_body_push_ores(get_body_push_ores())
-	drill_weapon.update_latching(has_move_intent, attack)
-	drill_weapon.tick(attack, delta, has_move_intent)
+	aim_direction = get_drill_aim_direction()
+	drill_weapon.set_aim_direction(aim_direction)
+	drill_weapon.tick(attack, delta, has_move_intent, get_body_push_ores())
 
 
 ## Cualquier ore que el body este tocando via slide cuenta como contacto de minado.
@@ -145,25 +126,13 @@ func apply_equipped_weapon() -> void:
 	equipped_weapon = WeaponData.load_by_id(GameManager.equipped_weapon_id)
 	if equipped_weapon == null:
 		equipped_weapon = WeaponData.load_by_id("drill_basic")
-
 	sync_weapon_stats()
 
 
 func sync_weapon_stats() -> void:
 	if equipped_weapon == null:
 		return
-
-	elif drill_weapon != null:
-		drill_weapon.setup(equipped_weapon)
-
-
-func is_drill_locked() -> bool:
-	return is_drill_engaged()
-
-
-## Hold estable: perforando, grace tras soltar, o empujando contra contacto.
-func is_drill_engaged() -> bool:
-	return drill_weapon != null and drill_weapon.should_hold_player()
+	drill_weapon.setup(equipped_weapon)
 
 
 func get_move_speed() -> float:
@@ -178,12 +147,6 @@ func get_attack_damage() -> float:
 	return 10.0
 
 
-func get_attack_cooldown() -> float:
-	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat(int(Stats.PLAYER_ATTACK_COOLDOWN))
-	return 0.5
-
-
 func apply_facing_flip() -> void:
 	if absf(facing_direction.x) < 0.01:
 		return
@@ -193,12 +156,6 @@ func apply_facing_flip() -> void:
 
 
 func update_animation() -> void:
-	#if is_drill_engaged():
-		## Pose de empuje: run congelado. No swap a idle (ese cambio causaba flicker).
-		#play_animation(run_animation, true)
-		#set_animation_time_scale(0.0)
-		#return
-
 	var is_moving := velocity.length() > run_speed_threshold
 	var animation_name := run_animation if is_moving else idle_animation
 	play_animation(animation_name, true)

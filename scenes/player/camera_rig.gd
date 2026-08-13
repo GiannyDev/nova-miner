@@ -46,10 +46,6 @@ func connect_player_drill() -> void:
 	var drill := player.drill_weapon
 	if not drill.ore_hit.is_connected(_on_drill_ore_hit):
 		drill.ore_hit.connect(_on_drill_ore_hit)
-	if not drill.drilling_started.is_connected(_on_drilling_started):
-		drill.drilling_started.connect(_on_drilling_started)
-	if not drill.drilling_stopped.is_connected(_on_drilling_stopped):
-		drill.drilling_stopped.connect(_on_drilling_stopped)
 
 
 func update_lookahead(delta: float) -> void:
@@ -76,6 +72,8 @@ func update_shake(delta: float) -> void:
 
 
 func update_zoom(delta: float) -> void:
+	var player := get_parent() as Player
+	is_latched = player != null and player.drill_weapon.is_drilling()
 	var target_zoom: Vector2 = profile.latch_zoom if is_latched else profile.default_zoom
 	zoom = zoom.lerp(target_zoom, clampf(profile.zoom_smoothing * delta, 0.0, 1.0))
 
@@ -106,17 +104,9 @@ func apply_punch(strength: float, aim: Vector2) -> void:
 	punch_offset += -dir.normalized() * strength
 
 
-func _on_drill_ore_hit(_ore: Ore, _damage: float) -> void:
+func _on_drill_ore_hit(ore: Ore, _damage: float) -> void:
 	var player := get_parent() as Player
 	if player == null or profile == null:
 		return
-	var strength: float = profile.chip_punch if player.drill_weapon.is_drilling() else profile.oneshot_punch
+	var strength: float = profile.chip_punch if ore.is_alive() else profile.oneshot_punch
 	apply_punch(strength, player.aim_direction)
-
-
-func _on_drilling_started(_ore: Ore) -> void:
-	is_latched = true
-
-
-func _on_drilling_stopped() -> void:
-	is_latched = false

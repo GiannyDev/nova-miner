@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://5ltlvirwl8up"]
+
+[ext_resource type="Script" uid="uid://dge4o3v8qjv10" path="res://scenes/ui/item_popup/item_popup.gd" id="1_2kpl2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_47oi6"]
+bg_color = Color(0.2520276, 0.25202766, 0.25202763, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5689727, 0.56897277, 0.56897265, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_2kpl2"]
+font_size = 24
+font_color = Color(0.36458418, 0.6271512, 0.97514755, 1)
+shadow_color = Color(0.22670749, 0.22670752, 0.22670743, 1)
+shadow_offset = Vector2(2, 2)
+
+[node name="ItemPopup" type="PanelContainer" unique_id=1481292749]
+custom_minimum_size = Vector2(300, 0)
+offset_right = 300.0
+offset_bottom = 163.0
+pivot_offset_ratio = Vector2(0.5, 0.5)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_47oi6")
+script = ExtResource("1_2kpl2")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1147231602]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1623625522]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer" unique_id=239243343]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player Speed"
+label_settings = SubResource("LabelSettings_2kpl2")
+horizontal_alignment = 1
+
+[node name="Separator" type="ColorRect" parent="MarginContainer/VBoxContainer" unique_id=590350617]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.29954743, 0.29954746, 0.29954734, 1)
+
+[node name="Description" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=103180230]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_font_sizes/normal_font_size = 30
+bbcode_enabled = true
+text = "Esta es una descripcion 
+de prueba"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Price" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=2084737752]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/normal_font_size = 32
+bbcode_enabled = true
+text = "[img=32]sprites/coin.png[/img] 20"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1

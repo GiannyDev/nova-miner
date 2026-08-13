@@ -87,8 +87,11 @@ process_material = SubResource("ParticleProcessMaterial_llooo")
 [node name="World" type="Node2D" parent="." unique_id=1044303364]
 unique_name_in_owner = true
 position = Vector2(960, 540)
+scale = Vector2(2, 2)
 script = ExtResource("2")
-default_zoom = 3.0
+zoom_min = 1.0
+zoom_max = 3.5
+default_zoom = 2.5
 
 [node name="Nodes" type="Node2D" parent="World" unique_id=1672611528]
 unique_name_in_owner = true
@@ -97,9 +100,7 @@ script = ExtResource("8_neighbors")
 [node name="Attack1" parent="World/Nodes" unique_id=698692302 node_paths=PackedStringArray("left_neighbor", "top_neighbor", "right_neighbor", "bottom_neighbor") instance=ExtResource("6")]
 unique_name_in_owner = true
 upgrade = ExtResource("9_attack_r")
-upgrade_key = "AttackRight"
 popup_title = "Attack Right"
-popup_description = "Increase drill damage by {stat_amount}."
 left_neighbor = NodePath("../Attack3")
 top_neighbor = NodePath("../SpawnOnDestroy")
 right_neighbor = NodePath("../Attack2")
@@ -110,7 +111,6 @@ position = Vector2(75, 0)
 upgrade = ExtResource("9_attack_r")
 upgrade_key = "AttackRight2"
 popup_title = "Attack Right"
-popup_description = "Increase drill damage by {stat_amount}."
 node1 = NodePath("../Attack1")
 left_neighbor = NodePath("../Attack1")
 bottom_neighbor = NodePath("../DrillDurability")
@@ -120,7 +120,6 @@ position = Vector2(-75, 0)
 upgrade = ExtResource("10_attack_l")
 upgrade_key = "AttackLeft"
 popup_title = "Attack Left"
-popup_description = "Increase drill damage by {stat_amount}."
 node1 = NodePath("../Attack1")
 right_neighbor = NodePath("../Attack1")
 bottom_neighbor = NodePath("../Speed")
@@ -184,6 +183,7 @@ offset_top = 24.0
 offset_right = 148.0
 offset_bottom = 91.0
 grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0)
 mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/PrestigeProgress" unique_id=62748117]

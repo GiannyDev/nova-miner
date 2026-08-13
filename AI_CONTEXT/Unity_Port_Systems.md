@@ -195,32 +195,14 @@ Dos colliders típicos (cuerpo + top) para apilar / y-sort.
 ### Movimiento
 - Input vector normalizado (WASD / stick)
 - Speed desde `PLAYER_SPEED` (stats)
-- `CharacterController` / Rigidbody2D kinematic + `Move`
-- **Si drill engaged → hard stop** (no slide al hueco)
+- `CharacterController` kinematic + accel lerp (`MovementComponent.move`)
+- **No hard stop.** El StaticBody del ore frena al player; al destruir el collider, sigue solo.
 
 ### DrillWeapon (composición, no en el Player monolítico)
 
 Contacto = **Area2D tip del drill ∪ slide collisions del body**.
 
-#### Latch vs Oneshot (regla de oro)
-```
-damage >= ore.currentHp  → ONESHOT
-  - Rompe al tocar, sin frenar player
-  - VFX burst corto
-  - NO latch / NO hold
-
-damage < ore.currentHp   → MULTI-HIT
-  - Latch al ore más cercano al tip
-  - Player se frena (shouldHoldPlayer)
-  - Golpes cada hitDelay (WeaponData)
-  - Squash en chips; último golpe = destroy + holdGrace breve (~0.08s)
-```
-
-#### Hold player
-```
-shouldHold = isDrilling || holdTimer > 0
-```
-Al soltar input de movimiento → release latch + clear hold.
+Si hay input de movimiento y un ore en contacto: pegar al más cercano cada `hitDelay` (`WeaponData`). `take_damage` destruye si HP llega a 0. Sin latch, sin hold, sin freeze del player.
 
 #### Aim
 Solo dirección de movimiento / último facing. **Nunca** apunta al ore (evita flick al destruir).
@@ -427,7 +409,7 @@ Springer (Godot) ≈ springs de Feel o DOTween con elastic/overshoot controlado.
 3. **Ore + OrePool** (spawn/despawn manual)
 4. **OreSpawner + SpawnProfile** (batch + refill + ban)
 5. **Player movement**
-6. **DrillWeapon** (oneshot vs latch — probar feel primero)
+6. **DrillWeapon** (contacto + hit_delay; el ore es la pared)
 7. **OreDrop + Currency + Inventory HUD**
 8. **Durability + MineZone run lifecycle + Intro**
 9. **Recap + Save records**

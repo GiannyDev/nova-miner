@@ -1,7 +1,6 @@
 @tool
 extends Node2D
 class_name UpgradeNode
-## Nodo YKTD: tooltip hijo, node1/node2, compra via UpgradeManager.
 
 signal first_purchase
 signal maxed_purchase
@@ -15,7 +14,12 @@ const GREEN_COLOR = Color("00e641")
 const YELLOW_COLOR = Color("ffdd00")
 const RED_COLOR = Color("ff4242")
 
-enum VariableType { Integer, Float, Percentage, Money }
+enum VariableType { 
+	Integer, 
+	Float, 
+	Percentage, 
+	Money 
+}
 
 @export var upgrade: StatUpgrade
 @export_multiline var upgrade_key: String = ""
@@ -39,19 +43,29 @@ enum VariableType { Integer, Float, Percentage, Money }
 @export var top_neighbor: UpgradeNode
 @export var right_neighbor: UpgradeNode
 @export var bottom_neighbor: UpgradeNode
+@export var tooltip_lift := 80.0
 
-@onready var tooltip = $Tooltip
-@onready var button = $Button
-@onready var icon = $Button / Icon
-@onready var tier_label = %TierLabel
+@onready var tooltip_host: Node2D = %TooltipHost
+@onready var tooltip: PanelContainer = %Tooltip
+@onready var tooltip_title: Label = %Title
+@onready var tooltip_description: RichTextLabel = %Description
+@onready var tooltip_price: RichTextLabel = %Price
+@onready var button: Button = $Button
+@onready var icon: Sprite2D = %Icon
+@onready var tier_label: Label = %TierLabel
+@onready var hover_sfx: AudioStreamPlayer = $Button/Hover
+@onready var click_sfx: AudioStreamPlayer = $Button/Click
 
 
 func _ready():
-	if not Engine.is_editor_hint():
-		tooltip.visible = true
-		if upgrade != null:
-			maximum_level = upgrade.get_max_level()
-			current_level = UpgradeManager.get_level(upgrade.id)
+	tooltip.modulate.a = 0.0
+	tooltip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.pivot_offset = button.size * 0.5
+	if Engine.is_editor_hint():
+		return
+	if upgrade != null:
+		maximum_level = upgrade.get_max_level()
+		current_level = UpgradeManager.get_level(upgrade.id)
 
 
 func _process(_delta):
@@ -66,13 +80,13 @@ func _process(_delta):
 ## Gamepad: vecinos a 75px, cableados por RecalculateNeighbors.
 func setup_neighbors():
 	if left_neighbor:
-		button.button.set_focus_neighbor(SIDE_LEFT, button.button.get_path_to(left_neighbor.button.button))
+		button.set_focus_neighbor(SIDE_LEFT, button.get_path_to(left_neighbor.button))
 	if top_neighbor:
-		button.button.set_focus_neighbor(SIDE_TOP, button.button.get_path_to(top_neighbor.button.button))
+		button.set_focus_neighbor(SIDE_TOP, button.get_path_to(top_neighbor.button))
 	if right_neighbor:
-		button.button.set_focus_neighbor(SIDE_RIGHT, button.button.get_path_to(right_neighbor.button.button))
+		button.set_focus_neighbor(SIDE_RIGHT, button.get_path_to(right_neighbor.button))
 	if bottom_neighbor:
-		button.button.set_focus_neighbor(SIDE_BOTTOM, button.button.get_path_to(bottom_neighbor.button.button))
+		button.set_focus_neighbor(SIDE_BOTTOM, button.get_path_to(bottom_neighbor.button))
 
 
 ## Visibilidad, colores (verde/rojo/amarillo) y texto del tooltip hijo.
@@ -85,11 +99,10 @@ func update_status():
 	var title_text = popup_title if popup_title != "" else upgrade_key
 	var desc_text = popup_description
 	var progress_text = " (%d/%d)" % [current_level, maximum_level]
-
 	if is_shown():
-		tooltip.title = title_text + progress_text
+		tooltip_title.text = title_text + progress_text
 	else:
-		tooltip.title = title_text
+		tooltip_title.text = title_text
 
 	var current_upgrade = get_current_upgrade()
 	var rate_value = get_rate_value()
@@ -115,27 +128,29 @@ func update_status():
 
 	if current_level < maximum_level:
 		var owned = CurrencyManager.get_ore_amount(Ores.get_id(get_cost_ore()))
-		desc_text += "\n%d/%d" % [owned, get_current_price()]
+		tooltip_price.text = "%d/%d" % [owned, get_current_price()]
 	else:
-		desc_text += "\n[color=ffe524]MAXED[/color]"
+		tooltip_price.text = "[color=ffe524]MAXED[/color]"
 
 	if is_shown():
-		tooltip.description = desc_text
+		tooltip_description.text = desc_text
 	elif node1 != null and node1_max_level:
-		tooltip.description = "Requires maxed %s" % [node1.popup_title if node1.popup_title != "" else node1.upgrade_key]
+		tooltip_description.text = "Requires maxed %s" % [node1.popup_title if node1.popup_title != "" else node1.upgrade_key]
 
 	button.modulate = Color("404040") if current_level == 0 else Color.WHITE
 	icon.modulate = Color("c0c0c0") if current_level == 0 else Color("808080")
 
 	if current_level == maximum_level:
 		button.disabled = true
-		button.set_border_color(YELLOW_COLOR)
+		set_button_border(YELLOW_COLOR)
 	elif can_afford() and not is_locked():
 		button.disabled = false
-		button.set_border_color(GREEN_COLOR)
+		set_button_border(GREEN_COLOR)
 	else:
 		button.disabled = true
-		button.set_border_color(RED_COLOR)
+		set_button_border(RED_COLOR)
+	ready_tooltip()
+	ready_tooltip.call_deferred()
 
 
 func format_variable(value: float) -> String:
@@ -209,7 +224,32 @@ func get_current_price():
 
 
 func spawn():
-	button.spawn()
+	Springer.scale(button, -1.0, 1.0)
+
+
+## Panel stays scale 1. Host Node2D at (0, -lift) is the spring target — Control pivot is not used.
+func ready_tooltip() -> void:
+	tooltip.reset_size()
+	var sz := tooltip.get_combined_minimum_size()
+	if sz.x < 1.0:
+		sz = tooltip.size
+	if sz.x < 1.0:
+		return
+	tooltip.size = sz
+	tooltip.position = -sz * 0.5
+	tooltip.scale = Vector2.ONE
+	tooltip.rotation = 0.0
+	tooltip_host.position = Vector2(0.0, -tooltip_lift)
+	tooltip_host.scale = Vector2.ONE
+	tooltip_host.rotation = 0.0
+
+
+## StyleBoxes are local-to-scene; tint all states so hover/press keep the same rim.
+func set_button_border(color: Color) -> void:
+	for kind in ["normal", "pressed", "hover", "disabled"]:
+		var box := button.get_theme_stylebox(kind)
+		if box is StyleBoxFlat:
+			(box as StyleBoxFlat).border_color = color
 
 
 func get_roman_numeral(n: int) -> String:
@@ -220,6 +260,9 @@ func get_roman_numeral(n: int) -> String:
 
 
 func _on_button_pressed():
+	click_sfx.play()
+	Springer.rotate(button, 12.0 * [-1.0, 1.0].pick_random())
+	Springer.scale(button, 0.1, 1.0)
 	if upgrade != null:
 		if not UpgradeManager.purchase(upgrade):
 			return
@@ -245,8 +288,15 @@ func _on_button_pressed():
 
 
 func _on_button_mouse_entered():
-	tooltip.open()
+	hover_sfx.play()
+	ready_tooltip()
+	tooltip.modulate.a = 1.0
+	Springer.rotate(tooltip_host, 5)
+	Springer.scale(tooltip_host, 0.5)
 
 
 func _on_button_mouse_exited():
-	tooltip.close()
+	Springer.kill_on(tooltip_host)
+	tooltip_host.scale = Vector2.ONE
+	tooltip_host.rotation = 0.0
+	tooltip.modulate.a = 0.0

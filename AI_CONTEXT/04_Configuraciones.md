@@ -14,7 +14,7 @@ Nuestros proyectos siempre tiene Godot MCP enabled, usalo cuando aplicas algo im
 * UpgradeTree → overlay Control (fondo opaco). Sin SubViewport ni Camera2D: pan/zoom mueven `%World`. Cada `UpgradeNode` (Node2D) lleva `node1`/`node2`, tooltip hijo y `StatUpgrade`. Lineas en `World._draw`. Grilla 75px. Instancia `upgrade_node.tscn` bajo `%Nodes`. `REFERENCIA/` tiene `.gdignore`: Godot no la compila.
 * RecapMenu → secuencia simple en Inspector (`Sequence`): paneles juntos sin texto → delay → textos en cadena (stagger) → delay → `records_panel`. Sin presets ShellDiver/Forager en el recap.
 * SaveData → `user://nova_miner_save.json` (upgrades, stats, bag de ores raw+refined, records). Antes de sobrescribir copia a `nova_miner_save.bak.json`. Si el save principal falla al cargar, usa el backup. Records: blocks / damage / distance; el Recap aplica y muestra `NEW` si se rompe la marca.
-* CameraFeelProfile → `data/camera/` (mina vs hub). `CameraRig` en el Camera2D de zona: lookahead + punch + zoom de latch. El drill no conoce la cámara.
+* CameraFeelProfile → `data/camera/` (mina vs hub). `CameraRig`: lookahead + punch + zoom al empujar un ore. El drill no conoce la cámara.
 * Weapons → `WeaponData` en `data/weapons/` (`drill_hit_delay`, `damage_multiplier`, `drill_spin_speed`, etc.). El player carga por `weapon_id` via `WeaponData.load_by_id()`.
 * Recap → `RunRecapData` + `StatDisplay`; textos con `tr("KEY")` desde `translations/translations.csv`.
 * DamageText → `scenes/ui/damage_text/`; spawn via `Feedbacks.spawn_damage_text(amount, world_pos, mine_dir)` (pop gordo → stretch en direccion de minado).
