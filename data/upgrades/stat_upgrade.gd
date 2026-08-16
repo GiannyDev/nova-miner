@@ -25,6 +25,10 @@ enum OperationType {
 ## Ore que se gasta al comprar (dropdown Ores).
 @export var cost_ore: int = Ores.GOLD
 
+@export_category("Translations")
+@export var title_id: String
+@export var descr_id: String
+
 @export_category("Operation")
 @export var operation_type: OperationType = OperationType.ADD
 @export var operation_mode: OperationMode = OperationMode.FLAT

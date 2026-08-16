@@ -6,6 +6,5 @@
 script = ExtResource("1")
 id = "speed"
 stat_id = 1
-cost_ore = 0
 costs = Array[int]([10, 18, 30, 50])
 values = Array[float]([40.0, 50.0, 60.0, 80.0])

@@ -1,5 +1,6 @@
 extends Control
 class_name UpgradeTree
+## Overlay del arbol. Primer hijo unlocked; el resto sale por node_connections.
 
 @onready var world = %World
 @onready var upgrade_nodes = %Nodes
@@ -11,7 +12,6 @@ var is_spawning := false
 func _ready():
 	visible = false
 	for node: UpgradeNode in upgrade_nodes.get_children():
-		node.setup_neighbors()
 		node.purchased.connect(_on_upgrade_purchased)
 	EventBus.currency_ui_update.connect(_on_currency_changed)
 	load_node_levels()
@@ -50,10 +50,36 @@ func load_node_levels() -> void:
 
 
 func update_tree():
+	var unlocked := collect_unlocked()
 	for upgrade_node: UpgradeNode in upgrade_nodes.get_children():
+		upgrade_node.unlocked = unlocked.has(upgrade_node)
 		upgrade_node.update_status()
+	for upgrade_node: UpgradeNode in upgrade_nodes.get_children():
+		upgrade_node.setup_neighbors()
 	update_progress()
 	world.queue_redraw()
+
+
+## Primer hijo siempre visible. Comprar un nodo revela sus node_connections (y sigue si ya estaban comprados).
+func collect_unlocked() -> Dictionary:
+	var unlocked := {}
+	if upgrade_nodes.get_child_count() == 0:
+		return unlocked
+	var start: UpgradeNode = upgrade_nodes.get_child(0)
+	unlocked[start] = true
+	var queue: Array = [start]
+	var visited := {start: true}
+	while not queue.is_empty():
+		var current: UpgradeNode = queue.pop_front()
+		if current.current_level <= 0:
+			continue
+		for connected in current.get_connected_nodes():
+			if visited.has(connected):
+				continue
+			visited[connected] = true
+			unlocked[connected] = true
+			queue.append(connected)
+	return unlocked
 
 
 func update_progress() -> void:
@@ -90,31 +116,27 @@ func play_intro_spawn() -> void:
 
 
 func traverse_nodes_depth():
-	var total = upgrade_nodes.get_child_count()
-	var s = 0
-	var queue = []
-	var visited = []
-	var depth_queue = [0]
-	var result = {0: [upgrade_nodes.get_child(0)]}
-	visited.resize(total)
-	visited.fill(false)
-	visited[s] = true
-	queue.append(s)
+	var result := {}
+	if upgrade_nodes.get_child_count() == 0:
+		return result
+	var start: UpgradeNode = upgrade_nodes.get_child(0)
+	if not start.visible:
+		return result
+	result[0] = [start]
+	var queue: Array = [start]
+	var depths := {start: 0}
 	while not queue.is_empty():
-		var curr = queue.pop_front()
-		var depth = depth_queue.pop_front()
-		var curr_node = upgrade_nodes.get_child(curr)
-		for i in total:
-			var node = upgrade_nodes.get_child(i)
-			if node.node1 == curr_node or node.node2 == curr_node:
-				if not visited[i]:
-					var new_depth = depth + 1
-					visited[i] = true
-					queue.append(i)
-					depth_queue.append(depth + 1)
-					if not result.has(new_depth):
-						result[new_depth] = []
-					result[new_depth].append(node)
+		var current: UpgradeNode = queue.pop_front()
+		var depth: int = depths[current]
+		for connected in current.get_connected_nodes():
+			if depths.has(connected) or not connected.visible:
+				continue
+			var new_depth := depth + 1
+			depths[connected] = new_depth
+			queue.append(connected)
+			if not result.has(new_depth):
+				result[new_depth] = []
+			result[new_depth].append(connected)
 	return result
 
 
@@ -128,9 +150,15 @@ func _on_currency_changed() -> void:
 
 
 func _on_close_pressed() -> void:
+	SFX.play(Sound.BUTTON_CLICK)
 	var parent_gui := get_parent()
 	if parent_gui is GUI:
 		parent_gui.close_upgrade_tree()
 	else:
 		close()
 		GameManager.curr_state = GameManager.GameStates.PLAYING
+
+
+func _on_close_button_mouse_entered() -> void:
+	SFX.play(Sound.BUTTON_HOVER)
+	Springer.rotate(%CloseButton, 10)

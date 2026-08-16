@@ -44,6 +44,6 @@ Current docs:
 
 ## Referencia local (gitignored, SIEMPRE legible; Godot NO la compila)
 
-`REFERENCIA/` está en `.gitignore` para no commitear juegos de terceros. Eso **no** restringe al agente: leé esa carpeta (path absoluto o shell) cuando compares sistemas, feel o upgrades. Hoy: `REFERENCIA/You Know the Drill! Demo/`.
+`REFERENCIA/` está en `.gitignore` para no commitear juegos de terceros. Eso **no** restringe al agente: leé esa carpeta (path absoluto o shell) cuando compares sistemas, feel o upgrades. Hoy: `REFERENCIA/You Know the Drill! Demo/` y `REFERENCIA/Mouseslash/`.
 
-Godot **no** debe importar ni parsear esa carpeta (chocan `class_name` UpgradeNode, Juice2D, Inventory, etc.). Hay un `REFERENCIA/.gdignore` para eso. Nunca copies scripts de REFERENCIA al proyecto sin renombrar classes.
+Godot **no** debe importar ni parsear esa carpeta (chocan `class_name` ScreenControl, Tooltip, UpgradeNode, Juice2D, Inventory, etc.). Hay un `REFERENCIA/.gdignore` para eso. Nunca copies scripts de REFERENCIA al proyecto sin renombrar classes.

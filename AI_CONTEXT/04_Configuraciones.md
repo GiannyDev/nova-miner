@@ -11,7 +11,7 @@ Nuestros proyectos siempre tiene Godot MCP enabled, usalo cuando aplicas algo im
 * Ores → `Resource` con texture, name, etc.
 * SubMine → `Resource` con icon, name, ore, ore_chance, quota, etc.
 * Maps → `Resource` con array[submine], name, banner, etc.
-* UpgradeTree → overlay Control (fondo opaco). Sin SubViewport ni Camera2D: pan/zoom mueven `%World`. Cada `UpgradeNode` (Node2D) lleva `node1`/`node2`, tooltip hijo y `StatUpgrade`. Lineas en `World._draw`. Grilla 75px. Instancia `upgrade_node.tscn` bajo `%Nodes`. `REFERENCIA/` tiene `.gdignore`: Godot no la compila.
+* UpgradeTree → overlay Control (fondo opaco). Sin SubViewport ni Camera2D: pan/zoom mueven `%World`. Cada `UpgradeNode` (Node2D) lleva `node_connections`, `StatUpgrade` y su propio `ItemPopup` centrado encima (`lift`). El primer hijo de `%Nodes` arranca unlocked; el resto solo se muestra si un padre ya se compró. Lineas en `World._draw`. Grilla 75px (focus gamepad en runtime). Instancia `upgrade_node.tscn` bajo `%Nodes`. `REFERENCIA/` tiene `.gdignore`: Godot no la compila (YKTD, Mouseslash, etc.).
 * RecapMenu → secuencia simple en Inspector (`Sequence`): paneles juntos sin texto → delay → textos en cadena (stagger) → delay → `records_panel`. Sin presets ShellDiver/Forager en el recap.
 * SaveData → `user://nova_miner_save.json` (upgrades, stats, bag de ores raw+refined, records). Antes de sobrescribir copia a `nova_miner_save.bak.json`. Si el save principal falla al cargar, usa el backup. Records: blocks / damage / distance; el Recap aplica y muestra `NEW` si se rompe la marca.
 * CameraFeelProfile → `data/camera/` (mina vs hub). `CameraRig`: lookahead + punch + zoom al empujar un ore. El drill no conoce la cámara.

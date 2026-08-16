@@ -16,7 +16,8 @@ func _process(_delta: float) -> void:
 		if not attached_to.is_inside_tree():
 			detach()
 		else:
-			set_pos(attached_to.get_global_transform_with_canvas().origin + attach_offset)
+			# Solo mueve. set_pos() hace force_size_update y deja pivot en 0 a mitad del squash.
+			global_position = round(attached_to.get_global_transform_with_canvas().origin + attach_offset)
 
 
 func force_size_update() -> void:

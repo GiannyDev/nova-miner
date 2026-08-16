@@ -499,6 +499,7 @@ visible = false
 visible = false
 
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1077753099]
+visible = false
 material = ExtResource("12_o6jf1")
 anchors_preset = 15
 anchor_right = 1.0

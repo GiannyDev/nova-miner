@@ -1,2 +1,3 @@
 # Godot ignora esta carpeta: no importa, no parsea GDScript, no registra class_name.
+# Incluye You Know the Drill! Demo y Mouseslash (ScreenControl, Tooltip, etc.).
 # El agente igual puede leerla por path absoluto. Ver .cursor/rules/ai-context.mdc

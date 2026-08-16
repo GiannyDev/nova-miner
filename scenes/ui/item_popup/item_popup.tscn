@@ -15,16 +15,15 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="LabelSettings" id="LabelSettings_2kpl2"]
-font_size = 24
 font_color = Color(0.36458418, 0.6271512, 0.97514755, 1)
 shadow_color = Color(0.22670749, 0.22670752, 0.22670743, 1)
 shadow_offset = Vector2(2, 2)
 
 [node name="ItemPopup" type="PanelContainer" unique_id=1481292749]
-custom_minimum_size = Vector2(300, 0)
-offset_right = 300.0
-offset_bottom = 163.0
-pivot_offset_ratio = Vector2(0.5, 0.5)
+custom_minimum_size = Vector2(240, 0)
+offset_right = 240.0
+offset_bottom = 142.0
+offset_transform_enabled = true
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_47oi6")
 script = ExtResource("1_2kpl2")
@@ -40,7 +39,7 @@ theme_override_constants/margin_bottom = 8
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1623625522]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer" unique_id=239243343]
 unique_name_in_owner = true
@@ -50,7 +49,7 @@ label_settings = SubResource("LabelSettings_2kpl2")
 horizontal_alignment = 1
 
 [node name="Separator" type="ColorRect" parent="MarginContainer/VBoxContainer" unique_id=590350617]
-custom_minimum_size = Vector2(0, 3)
+custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 mouse_filter = 2
 color = Color(0.29954743, 0.29954746, 0.29954734, 1)
@@ -61,10 +60,26 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
 theme_override_constants/shadow_offset_x = 2
-theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = true
 text = "Esta es una descripcion 
 de prueba"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Progress" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=2119637883]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.8669708, 0.41398707, 0, 1)
+theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_font_sizes/normal_font_size = 14
+bbcode_enabled = true
+text = "2 > 5"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -78,9 +93,9 @@ mouse_filter = 2
 theme_override_colors/font_shadow_color = Color(0.22745098, 0.22745098, 0.22745098, 1)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
-text = "[img=32]sprites/coin.png[/img] 20"
+text = "[img=16]sprites/coin.png[/img] 20"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
