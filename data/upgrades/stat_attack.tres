@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="StatUpgrade" format=3 uid="uid://yeecv5fdir71"]
-
-[ext_resource type="Script" uid="uid://75xwv0bxg78s" path="res://data/upgrades/stat_upgrade.gd" id="1"]
-
-[resource]
-script = ExtResource("1")
-id = "attack"
-costs = Array[int]([8, 15, 25, 40])
-values = Array[float]([3.0, 4.0, 6.0, 8.0])

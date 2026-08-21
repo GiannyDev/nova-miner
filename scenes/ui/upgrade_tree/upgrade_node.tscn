@@ -69,10 +69,10 @@ script = ExtResource("2")
 [node name="ItemPopup" parent="." unique_id=1481292749 instance=ExtResource("6_v5fde")]
 visible = false
 z_index = 5
-offset_left = -125.0
-offset_top = -204.0
-offset_right = 125.0
-offset_bottom = -42.0
+offset_left = -120.0
+offset_top = -193.0
+offset_right = 120.0
+offset_bottom = -51.0
 pivot_offset_ratio = Vector2(0.5, 0.5)
 
 [node name="Button" type="Button" parent="." unique_id=327377704]

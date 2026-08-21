@@ -135,9 +135,7 @@ func get_pending_ore_count() -> int:
 
 
 func get_target_ore_count() -> int:
-	if GameManager.player_stats == null:
-		return 0
-	return maxi(int(GameManager.player_stats.get_stat(int(Stats.STARTING_ORE_AMOUNT))), 0)
+	return maxi(int(Stats.get_stat(Stats.STARTING_ORE_AMOUNT)), 0)
 
 
 # --- Private helpers ---
@@ -384,9 +382,7 @@ func apply_block_layout_to_grid() -> void:
 
 
 func get_player_stat(stat_id: int) -> float:
-	if GameManager.player_stats == null:
-		return 0.0
-	return GameManager.player_stats.get_stat(int(stat_id))
+	return Stats.get_stat(stat_id)
 
 
 func handle_destroy_spawns(source_cell: Vector2i) -> void:

@@ -136,15 +136,11 @@ func sync_weapon_stats() -> void:
 
 
 func get_move_speed() -> float:
-	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat(int(Stats.PLAYER_SPEED))
-	return fallback_speed
+	return Stats.get_stat(Stats.PLAYER_SPEED)
 
 
 func get_attack_damage() -> float:
-	if GameManager.player_stats != null:
-		return GameManager.player_stats.get_stat(int(Stats.PLAYER_DMG))
-	return 10.0
+	return Stats.get_stat(Stats.PLAYER_DMG)
 
 
 func apply_facing_flip() -> void:
@@ -177,9 +173,7 @@ func sync_animation_speed(is_moving: bool) -> void:
 		animation_state.set_time_scale(0.0 if idle_uses_run_fallback else 1.0)
 		return
 
-	var base_speed := fallback_speed
-	if GameManager.player_stats_base != null:
-		base_speed = maxf(GameManager.player_stats_base.speed, 1.0)
+	var base_speed := maxf(Stats.get_base(Stats.PLAYER_SPEED), 1.0)
 
 	var speed_ratio := clampf(get_move_speed() / base_speed, 0.75, 1.5)
 	var velocity_ratio := clampf(velocity.length() / maxf(get_move_speed(), 1.0), 0.5, 1.0)

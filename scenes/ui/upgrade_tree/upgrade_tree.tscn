@@ -4,12 +4,6 @@
 [ext_resource type="Script" uid="uid://b4jk1vgho8equ" path="res://scenes/ui/upgrade_tree/upgrade_tree_world.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://bvbsus2pu1e" path="res://Circle512.png" id="2_oh35i"]
 [ext_resource type="PackedScene" uid="uid://bam1co12smhwc" path="res://scenes/ui/upgrade_tree/upgrade_node.tscn" id="6"]
-[ext_resource type="Resource" uid="uid://bb3nk6ie5ijb5" path="res://data/upgrades/stat_spawn_extra_on_destroy.tres" id="8_spawn"]
-[ext_resource type="Resource" uid="uid://c4vhblohn7gl2" path="res://data/upgrades/stat_attack_right.tres" id="9_attack_r"]
-[ext_resource type="Resource" uid="uid://c4vhblohn7gl3" path="res://data/upgrades/stat_attack_left.tres" id="10_attack_l"]
-[ext_resource type="Resource" uid="uid://bsbmugjtt6lc7" path="res://data/upgrades/stat_starting_ore_amount.tres" id="11_ore_amt"]
-[ext_resource type="Resource" uid="uid://b1cxjsvb1n73u" path="res://data/upgrades/stat_speed.tres" id="14_speed"]
-[ext_resource type="Resource" uid="uid://b65wydb8gm7ea" path="res://data/upgrades/stat_drill_durability.tres" id="15_drill_dur"]
 
 [sub_resource type="Gradient" id="Gradient_0meom"]
 offsets = PackedFloat32Array(0, 0.9969789)
@@ -130,46 +124,51 @@ unique_name_in_owner = true
 
 [node name="Attack1" parent="World/Nodes" unique_id=698692302 node_paths=PackedStringArray("node_connections") instance=ExtResource("6")]
 unique_name_in_owner = true
-upgrade = ExtResource("9_attack_r")
-popup_title = "Attack Right"
+upgrade_id = "attack_right"
+costs = Array[int]([5, 10, 15])
+values = Array[float]([2.0, 3.0, 5.0])
 node_connections = [NodePath("../Attack2"), NodePath("../Attack3"), NodePath("../SpawnOnDestroy"), NodePath("../StartingOreAmount")]
 
 [node name="Attack2" parent="World/Nodes" unique_id=404939488 instance=ExtResource("6")]
 position = Vector2(75, 0)
-upgrade = ExtResource("9_attack_r")
-upgrade_key = "AttackRight2"
-popup_title = "Attack Right"
+upgrade_id = "attack_right_2"
+costs = Array[int]([10, 20, 35])
+values = Array[float]([2.0, 3.0, 5.0])
 
 [node name="Attack3" parent="World/Nodes" unique_id=2014035277 instance=ExtResource("6")]
 position = Vector2(-75, 0)
-upgrade = ExtResource("10_attack_l")
-upgrade_key = "AttackLeft"
-popup_title = "Attack Left"
+upgrade_id = "attack_left"
+costs = Array[int]([10, 20, 35])
+values = Array[float]([2.0, 3.0, 5.0])
 
 [node name="SpawnOnDestroy" parent="World/Nodes" unique_id=2035450125 instance=ExtResource("6")]
 position = Vector2(0, -75)
-upgrade = ExtResource("8_spawn")
-upgrade_key = "ExtraSpawn"
-popup_title = "Extra Spawn"
+upgrade_id = "spawn_extra_on_destroy"
+upgrade_type = 4
+costs = Array[int]([5, 25, 45])
+values = Array[float]([1.0, 1.0, 2.0])
 
 [node name="StartingOreAmount" parent="World/Nodes" unique_id=1533894802 node_paths=PackedStringArray("node_connections") instance=ExtResource("6")]
 position = Vector2(0, 75)
-upgrade = ExtResource("11_ore_amt")
-upgrade_key = "OreDensity"
-popup_title = "Ore Density"
+upgrade_id = "starting_ore_amount"
+upgrade_type = 0
+costs = Array[int]([10, 20, 35, 55])
+values = Array[float]([4.0, 6.0, 8.0, 10.0])
 node_connections = [NodePath("../DrillDurability"), NodePath("../Speed")]
 
 [node name="DrillDurability" parent="World/Nodes" unique_id=231663141 instance=ExtResource("6")]
 position = Vector2(75, 75)
-upgrade = ExtResource("15_drill_dur")
-upgrade_key = "DrillDurability"
-popup_title = "Drill Durability"
+upgrade_id = "drill_durability_max"
+upgrade_type = 8
+costs = Array[int]([12, 22, 40, 60])
+values = Array[float]([10.0, 15.0, 20.0, 25.0])
 
 [node name="Speed" parent="World/Nodes" unique_id=1538912029 instance=ExtResource("6")]
 position = Vector2(-75, 75)
-upgrade = ExtResource("14_speed")
-upgrade_key = "Speed"
-popup_title = "Speed"
+upgrade_id = "speed"
+upgrade_type = 1
+costs = Array[int]([10, 18, 30, 50])
+values = Array[float]([40.0, 50.0, 60.0, 80.0])
 
 [node name="HUD" type="Control" parent="." unique_id=804636700]
 layout_mode = 1
@@ -233,10 +232,14 @@ vertical_alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 56)
 layout_mode = 1
-offset_left = 30.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
 offset_top = 30.0
-offset_right = 200.0
+offset_right = -30.0
 offset_bottom = 95.0
+grow_horizontal = 0
 pivot_offset_ratio = Vector2(0.5, 0.5)
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_close")

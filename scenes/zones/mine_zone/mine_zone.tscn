@@ -83,8 +83,7 @@ block_layout = ExtResource("8_layout")
 [node name="MineChunk" type="Node2D" parent="." unique_id=1154914423 node_paths=PackedStringArray("grid")]
 script = ExtResource("11_2crg8")
 grid = NodePath("../MineGrid")
-chunk_size_cells = Vector2i(20, 20)
-lookahead_cells = Vector2(0, 3)
+chunk_size_cells = Vector2i(16, 16)
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true

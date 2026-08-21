@@ -9,6 +9,8 @@ class_name ItemPopup
 @onready var progress: RichTextLabel = %Progress
 @onready var price: RichTextLabel = %Price
 
+var tween: Tween
+
 func _ready() -> void:
 	super._ready()
 	offset_transform_enabled = true
@@ -30,6 +32,11 @@ func appear() -> void:
 	await get_tree().process_frame
 	if not is_visible_in_tree():
 		return
+	
+	if tween and tween.is_running():
+		tween.kill()
+	tween = create_tween()
+	tween.tween_property(self, "modulate:a", 1, 0.15)
 	position = Vector2(round(-size.x * 0.5), round(-size.y - lift))
 	scale = Vector2.ONE
 	rotation = 0.0
@@ -40,4 +47,9 @@ func disappear() -> void:
 	Springer.kill_on(self)
 	scale = Vector2.ONE
 	rotation = 0.0
-	hide()
+	
+	if tween and tween.is_running():
+		tween.kill()
+	tween = create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, 0.15)
+	#hide()

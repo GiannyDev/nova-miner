@@ -5,7 +5,7 @@ extends Node
 const SAVE_PATH := "user://nova_miner_save.json"
 const SAVE_BACKUP_PATH := "user://nova_miner_save.bak.json"
 
-## upgrade.id -> level
+## upgrade_id -> { "level": int, "type": String }
 var upgrade_levels: Dictionary = {}
 ## Stats enum int (como String key en JSON) -> float
 var stat_values: Dictionary = {}
@@ -23,8 +23,7 @@ func _ready() -> void:
 
 
 func save_progress() -> void:
-	if GameManager.player_stats != null:
-		stat_values = capture_stats(GameManager.player_stats)
+	stat_values = Stats.capture()
 	upgrade_levels = UpgradeManager.levels.duplicate()
 	ore_amounts = CurrencyManager.capture_ore_amounts()
 
@@ -95,8 +94,8 @@ func apply_payload(data: Dictionary) -> void:
 
 	UpgradeManager.load_levels(upgrade_levels)
 	CurrencyManager.apply_ore_amounts(ore_amounts)
-	if GameManager.player_stats != null and not stat_values.is_empty():
-		apply_stats(GameManager.player_stats, stat_values)
+	if not stat_values.is_empty():
+		Stats.apply(stat_values)
 		GameManager.repair_drill_full()
 
 
@@ -122,18 +121,6 @@ func apply_run_records(blocks_mined: int, damage_dealt: float, distance_traveled
 		save_progress()
 
 	return beaten
-
-
-func capture_stats(stats: StatsData) -> Dictionary:
-	var result := {}
-	for stat_id in Stats.all_ids():
-		result[stat_id] = stats.get_stat(stat_id)
-	return result
-
-
-func apply_stats(stats: StatsData, values: Dictionary) -> void:
-	for key in values.keys():
-		stats.set_stat(int(key), float(values[key]))
 
 
 func parse_ore_amounts(source: Dictionary) -> Dictionary:

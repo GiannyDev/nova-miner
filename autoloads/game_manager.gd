@@ -12,7 +12,6 @@ const RAW_ORE_ID := "gold"
 const REFINED_ORE_SUFFIX := "_refined"
 
 var curr_state: GameStates = GameStates.NONE
-var player_stats: StatsData
 var unlocked_weapon_ids: Array[String] = ["drill_basic"]
 var equipped_weapon_id: String = "drill_basic"
 
@@ -21,23 +20,14 @@ var drill_durability_current: float = 0.0
 var durability_depleted_emitted: bool = false
 var drill_durability_drain_per_frame: float = 5.0
 
-var player_stats_base: StatsData
 
 func _ready() -> void:
 	init_locale()
-	init_player_stats()
 	repair_drill_full()
 
 
 func init_locale() -> void:
 	TranslationServer.set_locale("en")
-
-
-## Base defaults. SaveData.load_progress (deferred) pisa con valores guardados.
-func init_player_stats() -> void:
-	if player_stats_base == null:
-		player_stats_base = load("res://data/player/player_stats_base.tres")
-	player_stats = player_stats_base.duplicate(true)
 
 
 # --- Drill durability ---
@@ -46,24 +36,20 @@ func get_drill_durability() -> float:
 
 
 func get_drill_durability_max() -> float:
-	if player_stats == null:
-		return 0.0
-	return maxf(player_stats.get_stat(int(Stats.DRILL_DURABILITY_MAX)), 0.0)
+	return maxf(Stats.get_stat(Stats.DRILL_DURABILITY_MAX), 0.0)
 
 
 func increase_drill_durability(amount: float) -> void:
-	if amount == 0.0 or player_stats == null:
+	if amount == 0.0:
 		return
-	var new_max := maxf(player_stats.get_stat(int(Stats.DRILL_DURABILITY_MAX)) + amount, 0.0)
-	player_stats.set_stat(int(Stats.DRILL_DURABILITY_MAX), new_max)
+	var new_max := maxf(Stats.get_stat(Stats.DRILL_DURABILITY_MAX) + amount, 0.0)
+	Stats.set_stat(Stats.DRILL_DURABILITY_MAX, new_max)
 	SaveData.save_progress()
 	EventBus.drill_durability_changed.emit(drill_durability_current, get_drill_durability_max())
 
 
 func set_drill_durability_max(value: float) -> void:
-	if player_stats == null:
-		return
-	player_stats.set_stat(int(Stats.DRILL_DURABILITY_MAX), maxf(value, 0.0))
+	Stats.set_stat(Stats.DRILL_DURABILITY_MAX, maxf(value, 0.0))
 	SaveData.save_progress()
 	EventBus.drill_durability_changed.emit(drill_durability_current, get_drill_durability_max())
 
@@ -133,12 +119,3 @@ func take_next_raw_ore() -> String:
 		remove_ore(ore_id, 1)
 		return ore_id
 	return ""
-
-
-func get_ore_with_probabilities() -> PackedScene:
-	return null
-
-
-func prepare_control_pivot(control: Control) -> void:
-	if control.pivot_offset.is_zero_approx():
-		control.pivot_offset = control.size * 0.5

@@ -13,3 +13,37 @@ BTN_BASE,Base,Base
 ORE_GOLD,Gold,Oro
 ORE_SILVER,Silver,Plata
 ORE_PLATINUM,Platinum,Platino
+UPGRADE_ORE_AMOUNT_TITLE,Ore Density,Densidad de minerales
+UPGRADE_ORE_AMOUNT_DESC,Increase nearby ores by {value}.,Aumenta los minerales cercanos en {value}.
+UPGRADE_SPEED_TITLE,Speed,Velocidad
+UPGRADE_SPEED_DESC,Increase move speed by {value}.,Aumenta la velocidad en {value}.
+UPGRADE_ATTACK_TITLE,Attack,Ataque
+UPGRADE_ATTACK_DESC,Increase drill damage by {value}.,Aumenta el daño del taladro en {value}.
+UPGRADE_ATTACK_COOLDOWN_TITLE,Attack Speed,Velocidad de ataque
+UPGRADE_ATTACK_COOLDOWN_DESC,Change attack cooldown by {value}.,Cambia el cooldown de ataque en {value}.
+UPGRADE_EXTRA_SPAWN_TITLE,Extra Spawn,Spawn extra
+UPGRADE_EXTRA_SPAWN_DESC,Spawn {value} extra ores when one is destroyed.,Spawnea {value} minerales extra al destruir uno.
+UPGRADE_SPAWN_CHANCE_TITLE,Spawn Chance,Probabilidad de spawn
+UPGRADE_SPAWN_CHANCE_DESC,Chance to spawn extra ores: {value}.,Probabilidad de spawnear extras: {value}.
+UPGRADE_CLUSTER_CHANCE_TITLE,Cluster Chance,Probabilidad de cluster
+UPGRADE_CLUSTER_CHANCE_DESC,Chance to spawn a cluster: {value}.,Probabilidad de spawnear un cluster: {value}.
+UPGRADE_CLUSTER_SIZE_TITLE,Cluster Size,Tamaño de cluster
+UPGRADE_CLUSTER_SIZE_DESC,Cluster size increases by {value}.,El cluster aumenta en {value}.
+UPGRADE_DRILL_DURABILITY_TITLE,Drill Durability,Durabilidad de perforadora
+UPGRADE_DRILL_DURABILITY_DESC,Increase drill durability by {value}.,Aumenta la durabilidad en {value}.
+UPGRADE_PICKUP_RADIUS_TITLE,Pickup Radius,Radio de recolecta
+UPGRADE_PICKUP_RADIUS_DESC,Increase pickup radius by {value}.,Aumenta el radio de recolecta en {value}.
+UPGRADE_INVENTORY_SIZE_TITLE,Inventory Size,Tamaño de inventario
+UPGRADE_INVENTORY_SIZE_DESC,Increase inventory size by {value}.,Aumenta el inventario en {value}.
+UPGRADE_DEPOSIT_TIME_TITLE,Deposit Time,Tiempo de depósito
+UPGRADE_DEPOSIT_TIME_DESC,Change deposit time by {value}.,Cambia el tiempo de depósito en {value}.
+UPGRADE_REFINEMENT_TIME_TITLE,Refinement Time,Tiempo de refinamiento
+UPGRADE_REFINEMENT_TIME_DESC,Change refinement time by {value}.,Cambia el tiempo de refinamiento en {value}.
+UPGRADE_HELPERS_UNLOCKED_TITLE,Helpers,Ayudantes
+UPGRADE_HELPERS_UNLOCKED_DESC,Unlock {value} helpers.,Desbloquea {value} ayudantes.
+UPGRADE_UNLOCK_WEAPON_SHOP_TITLE,Weapon Shop,Tienda de armas
+UPGRADE_UNLOCK_WEAPON_SHOP_DESC,Unlock the weapon shop.,Desbloquea la tienda de armas.
+UPGRADE_UNLOCK_REFINEMENT_TITLE,Refinement,Refinamiento
+UPGRADE_UNLOCK_REFINEMENT_DESC,Unlock ore refinement.,Desbloquea el refinamiento de minerales.
+UPGRADE_UNLOCK_WORKSHOP_TITLE,Workshop,Taller
+UPGRADE_UNLOCK_WORKSHOP_DESC,Unlock the companion workshop.,Desbloquea el taller de compañeros.

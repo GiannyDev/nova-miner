@@ -1,3 +1,4 @@
+@tool
 extends Node2D
 class_name UpgradeNode
 
@@ -12,16 +13,15 @@ const GREEN_COLOR = Color("00e641")
 const YELLOW_COLOR = Color("ffdd00")
 const RED_COLOR = Color("ff4242")
 
-@export var upgrade: StatUpgrade
-@export var upgrade_key: String = ""
-@export var popup_title: String = ""
-@export var popup_description: String = ""
-@export_category("Progress")
-@export var current_level: int = 0
-@export var maximum_level: int = 10
+@export_category("Identity")
+@export var upgrade_id: String = ""
+@export var upgrade_type: Upgrades.Type = Upgrades.Type.ATTACK
+
+@export_category("Levels")
 @export var cost_ore: int = Ores.GOLD
-@export var upgrade_price: UpgradePrice
-@export var upgrade_values: Array[float]
+@export var costs: Array[int] = []
+@export var values: Array[float] = []
+
 @export_category("Connections")
 @export var node_connections: Array[UpgradeNode] = []
 
@@ -34,15 +34,49 @@ const RED_COLOR = Color("ff4242")
 @onready var item_popup: ItemPopup = $ItemPopup
 
 var unlocked := false
+var current_level := 0
+var maximum_level := 0
+
 
 func _ready():
 	visuals.pivot_offset = visuals.size * 0.5
 	button.pivot_offset = button.size * 0.5
 	if Engine.is_editor_hint():
 		return
-	if upgrade != null:
-		maximum_level = upgrade.get_max_level()
-		current_level = UpgradeManager.get_level(upgrade.id)
+	sync_from_save()
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	if upgrade_id.is_empty():
+		warnings.append("Asigna upgrade_id unico para el save (ej. attack_right).")
+	if costs.is_empty() or values.is_empty():
+		warnings.append("Rellena costs y values.")
+	elif costs.size() != values.size():
+		warnings.append("costs y values deben tener el mismo tamano.")
+	return warnings
+
+
+## Nivel actual desde UpgradeManager; max = largo de costs/values.
+func sync_from_save() -> void:
+	maximum_level = get_max_level()
+	current_level = UpgradeManager.get_level(upgrade_id)
+
+
+func get_max_level() -> int:
+	return mini(costs.size(), values.size())
+
+
+func get_cost(level_index: int) -> int:
+	if level_index < 0 or level_index >= costs.size():
+		return 0
+	return costs[level_index]
+
+
+func get_value(level_index: int) -> float:
+	if level_index < 0 or level_index >= values.size():
+		return 0.0
+	return values[level_index]
 
 
 ## Gamepad: vecinos a 75px; no se cablean en el inspector.
@@ -77,7 +111,7 @@ func get_connected_nodes() -> Array:
 	return result
 
 
-## Visibilidad por desbloqueo y borde verde/rojo/amarillo. El popup lo llena UpgradeTree.
+## Visibilidad por desbloqueo y borde verde/rojo/amarillo.
 func update_status() -> void:
 	if Engine.is_editor_hint():
 		visible = true
@@ -104,51 +138,41 @@ func update_status() -> void:
 
 
 func get_popup_progress() -> String:
-	return ""
+	return "(%d/%d)" % [current_level, maximum_level]
 
 
 func get_popup_price() -> String:
 	if current_level < maximum_level:
-		var owned = CurrencyManager.get_ore_amount(Ores.get_id(get_cost_ore()))
+		var owned = CurrencyManager.get_ore_amount(Ores.get_id(cost_ore))
 		return "%d/%d" % [owned, get_current_price()]
 	return "[color=ffe524]MAXED[/color]"
 
 
 func format_variable(value: float) -> String:
-	if upgrade != null and upgrade.display_type == StatUpgrade.OperationMode.PERCENT:
+	if Upgrades.get_display_type(upgrade_type) == Upgrades.OperationMode.PERCENT:
 		return str(int(round(abs(value) * 100.0))) + "%"
-	if upgrade != null and upgrade.display_type == StatUpgrade.OperationMode.MULTIPLIER:
+	if Upgrades.get_display_type(upgrade_type) == Upgrades.OperationMode.MULTIPLIER:
 		return "x%.1f" % value
 	if is_equal_approx(value, roundf(value)):
 		return "%d" % roundi(value)
 	return "%.1f" % value
 
 
-func get_current_upgrade():
-	if upgrade != null:
-		var accumulated := 0.0
-		for i in range(current_level):
-			accumulated += upgrade.get_value(i)
-		return accumulated
-	return 0.0
-
-
-func get_cost_ore() -> int:
-	if upgrade != null:
-		return upgrade.cost_ore
-	return cost_ore
+## Value que va en {value}: el de la proxima compra, o el ultimo si ya esta maxed.
+func get_display_value() -> float:
+	if values.is_empty():
+		return 0.0
+	if current_level < values.size():
+		return values[current_level]
+	return values[values.size() - 1]
 
 
 func can_afford() -> bool:
-	return CurrencyManager.can_afford_ore_type(get_cost_ore(), get_current_price())
+	return CurrencyManager.can_afford_ore_type(cost_ore, get_current_price())
 
 
-func get_current_price():
-	if upgrade != null:
-		return upgrade.get_cost(current_level)
-	if upgrade_price != null:
-		return upgrade_price.calculate(current_level)
-	return 0
+func get_current_price() -> int:
+	return get_cost(current_level)
 
 
 ## Borde del panel visible. El Button solo existe para focus/gamepad.
@@ -167,35 +191,26 @@ func _on_button_pressed():
 	click_sfx.play()
 	Springer.rotate(visuals, 12.0 * [-1.0, 1.0].pick_random())
 	Springer.scale(visuals, 0.1, 1.0)
-	if upgrade != null:
-		if not UpgradeManager.purchase(upgrade):
-			return
-		var previous_level = current_level
-		current_level = UpgradeManager.get_level(upgrade.id)
-		purchased.emit(self)
-		if previous_level == 0:
-			first_purchase.emit()
-		if current_level == maximum_level:
-			maxed_purchase.emit()
+	if not UpgradeManager.purchase(self):
 		return
-
-	var current_price = get_current_price()
-	if CurrencyManager.can_afford_ore_type(get_cost_ore(), current_price):
-		CurrencyManager.spend_ore_type(get_cost_ore(), current_price)
-		var previous_level = current_level
-		current_level = clamp(current_level + 1, 0, maximum_level)
-		purchased.emit(self)
-		Refs.shake_camera(10.0)
-		if previous_level == 0:
-			first_purchase.emit()
-		if current_level == maximum_level:
-			maxed_purchase.emit()
+	var previous_level = current_level
+	current_level = UpgradeManager.get_level(upgrade_id)
+	purchased.emit(self)
+	if previous_level == 0:
+		first_purchase.emit()
+	if current_level == maximum_level:
+		maxed_purchase.emit()
 
 
 func _on_button_mouse_entered():
 	SFX.play(Sound.BUTTON_HOVER)
 	Springer.rotate(visuals, 18)
-	item_popup.set_content(popup_title, popup_description, get_popup_progress(), get_popup_price())
+	item_popup.set_content(
+		UpgradeManager.get_title(upgrade_type),
+		UpgradeManager.get_description(upgrade_type, format_variable(get_display_value())),
+		get_popup_progress(),
+		get_popup_price()
+	)
 	item_popup.appear()
 
 

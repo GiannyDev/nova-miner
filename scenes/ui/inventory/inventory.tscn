@@ -4,6 +4,7 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_la2ei"]
 bg_color = Color(0.15487584, 0.15487605, 0.15487596, 1)
+draw_center = false
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8

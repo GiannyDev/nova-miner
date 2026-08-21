@@ -1,6 +1,6 @@
 extends Node
 
-signal upgrade_purchased(upgrade: StatUpgrade, new_level: int)
+signal upgrade_purchased(upgrade_id: String, upgrade_type: int, new_level: int)
 signal upgrade_stat_changed(stat_id: int, new_value: float)
 signal currency_ui_update
 

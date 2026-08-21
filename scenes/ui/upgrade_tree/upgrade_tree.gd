@@ -42,11 +42,10 @@ func close() -> void:
 	is_spawning = false
 
 
+## Lee niveles guardados en cada nodo (id de save, no Type).
 func load_node_levels() -> void:
-	for node in upgrade_nodes.get_children():
-		if node.upgrade != null:
-			node.maximum_level = node.upgrade.get_max_level()
-			node.current_level = UpgradeManager.get_level(node.upgrade.id)
+	for node: UpgradeNode in upgrade_nodes.get_children():
+		node.sync_from_save()
 
 
 func update_tree():
