@@ -73,7 +73,6 @@ debug_fast_forward = 2.5
 [node name="OreSpawner" type="Node" parent="." unique_id=1113268201]
 script = ExtResource("5_spwn")
 profile = ExtResource("3_k6t54")
-max_spawns_per_frame = 48
 block_layout = ExtResource("8_layout")
 
 [node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
@@ -83,7 +82,8 @@ block_layout = ExtResource("8_layout")
 [node name="MineChunk" type="Node2D" parent="." unique_id=1154914423 node_paths=PackedStringArray("grid")]
 script = ExtResource("11_2crg8")
 grid = NodePath("../MineGrid")
-chunk_size_cells = Vector2i(16, 16)
+chunk_size_cells = Vector2i(20, 20)
+lookahead_cells = Vector2(0, 0)
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true
@@ -244,6 +244,7 @@ mouse_filter = 2
 
 [node name="OrePool" type="Node" parent="." unique_id=890285604]
 script = ExtResource("12_0fijc")
+prewarm_count = 480
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=174832406]
 environment = SubResource("Environment_0fijc")

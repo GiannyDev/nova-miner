@@ -52,6 +52,7 @@ func setup(
 	if data != null:
 		ore_data = data
 	refresh_hp_sprite()
+	apply_block_look()
 
 
 ## Golpe no letal: squash + sprite. Letal → destroy sin FX.
@@ -103,7 +104,8 @@ func destroy() -> void:
 		grid.remove_stack_occupation(grid_cell)
 
 	EventBus.run_ore_destroyed.emit(self)
-	spawn_ore_drops()
+	if not is_dirt():
+		spawn_ore_drops()
 	destroyed.emit(self)
 
 
@@ -117,6 +119,7 @@ func on_spawned() -> void:
 	if visuals != null:
 		visuals.scale = Vector2.ONE
 	refresh_hp_sprite()
+	apply_block_look()
 	set_collision_enabled(true)
 	reset_physics_interpolation()
 
@@ -127,12 +130,22 @@ func on_despawned() -> void:
 	Springer.kill_on(visuals)
 	Springer.kill_on(self)
 	visible = false
+	if sprite != null:
+		sprite.modulate = Color.WHITE
 	set_collision_enabled(false)
 	reset_physics_interpolation()
 	grid = null
 
 
-## "Plop" de aparicion mid-run. Visible recien en scale 0 para no mostrar un frame a size completo.
+## Visible a escala 1, sin pop-in (revelado mid-run / fuera de camara).
+func show_instantly() -> void:
+	kill_spawn_tween()
+	scale = Vector2.ONE
+	visible = true
+	reset_physics_interpolation()
+
+
+## "Plop" de aparicion. Solo intro si el spawner lo pide; mid-run usa show_instantly.
 func play_spawn_animation(duration: float) -> void:
 	kill_spawn_tween()
 	reset_physics_interpolation()
@@ -239,6 +252,18 @@ func get_drop_visual_count() -> int:
 
 func is_alive() -> bool:
 	return not is_destroyed
+
+
+## Tierra de cueva: se perfora, no dropea mineral.
+func is_dirt() -> bool:
+	return ore_data != null and ore_data.is_dirt
+
+
+## Tierra mas oscura; mineral queda blanco.
+func apply_block_look() -> void:
+	if sprite == null:
+		return
+	sprite.modulate = Color(0.48, 0.42, 0.38) if is_dirt() else Color.WHITE
 
 
 # --- Signal callbacks ---

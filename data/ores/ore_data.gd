@@ -9,3 +9,5 @@ class_name OreData
 @export var refine_wait_time: float = 6.0
 ## True = lingote / moneda de upgrade. El bag guarda raw y refined por id.
 @export var is_refined: bool = false
+## Tierra de la cueva: se perfora, no dropea mineral ni cuenta en recap.
+@export var is_dirt: bool = false

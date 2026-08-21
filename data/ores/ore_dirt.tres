@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="OreData" format=3 uid="uid://bqdirtblock01"]
+
+[ext_resource type="Script" uid="uid://b252iw7cblwlw" path="res://data/ores/ore_data.gd" id="1_8o62o"]
+
+[resource]
+script = ExtResource("1_8o62o")
+id = "dirt"
+is_dirt = true
+metadata/_custom_type_script = "uid://b252iw7cblwlw"

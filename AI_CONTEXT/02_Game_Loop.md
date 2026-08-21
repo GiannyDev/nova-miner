@@ -9,4 +9,5 @@ El juego es muy simple, el player entra a minas, mina ores por X segundos y regr
 - El User gasta ores para comprar mejoras en el UpgradeTree, WeaponShop y CompanionWorkshop
 - El User puede transformar ores para obtener otros recursos necesarios del juego
 - Cada mapa tiene sus propios ores a spawnear segun un % a definir (Configurable en sus Resources)
+- La cueva se genera al revelar celdas (`MineSpawnProfile` + densidad `Stats.STARTING_ORE_AMOUNT`). Tierra rellena el resto; lo minado queda hueco.
 - El UpgradeTree permitira comprar mejoras como PlayerSpeed, UnlockPlayerDash, PlayerDashSpeed, OreCount, SpawnXOresWhenOneDestroyed, etc. Todo para progreso del juego.

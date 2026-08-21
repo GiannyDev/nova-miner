@@ -286,8 +286,10 @@ func _on_ore_amount_changed(ore_data: OreData, _new_amount: int, delta: int) -> 
 	ores_collected[ore_id] = int(ores_collected.get(ore_id, 0)) + delta
 
 
-func _on_run_ore_destroyed(_ore: Ore) -> void:
+func _on_run_ore_destroyed(ore: Ore) -> void:
 	if GameManager.curr_state != GameManager.GameStates.PLAYING:
+		return
+	if ore != null and ore.is_dirt():
 		return
 	blocks_mined += 1
 

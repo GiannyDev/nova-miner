@@ -1,6 +1,7 @@
 extends Node
 ## Stats permanentes: enum + bag. Uso: Stats.get_stat(Stats.PLAYER_SPEED).
 ## get/set/get_name no se pueden usar: chocan con Object/Node.
+## STARTING_ORE_AMOUNT = densidad % de mineral en celdas nuevas (no "mantener N vivos").
 
 enum {
 	STARTING_ORE_AMOUNT,
@@ -23,6 +24,7 @@ enum {
 }
 
 const DEFAULTS: Dictionary[int, float] = {
+	## Porcentaje de celdas nuevas que son mineral suelto (12 = 12%). El resto es tierra.
 	STARTING_ORE_AMOUNT: 12.0,
 	PLAYER_SPEED: 350.0,
 	PLAYER_DMG: 8.0,

@@ -2,7 +2,7 @@
 extends Node2D
 class_name MineGrid
 ## Espacio de celdas infinito de la mina: conversion celda<->mundo, ocupacion, reservas y debug draw.
-## No decide donde nace contenido: eso es del MineChunk (ventana) y del OreSpawner (relleno).
+## No decide WHERE (chunk) ni el contenido persistente (OreSpawner generate-once).
 ## Asume el nodo sin transform propio (position 0, sin rotar ni escalar).
 
 ## Tamano de celda en pixeles (X = ancho de footprint, Y = paso de stack). Lo dicta block_layout.

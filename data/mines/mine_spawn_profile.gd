@@ -1,39 +1,24 @@
 extends Resource
 class_name MineSpawnProfile
-## Reglas de spawn: safe zone, scatter en el chunk, poco bias cerca del player.
+## Cueva generate-once: celdas nuevas son tierra u ore. Minado = hueco permanente.
 
-# --- Exports ---
 @export_group("Safe Zone")
-## Celdas libres al entrar (reserva en el punto de entrada).
+## Celdas vacias al entrar (spawn del player).
 @export var start_clearance_cells: int = 1
-## NxN bloqueado alrededor del player (2 = 2x2). Nunca spawnea aqui durante la run.
+## NxN tratado como hueco alrededor del player al revelar (2 = 2x2).
 @export var safe_zone_size: int = 2
 
-@export_group("Placement")
-## Fraccion de spawns que intentan caer cerca del player (resto = random en el chunk).
-@export_range(0.0, 1.0, 0.01) var near_player_bias: float = 0.2
-## Radio Chebyshev del "cerca" (fuera del safe_zone).
-@export var near_spawn_radius: int = 6
-## Segundos que una celda minada queda prohibida para respawn.
-@export var mined_cell_ban_seconds: float = 1.25
+@export_group("Dirt")
+@export var dirt_data: OreData
+## HP de la tierra. 1 = un golpe.
+@export var dirt_hp: float = 1.0
 
-@export_group("Direction Bias")
-## De los spawns "cerca", fraccion empujada hacia la direccion de movimiento.
-@export_range(0.0, 1.0, 0.01) var forward_bias_ratio: float = 0.35
-@export var forward_bias_min_speed: float = 20.0
-
-@export_group("Clustering")
-## Probabilidad de pegar el siguiente ore a uno ya colocado (vetas). Nunca reusa la misma celda.
-@export_range(0.0, 1.0, 0.01) var cluster_chance: float = 0.25
-@export var cluster_spread: int = 2
+@export_group("Clusters")
+## Probabilidad de sellar un blob de ores juntos (sin tierra adentro) al revelar celdas.
+@export_range(0.0, 1.0, 0.01) var cluster_chance: float = 0.2
+## Cuantos ores forma cada cluster de mapa.
+@export var cluster_size: int = 4
 @export var max_attempts_per_ore: int = 20
-
-@export_group("Overflow")
-@export var overflow_ring_cells: int = 2
-
-@export_group("Stacks")
-@export_range(0.0, 1.0, 0.01) var stack_chance: float = 0.0
-@export var max_stack_height: int = 1
 
 @export_group("Content")
 @export var ore_weights: Array[OreSpawnEntry] = []
@@ -41,6 +26,7 @@ class_name MineSpawnProfile
 @export var fallback_ore_hp: float = 24.0
 
 @export_group("Feel")
+## Solo intro de la run. Mid-run los bloques aparecen sin pop-in.
 @export var spawn_animation_time: float = 0.3
 
 
@@ -70,15 +56,9 @@ func pick_ore_data() -> OreData:
 	return CurrencyManager.get_ore_data(fallback_ore_id)
 
 
-func get_stack_height() -> int:
-	if stack_chance <= 0.0 or max_stack_height <= 1:
-		return 1
-	if randf() > stack_chance:
-		return 1
-	return randi_range(2, maxi(max_stack_height, 2))
-
-
 func get_ore_hp(ore_data: OreData, ore_size: OreDefinition.OreSize) -> float:
+	if ore_data != null and ore_data.is_dirt:
+		return dirt_hp
 	if ore_data == null:
 		return fallback_ore_hp
 
