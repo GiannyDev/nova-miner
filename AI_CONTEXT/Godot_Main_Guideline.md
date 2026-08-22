@@ -75,15 +75,15 @@ Never dump code without explanation.
 
 ### Code quality checklist
 
-* Clean architecture
+* Clean architecture — logic lives in the class that owns it
 * Single Responsibility respected
+* Bool queries as the public language between classes (`is_drilling()`, `can_move()`, `is_alive()`)
+* No spaghetti: one job per function, pipeline of named steps over nested ifs
 * No duplicated code
 * No unnecessary coupling
 * Inspector-friendly exports
-* Reusable where appropriate
-* Readable names
+* Readable names that read like the design
 * Small functions
-* Modular design
 * Follows Godot best practices
 
 ---
@@ -106,10 +106,31 @@ Never dump code without explanation.
 * **Never** prefix custom private helpers with `_` — use `spawn_peer()`, not `_spawn_peer()`.
 * Signal connection callbacks go at the **bottom** of the script.
 * Built-ins (`_ready`, `_enter_tree`, `_process`, …) go near the **top** (after exports / onready / vars).
-* Prefer bool helpers when logic exceeds one line: `can_pickup_item()`, `can_move()`, `is_player_grounded()`, `is_alive()`, `has_target()`.
+* Prefer bool helpers when logic exceeds one line: `can_pickup_item()`, `can_move()`, `is_player_grounded()`, `is_alive()`, `has_target()`, `is_drilling()`.
 * **Function signatures on one line** — keep the full signature on a single line even when long; wrap only the body when needed.
 * **Juice / UI feel** — reusable animation helpers live under `res://scripts/juice/` (e.g. `UIJuice`, `JuicePreset`). Scene scripts call those helpers when shared; simple one-off sequences (Recap) stay local and tiny.
 * **Scene controls always exist** — `@onready` / `%Name` / `$Path` nodes wired in the `.tscn` are guaranteed. Do **not** null-check them or early-return “por si no existen”. Fix the scene if a reference is wrong.
+
+### Readable gameplay (SOLID, no spaghetti)
+
+Simple and named beats clever. A function name should tell you the design: `drill_weapon.is_drilling()`, `ore.is_dirt()`, `spawner.is_unknown(cell)`.
+
+* **S — one owner.** Player moves and asks. Drill owns contact, hits, and “am I still against a block?”. Spawner owns cell kinds. Ore owns HP. Camera listens to signals; it does not reach into the Area2D.
+* **Queries, not copies.** If class B needs a fact from class A, A exposes `is_*` / `can_*`. Do not re-derive overlap, HP, or grid state in the caller.
+* **Pipelines over nests.** A generate/tick function should read as steps: `carve_walkable_paths()` → `stamp_map_clusters()` → `fill_remaining_cells()`. If you need a comment that says “now do X”, it should be a function named X.
+* **O — tunables in Resources / `@export`.** No magic numbers that a designer would want to change.
+* **D — signals / EventBus** for cross-cutting feel (hit, destroyed, run ended). Call methods on children you own; emit for everyone else.
+* **Keep it small.** Latch, grace, bias, and extra dictionaries are complexity. Add them only when the simple loop is visibly wrong in play.
+
+```gdscript
+# GOOD — Player does not know how the drill touches ores.
+if drill_weapon.is_drilling():
+	velocity = Vector2.ZERO
+
+# BAD — Player duplicates contact rules.
+if drill_weapon.contact_area.get_overlapping_bodies().size() > 0:
+	velocity = Vector2.ZERO
+```
 
 ### Inline comments
 

@@ -1,20 +1,12 @@
 extends Node
 class_name OrePool
-## Pool de bloques Ore reutilizables: evita instanciar/liberar mientras el player se mueve.
-## Vive dentro de la escena de la mina para no filtrar nodos entre cambios de escena.
 
-# --- Exports ---
-## Escena del bloque. Si esta vacia usa Refs.ORE_SCENE.
 @export var ore_scene: PackedScene
-## Bloques creados al entrar a la mina para que los primeros spawns no instancien nada.
 @export var prewarm_count: int = 0
 
-# --- Runtime ---
 var available: Array[Ore] = []
 var total_created: int = 0
 
-
-# --- Built-ins ---
 func _ready() -> void:
 	prewarm(prewarm_count)
 
@@ -68,9 +60,9 @@ func get_available_count() -> int:
 
 # --- Private helpers (no leading _) ---
 func create_ore() -> Ore:
-	var scene := ore_scene if ore_scene != null else Refs.ORE_SCENE
-	if scene == null:
-		push_error("OrePool: sin ore_scene ni Refs.ORE_SCENE.")
+	var scene := resolve_ore_scene()
+	if scene == null or not scene.can_instantiate():
+		push_error("OrePool: PackedScene de ore invalida (path vacio o sin nodos).")
 		return null
 
 	var ore := scene.instantiate() as Ore
@@ -80,6 +72,13 @@ func create_ore() -> Ore:
 
 	total_created += 1
 	return ore
+
+
+## Inspector vacio a veces llega como PackedScene "" (node count 0), no como null.
+func resolve_ore_scene() -> PackedScene:
+	if ore_scene != null and ore_scene.can_instantiate():
+		return ore_scene
+	return Refs.ORE_SCENE
 
 
 ## Saca el bloque del arbol y lo guarda como disponible (nodo huerfano, sin fisica ni dibujo).

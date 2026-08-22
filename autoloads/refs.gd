@@ -1,16 +1,17 @@
 extends Node
 
-var player: Player
 var gui: GUI
+var player: Player
+var mine_zone: MineZone
 var inventory: Inventory
 var camera: CameraRig
 
-const ORE_SCENE = preload("uid://dcuuf1m1b62jv")
-const ORE_DROP_SCENE = preload("uid://behv72lanuvpp")
-const REFINED_ORE_SCENE = preload("uid://dkkjgq0b3f1vw")
+const ORE_SCENE = preload("res://scenes/ore/ore.tscn")
+const ORE_DROP_SCENE = preload("res://scenes/ore/ore_drop.tscn")
+const REFINED_ORE_SCENE = preload("res://scenes/ore/refined_ore.tscn")
 const DAMAGE_TEXT_SCENE = preload("res://scenes/ui/damage_text/damage_text.tscn")
 
-const PERK_MINE_DISPLAY_SCENE = preload("uid://csmcrehd0wad2")
+const PERK_MINE_DISPLAY_SCENE = preload("res://scenes/ui/perks/perk_mine_display.tscn")
 
 
 ## Shake omnidireccional. Atajo de Refs.camera.shake(...).

@@ -14,6 +14,10 @@ signal dealt_damage(amount: float)
 @export var dust_trail_offset: float = 7.0
 @export var dust_y_bias: float = 3.0
 
+@export_group("Lightning Test")
+@export var lightning_hops: int = 8
+@export var lightning_range_cells: int = 3
+
 @onready var movement_component: MovementComponent = $MovementComponent
 @onready var spine_sprite: SpineSprite = $SpineSprite
 @onready var weapon_mount: Node2D = $Weapon
@@ -26,6 +30,7 @@ var aim_direction: Vector2 = Vector2.RIGHT
 var current_animation: String = ""
 var idle_uses_run_fallback: bool = false
 var equipped_weapon: WeaponData
+var is_chaining: bool = false
 
 
 func _ready() -> void:
@@ -44,15 +49,50 @@ func _physics_process(delta: float) -> void:
 		update_facing()
 	else:
 		input_direction = Vector2.ZERO
-	move_player(delta)
 	update_drill_weapon(delta)
+	move_player(delta)
 	update_dust_vfx()
 	update_animation()
 
 
-#func _input(event: InputEvent) -> void:
-	#if event.is_action_pressed("ui_accept"):
-		#Feedbacks.do_horizontal_squash(self)
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		play_test_lightning()
+
+
+## Prueba del skill: un hop a la vez, siempre el bloque vivo mas cercano a X celdas.
+func play_test_lightning() -> void:
+	if is_chaining or not can_move():
+		return
+
+	is_chaining = true
+	var chainer: Chainer = ChainLightning.new()
+	Refs.mine_zone.add_child(chainer)
+
+	var spawner := Refs.mine_zone.ore_spawner
+	var exclude := {}
+	var from_cell := spawner.grid.world_to_cell(global_position)
+	var prev_pos := global_position
+	var damage := get_attack_damage()
+
+	for i in lightning_hops:
+		var ore := spawner.get_chain_ore(from_cell, lightning_range_cells, exclude)
+		if ore == null:
+			break
+		var hop_cell := ore.grid_cell
+		exclude[hop_cell] = true
+		await chainer.chain(prev_pos, ore)
+		if not spawner.owns_live_block(hop_cell, ore):
+			from_cell = hop_cell
+			continue
+		ore.take_damage(damage)
+		prev_pos = ore.global_position
+		from_cell = hop_cell
+		await get_tree().create_timer(chainer.time_between_chains()).timeout
+
+	chainer.queue_free()
+	is_chaining = false
+
 
 
 func get_input_direction() -> void:
@@ -62,6 +102,11 @@ func get_input_direction() -> void:
 
 
 func move_player(delta: float) -> void:
+	# El body no choca ores: si el drill sigue contra un bloque vivo, frenamos aca.
+	if drill_weapon.is_drilling():
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	movement_component.move(self, input_direction, delta, get_move_speed())
 
 
@@ -95,20 +140,7 @@ func update_drill_weapon(delta: float) -> void:
 	var attack := get_attack_damage()
 	aim_direction = get_drill_aim_direction()
 	drill_weapon.set_aim_direction(aim_direction)
-	drill_weapon.tick(attack, delta, has_move_intent, get_body_push_ores())
-
-
-## Cualquier ore que el body este tocando via slide cuenta como contacto de minado.
-func get_body_push_ores() -> Array[Ore]:
-	var ores: Array[Ore] = []
-	for i in range(get_slide_collision_count()):
-		var collision := get_slide_collision(i)
-		if collision == null:
-			continue
-		var ore := drill_weapon.resolve_ore(collision.get_collider())
-		if ore != null and not ores.has(ore):
-			ores.append(ore)
-	return ores
+	drill_weapon.tick(attack, delta, has_move_intent)
 
 
 ## Solo movimiento / ultimo facing. Nunca apunta al ore (evita flick al destruir).

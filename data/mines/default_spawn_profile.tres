@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="MineSpawnProfile" format=3 uid="uid://jrtwrfgy4vf"]
 
 [ext_resource type="Script" uid="uid://drkdckx2rt1k0" path="res://data/mines/mine_spawn_profile.gd" id="1_profile"]
+[ext_resource type="Resource" uid="uid://bqdirtblock01" path="res://data/ores/ore_dirt.tres" id="2_dirt"]
 [ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://data/ores/ore_gold.tres" id="3_gold"]
 [ext_resource type="Script" uid="uid://c7piehx0h7t6d" path="res://data/mines/ore_spawn_entry.gd" id="4_entry"]
 
@@ -11,4 +12,5 @@ ore_data = ExtResource("3_gold")
 [resource]
 script = ExtResource("1_profile")
 start_clearance_cells = 2
+dirt_data = ExtResource("2_dirt")
 ore_weights = Array[ExtResource("4_entry")]([SubResource("OreSpawnEntry_gold")])

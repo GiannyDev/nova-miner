@@ -20,7 +20,7 @@ Nuestros proyectos siempre tiene Godot MCP enabled, usalo cuando aplicas algo im
 * Recap → `RunRecapData` + `StatDisplay`; textos con `tr("KEY")` desde `translations/translations.csv`.
 * DamageText → `scenes/ui/damage_text/`; spawn via `Feedbacks.spawn_damage_text(amount, world_pos, mine_dir)` (pop gordo → stretch en direccion de minado).
 * OreDrop → cae/rebota y vuela en curva (`Feedbacks.do_jump`) al icono de `Inventory` (`Refs.inventory`).
-* MineSpawnProfile → `data/mines/` (safe zone, `dirt_data`/`dirt_hp`, `cluster_chance`/`cluster_size`, `ore_weights`). Densidad de mineral suelto = `Stats.STARTING_ORE_AMOUNT` (%). Tierra: `OreData.is_dirt` (`data/ores/ore_dirt.tres`), no dropea ni cuenta en recap.
+* MineSpawnProfile → `data/mines/` (safe zone, `dirt_data`/`dirt_hp`, clusters, **walkable paths** `walkable_chance` / `path_worms` / `path_worm_length` / `path_width`, `ore_weights`). Densidad de mineral suelto = `Stats.STARTING_ORE_AMOUNT` (%). Tierra: `OreData.is_dirt` (`data/ores/ore_dirt.tres`), no dropea ni cuenta en recap.
 * Mine intro → `GameStates.INTRO`: player delay → bloques `play_rise_animation` todos a la vez → `begin_run()` (`PLAYING` + `on_run_started`). Mid-run los revelados salen instantáneos. Timings en MineZone `Intro`.
 * Juice → helpers en `scripts/juice/` (`UIJuice`, `JuicePreset`) donde aporten; no forzar presets en pantallas que ya tienen una secuencia propia simple.
 

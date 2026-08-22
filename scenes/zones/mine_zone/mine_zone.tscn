@@ -18,6 +18,7 @@
 [ext_resource type="LabelSettings" uid="uid://bkyjcykmls2up" path="res://resources/label_24.tres" id="15_ln1sk"]
 [ext_resource type="Resource" uid="uid://n1h27e03if8m" path="res://data/perks/perk_speed_boost.tres" id="16_perk_speed"]
 [ext_resource type="Resource" uid="uid://bmqavw2l3rg2f" path="res://data/perks/perk_cluster_bonus.tres" id="17_perk_cluster"]
+[ext_resource type="PackedScene" uid="uid://dcuuf1m1b62jv" path="res://scenes/ore/ore.tscn" id="18_ore"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
 shader = ExtResource("9_1xuby")
@@ -244,6 +245,7 @@ mouse_filter = 2
 
 [node name="OrePool" type="Node" parent="." unique_id=890285604]
 script = ExtResource("12_0fijc")
+ore_scene = ExtResource("18_ore")
 prewarm_count = 480
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=174832406]

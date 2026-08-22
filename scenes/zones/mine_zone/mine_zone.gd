@@ -4,14 +4,13 @@ class_name MineZone
 
 const PERK_DISPLAY_SCENE := preload("res://scenes/ui/perks/perk_mine_display.tscn")
 
-@export_group("Recap")
 @export var recap_ore_ids: Array[String] = ["gold", "silver", "platinum"]
 
-@export_group("Perks")
+@export_category("Perks")
 @export var debug_start_perks: Array[PerkData] = []
 @export var perk_tooltip_spring: float = 8.0
 
-@export_group("Intro")
+@export_category("Intro")
 @export var player_intro_delay: float = 0.4
 @export var delay_before_ores_rise: float = 0.15
 @export var ores_rise_duration: float = 0.55
@@ -55,12 +54,12 @@ var run_elapsed: float = 0.0
 var run_ended: bool = false
 
 
-# --- Built-ins ---
 func _ready() -> void:
 	GameManager.curr_state = GameManager.GameStates.INTRO
 	run_ended = false
 	run_elapsed = 0.0
 	Refs.inventory = inventory
+	Refs.mine_zone = self
 	ore_spawner.setup(grid, chunk, ysort, ore_pool)
 	GameManager.repair_drill_full()
 	spawn_player()

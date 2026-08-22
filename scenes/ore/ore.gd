@@ -3,13 +3,9 @@ class_name Ore
 
 signal destroyed(ore: Ore)
 
-@export_group("Combat")
 @export var max_hp: float = 30.0
 @export var ore_size: OreDefinition.OreSize = OreDefinition.OreSize.SMALL
-## OreData del catalogo (id + icon). Si null al spawnear, el spawner asigna default.
 @export var ore_data: OreData
-
-@export_group("Performance")
 ## Apaga el collider al salir de pantalla. Ojo: un taladro fuera de vista tampoco podra golpearlo.
 @export var cull_collision_offscreen: bool = false
 

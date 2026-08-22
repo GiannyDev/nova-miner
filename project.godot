@@ -33,6 +33,8 @@ Transition="*uid://ws1o8hxgjvso"
 Feedbacks="*uid://bprgufiyc2d0o"
 SaveData="*res://autoloads/save_data.gd"
 SFX="*uid://blpgryosiqe7p"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+Effects="*uid://dmuwjpg4doefq"
 
 [display]
 
@@ -44,7 +46,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/kanban_tasks/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/kanban_tasks/plugin.cfg")
 
 [gui]
 

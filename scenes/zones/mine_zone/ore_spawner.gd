@@ -1,54 +1,43 @@
 extends Node
 class_name OreSpawner
-## Cueva generate-once: cada celda se decide al revelar la ventana (tierra u ore).
-## Minado = hueco permanente. Fuera de ventana se recicla el visual; el kind queda.
 
 enum CellKind { UNKNOWN, DIRT, ORE, MINED }
 
-const CARDINALS: Array[Vector2i] = [
-	Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN
-]
+const CARDINALS: Array[Vector2i] = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 const DIRT_PATH := "res://data/ores/ore_dirt.tres"
+## Extras al destruir no pueden convertir mas de esta fraccion de celdas nuevas en ore.
+const BONUS_ORE_CAP_FRACTION := 0.2
 
-# --- Exports ---
 @export_group("Spawn")
 @export var profile: MineSpawnProfile
 @export var max_spawns_per_frame: int = 48
-## Anillo de celdas Unknown fuera de la ventana donde pueden caer extras al minar.
-@export var extras_lookahead_cells: int = 4
 
 @export_group("Block Layout")
 @export var block_layout: MineBlockLayout
 
-# --- Runtime ---
 var grid: MineGrid
 var chunk: MineChunk
 var pool: OrePool
 var target: Node2D
-## cell -> Ore vivo en el arbol.
 var live_blocks: Dictionary = {}
-## cell -> CellKind. Persiste toda la run.
 var cell_kinds: Dictionary = {}
-## cell -> OreData (solo KIND_ORE).
 var cell_ore_data: Dictionary = {}
 var spawn_queue: Array[Vector2i] = []
 var window_connected: bool = false
-## Si true, los bloques salen colapsados para la animacion de intro.
 var intro_spawn_mode: bool = false
+## Ores extra de perks/upgrades, aplicados al revelar — nunca pisan el tunel.
+var pending_bonus_ores: int = 0
 
 
-# --- Built-ins ---
 func _process(_delta: float) -> void:
 	drain_spawn_queue()
 
 
-# --- Public API ---
 func setup(mine_grid: MineGrid, mine_chunk: MineChunk, ore_parent: Node2D, ore_pool: OrePool = null) -> void:
 	grid = mine_grid
 	chunk = mine_chunk
 	target = ore_parent
 	pool = ore_pool
-
 	ensure_profile()
 	apply_block_layout_to_grid()
 	connect_chunk_signals()
@@ -56,13 +45,13 @@ func setup(mine_grid: MineGrid, mine_chunk: MineChunk, ore_parent: Node2D, ore_p
 	set_process(true)
 
 
+## Reserva el hueco de entrada (spawn del player).
 func reserve_entry_area(world_position: Vector2) -> void:
 	if grid == null:
 		return
 	grid.reserve_area(grid.world_to_cell(world_position), profile.start_clearance_cells)
 
 
-## Primera ventana: genera dirt/ore y encola visuales.
 func spawn_initial_batch() -> void:
 	sync_window()
 
@@ -73,7 +62,6 @@ func flush_spawn_queue() -> void:
 		spawn_queued_block(spawn_queue.pop_back())
 
 
-## Todos los bloques activos crecen a la vez desde abajo.
 func play_intro_rise_all(duration: float) -> void:
 	for ore in live_blocks.values():
 		if is_instance_valid(ore):
@@ -81,13 +69,14 @@ func play_intro_rise_all(duration: float) -> void:
 	await get_tree().create_timer(duration).timeout
 
 
-## Extras de perk/skill: convierte celdas Unknown (nunca rellena el tunel).
-func spawn_burst_around(source_cell: Vector2i, count: int, _spread: int = -1) -> void:
-	stamp_ores_on_unknown(source_cell, count)
+## Extras de perk: se mezclan en el proximo lote revelado, nunca en el tunel.
+func spawn_burst_around(_source_cell: Vector2i, count: int, _spread: int = -1) -> void:
+	pending_bonus_ores += maxi(count, 0)
 
 
 func clear_ores() -> void:
 	spawn_queue.clear()
+	pending_bonus_ores = 0
 	for cell in live_blocks.keys():
 		var ore: Ore = live_blocks[cell]
 		if is_instance_valid(ore):
@@ -110,7 +99,7 @@ func get_active_ore_count() -> int:
 	return live_blocks.size()
 
 
-# --- Private helpers ---
+# --- Window ---
 func connect_chunk_signals() -> void:
 	if chunk == null or window_connected:
 		return
@@ -119,24 +108,20 @@ func connect_chunk_signals() -> void:
 	window_connected = true
 
 
-## Cull visuales fuera de ventana, genera Unknown, encola dirt/ore faltantes.
 func sync_window() -> void:
 	if grid == null or chunk == null or not chunk.has_window:
 		push_warning("OreSpawner: la ventana del chunk no esta lista.")
 		return
-
 	cull_outside_window()
 	generate_unknown_in_window()
 	enqueue_missing_visuals()
 
 
-## Recorta visuales fuera de ventana. El kind (dirt/ore/mined) se queda.
 func cull_outside_window() -> void:
 	var to_cull: Array[Vector2i] = []
 	for cell in live_blocks.keys():
 		if not chunk.is_inside_window(cell):
 			to_cull.append(cell)
-
 	for cell in to_cull:
 		var ore: Ore = live_blocks[cell]
 		live_blocks.erase(cell)
@@ -146,43 +131,141 @@ func cull_outside_window() -> void:
 			release_ore(ore)
 
 
-## Primera vez que una celda entra a la ventana: clusters, luego densidad, resto tierra.
+# --- Generate-once ---
+## Pipeline: huecos de spawn → rutas → vetas → extras → densidad tierra/ore.
 func generate_unknown_in_window() -> void:
-	var available: Dictionary = {}
-	var player_cell := get_player_cell()
-	var area := chunk.window_cells
-
-	for cy in range(area.position.y, area.end.y):
-		for cx in range(area.position.x, area.end.x):
-			var cell := Vector2i(cx, cy)
-			if get_kind(cell) != CellKind.UNKNOWN:
-				continue
-			if grid.is_reserved(cell) or profile.is_inside_safe_zone(cell, player_cell):
-				set_kind(cell, CellKind.MINED)
-				continue
-			available[cell] = true
-
+	var available := collect_unknown_in_window()
+	carve_spawn_holes(available)
+	carve_walkable_paths(available)
 	stamp_map_clusters(available)
+	stamp_bonus_ores(available)
 	fill_remaining_cells(available)
 
 
-## Vetas de mapa: blobs 4-conectados sin tierra adentro.
+func collect_unknown_in_window() -> Dictionary:
+	var available := {}
+	var area := chunk.window_cells
+	for cy in range(area.position.y, area.end.y):
+		for cx in range(area.position.x, area.end.x):
+			var cell := Vector2i(cx, cy)
+			if is_unknown(cell):
+				available[cell] = true
+	return available
+
+
+func carve_spawn_holes(available: Dictionary) -> void:
+	var player_cell := get_player_cell()
+	var cells: Array = available.keys()
+	for cell in cells:
+		if grid.is_reserved(cell) or profile.is_inside_safe_zone(cell, player_cell):
+			carve_cell(cell, available)
+
+
+## Huecos sueltos + gusanos desde tuneles ya abiertos (Sebastian Lague / cueva conectada).
+func carve_walkable_paths(available: Dictionary) -> void:
+	scatter_walkable(available)
+	carve_path_worms(available)
+
+
+func scatter_walkable(available: Dictionary) -> void:
+	if profile.walkable_chance <= 0.0 or available.is_empty():
+		return
+	var cells: Array = available.keys()
+	for cell in cells:
+		if randf() < profile.walkable_chance:
+			carve_cell(cell, available)
+
+
+func carve_path_worms(available: Dictionary) -> void:
+	if profile.path_worms <= 0 or profile.path_worm_length <= 0 or available.is_empty():
+		return
+	for i in profile.path_worms:
+		run_path_worm(available)
+
+
+func run_path_worm(available: Dictionary) -> void:
+	var cell := pick_path_seed(available)
+	if not available.has(cell):
+		return
+	var direction: Vector2i = CARDINALS.pick_random()
+	for step in profile.path_worm_length:
+		if available.is_empty():
+			return
+		if not available.has(cell):
+			cell = pick_neighbor_in(available, cell)
+			if not available.has(cell):
+				return
+		carve_with_width(cell, available)
+		if randf() < profile.path_turn_chance:
+			direction = CARDINALS.pick_random()
+		cell += direction
+
+
+func pick_path_seed(available: Dictionary) -> Vector2i:
+	var adjacent: Array[Vector2i] = []
+	for cell in available.keys():
+		if is_adjacent_to_walkable(cell):
+			adjacent.append(cell)
+	if not adjacent.is_empty():
+		return adjacent.pick_random()
+	return available.keys().pick_random()
+
+
+func pick_neighbor_in(available: Dictionary, from: Vector2i) -> Vector2i:
+	var options: Array[Vector2i] = []
+	for dir in CARDINALS:
+		var next: Vector2i = from + dir
+		if available.has(next):
+			options.append(next)
+	if options.is_empty():
+		return from
+	return options.pick_random()
+
+
+func carve_with_width(center: Vector2i, available: Dictionary) -> void:
+	var radius := maxi(profile.path_width, 0)
+	for oy in range(-radius, radius + 1):
+		for ox in range(-radius, radius + 1):
+			var cell := center + Vector2i(ox, oy)
+			if available.has(cell):
+				carve_cell(cell, available)
+
+
+func carve_cell(cell: Vector2i, available: Dictionary) -> void:
+	mark_as_mined(cell)
+	available.erase(cell)
+
+
 func stamp_map_clusters(available: Dictionary) -> void:
 	var size := maxi(profile.cluster_size, 2)
 	if size <= 0 or profile.cluster_chance <= 0.0 or available.is_empty():
 		return
-
-	var max_count := maxi(1, available.size() / (size * 8))
-	for i in max_count:
-		if randf() > profile.cluster_chance:
-			continue
+	# Esperanza proporcional al lote. Sin forzar 1 cluster por cada tira de ventana.
+	var expected := float(available.size()) * profile.cluster_chance / float(size * 4)
+	var budget := int(expected)
+	if randf() < expected - float(budget):
+		budget += 1
+	for i in budget:
 		var blob := grow_ore_blob(available, size)
 		for cell in blob:
 			mark_as_ore(cell)
 			available.erase(cell)
 
 
-## Resto de celdas: STARTING_ORE_AMOUNT% mineral suelto, el resto tierra.
+func stamp_bonus_ores(available: Dictionary) -> void:
+	if pending_bonus_ores <= 0 or available.is_empty():
+		return
+	var cap := maxi(1, int(ceil(float(available.size()) * BONUS_ORE_CAP_FRACTION)))
+	var count := mini(pending_bonus_ores, cap)
+	pending_bonus_ores -= count
+	for i in count:
+		if available.is_empty():
+			return
+		var cell: Vector2i = available.keys().pick_random()
+		mark_as_ore(cell)
+		available.erase(cell)
+
+
 func fill_remaining_cells(available: Dictionary) -> void:
 	var density := clampf(Stats.get_stat(Stats.STARTING_ORE_AMOUNT) * 0.01, 0.0, 1.0)
 	var cells: Array = available.keys()
@@ -194,21 +277,14 @@ func fill_remaining_cells(available: Dictionary) -> void:
 		available.erase(cell)
 
 
-## Blob 4-conectado de `size` ores. Si no llega, fallback a cuadrado ceil(sqrt(n)).
-func grow_ore_blob(available: Dictionary, size: int, preferred_seed: Variant = null) -> Array[Vector2i]:
+func grow_ore_blob(available: Dictionary, size: int) -> Array[Vector2i]:
 	var empty: Array[Vector2i] = []
 	if available.is_empty() or size <= 0:
 		return empty
-
-	var seed_cell: Vector2i
-	if preferred_seed is Vector2i and available.has(preferred_seed):
-		seed_cell = preferred_seed
-	else:
-		seed_cell = available.keys().pick_random()
+	var seed_cell: Vector2i = available.keys().pick_random()
 	var blob: Array[Vector2i] = []
 	var in_blob := {}
 	var frontier: Array[Vector2i] = [seed_cell]
-
 	while blob.size() < size and not frontier.is_empty():
 		var idx := randi() % frontier.size()
 		var cell: Vector2i = frontier[idx]
@@ -221,11 +297,9 @@ func grow_ore_blob(available: Dictionary, size: int, preferred_seed: Variant = n
 			var neighbor: Vector2i = cell + dir
 			if available.has(neighbor) and not in_blob.has(neighbor):
 				frontier.append(neighbor)
-
 	if blob.size() >= size:
 		blob.resize(size)
 		return blob
-
 	var square := try_square_blob(available, seed_cell, size)
 	if not square.is_empty():
 		return square
@@ -256,16 +330,13 @@ func square_fits(origin: Vector2i, side: int, available: Dictionary) -> bool:
 	return true
 
 
-## Encola dirt/ore de la ventana que aun no tienen visual (respawn al volver).
+# --- Visuals ---
 func enqueue_missing_visuals() -> void:
 	var area := chunk.window_cells
 	for cy in range(area.position.y, area.end.y):
 		for cx in range(area.position.x, area.end.x):
 			var cell := Vector2i(cx, cy)
-			var kind := get_kind(cell)
-			if kind != CellKind.DIRT and kind != CellKind.ORE:
-				continue
-			if live_blocks.has(cell):
+			if not is_solid(cell) or live_blocks.has(cell):
 				continue
 			enqueue_cell(cell)
 
@@ -284,23 +355,17 @@ func drain_spawn_queue() -> void:
 
 
 func spawn_queued_block(cell: Vector2i) -> void:
-	if live_blocks.has(cell):
+	if live_blocks.has(cell) or chunk == null or not chunk.is_inside_window(cell):
 		return
-	if chunk == null or not chunk.is_inside_window(cell):
+	if not is_solid(cell):
 		return
-
-	var kind := get_kind(cell)
-	if kind != CellKind.DIRT and kind != CellKind.ORE:
-		return
-
-	spawn_block_at_cell(cell, kind)
+	spawn_block_at_cell(cell, get_kind(cell))
 
 
 func spawn_block_at_cell(cell: Vector2i, kind: CellKind) -> Ore:
 	var ore := acquire_ore()
 	if ore == null:
 		return null
-
 	var data := get_dirt_data() if kind == CellKind.DIRT else get_ore_data_for_cell(cell)
 	ore.visible = false
 	ore.global_position = grid.get_ore_world_position(cell, 0)
@@ -319,10 +384,8 @@ func spawn_block_at_cell(cell: Vector2i, kind: CellKind) -> Ore:
 		ore.prepare_intro_collapsed()
 	else:
 		ore.show_instantly()
-
 	if not ore.destroyed.is_connected(_on_ore_destroyed):
 		ore.destroyed.connect(_on_ore_destroyed)
-
 	live_blocks[cell] = ore
 	return ore
 
@@ -330,7 +393,6 @@ func spawn_block_at_cell(cell: Vector2i, kind: CellKind) -> Ore:
 func acquire_ore() -> Ore:
 	if pool != null:
 		return pool.acquire(target)
-
 	var ore := Refs.ORE_SCENE.instantiate() as Ore
 	if ore != null:
 		target.add_child(ore)
@@ -359,77 +421,15 @@ func apply_block_layout_to_grid() -> void:
 	grid.sync_cell_size_from_layout()
 
 
-func handle_destroy_extras(source_cell: Vector2i) -> void:
-	var spawn_count := 0
+## Acumula ores extra para el siguiente lote. No pinta Unknown adelante.
+func handle_destroy_extras(_source_cell: Vector2i) -> void:
+	var bonus := 0
 	if randf() <= Stats.get_stat(Stats.SPAWN_ON_DESTROY_CHANCE):
-		spawn_count += 1
-	spawn_count += int(Stats.get_stat(Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT))
-	if spawn_count > 0:
-		stamp_ores_on_unknown(source_cell, spawn_count)
-
+		bonus += 1
+	bonus += int(Stats.get_stat(Stats.SPAWN_ORE_WHEN_DESTROYED_AMOUNT))
 	if randf() <= Stats.get_stat(Stats.SPAWN_CLUSTER_CHANCE):
-		var cluster_size := int(Stats.get_stat(Stats.SPAWN_CLUSTER_SIZE))
-		if cluster_size > 0:
-			stamp_cluster_on_unknown(source_cell, cluster_size)
-
-
-## Convierte celdas Unknown del anillo en mineral suelto (nunca rellena MINED).
-func stamp_ores_on_unknown(source_cell: Vector2i, count: int) -> void:
-	var available := collect_unknown_ahead()
-	for i in count:
-		if available.is_empty():
-			return
-		var cell := pick_closest_cell(available, source_cell)
-		mark_as_ore(cell)
-		available.erase(cell)
-		if chunk != null and chunk.is_inside_window(cell):
-			enqueue_cell(cell)
-
-
-## Blob de ores en Unknown, 4-conectados, sin tierra adentro.
-func stamp_cluster_on_unknown(source_cell: Vector2i, size: int) -> void:
-	var available := collect_unknown_ahead()
-	if available.is_empty():
-		return
-	var blob := grow_ore_blob(available, size, pick_closest_cell(available, source_cell))
-	for cell in blob:
-		mark_as_ore(cell)
-		if chunk != null and chunk.is_inside_window(cell):
-			enqueue_cell(cell)
-
-
-func pick_closest_cell(available: Dictionary, source: Vector2i) -> Vector2i:
-	if available.is_empty():
-		return source
-	var best: Vector2i = available.keys()[0]
-	var best_d := 2147483647
-	for cell in available.keys():
-		var offset: Vector2i = cell - source
-		var d := absi(offset.x) + absi(offset.y)
-		if d < best_d:
-			best_d = d
-			best = cell
-	return best
-
-
-## Unknown en el anillo alrededor de la ventana (lookahead), no dentro.
-func collect_unknown_ahead() -> Dictionary:
-	var available := {}
-	if chunk == null or not chunk.has_window:
-		return available
-
-	var area := chunk.window_cells.grow(maxi(extras_lookahead_cells, 1))
-	for cy in range(area.position.y, area.end.y):
-		for cx in range(area.position.x, area.end.x):
-			var cell := Vector2i(cx, cy)
-			if chunk.is_inside_window(cell):
-				continue
-			if get_kind(cell) != CellKind.UNKNOWN:
-				continue
-			if grid != null and grid.is_reserved(cell):
-				continue
-			available[cell] = true
-	return available
+		bonus += int(Stats.get_stat(Stats.SPAWN_CLUSTER_SIZE))
+	pending_bonus_ores += bonus
 
 
 func mark_as_ore(cell: Vector2i) -> void:
@@ -473,6 +473,60 @@ func get_player_cell() -> Vector2i:
 	if chunk == null or chunk.follow_target == null or grid == null:
 		return Vector2i.ZERO
 	return grid.world_to_cell(chunk.follow_target.global_position)
+
+
+## Siguiente bloque vivo a lo sumo `max_cells` (Chebyshev) de `from_cell`. `exclude` = celdas ya tocadas.
+func get_chain_ore(from_cell: Vector2i, max_cells: int, exclude: Dictionary) -> Ore:
+	var best: Ore = null
+	var best_d := 2147483647
+	var radius := maxi(max_cells, 1)
+	for oy in range(-radius, radius + 1):
+		for ox in range(-radius, radius + 1):
+			var cell := from_cell + Vector2i(ox, oy)
+			if exclude.has(cell):
+				continue
+			var ore: Ore = live_blocks.get(cell) as Ore
+			if not is_live_block(ore):
+				continue
+			var dist := cell_distance(from_cell, cell)
+			if dist > radius or dist >= best_d:
+				continue
+			best_d = dist
+			best = ore
+	return best
+
+
+func is_live_block(ore: Ore) -> bool:
+	return ore != null and is_instance_valid(ore) and ore.is_alive()
+
+
+func owns_live_block(cell: Vector2i, ore: Ore) -> bool:
+	return is_live_block(ore) and live_blocks.get(cell) == ore
+
+
+func cell_distance(a: Vector2i, b: Vector2i) -> int:
+	return maxi(absi(a.x - b.x), absi(a.y - b.y))
+
+
+# --- Bool queries ---
+func is_unknown(cell: Vector2i) -> bool:
+	return get_kind(cell) == CellKind.UNKNOWN
+
+
+func is_walkable(cell: Vector2i) -> bool:
+	return get_kind(cell) == CellKind.MINED
+
+
+func is_solid(cell: Vector2i) -> bool:
+	var kind := get_kind(cell)
+	return kind == CellKind.DIRT or kind == CellKind.ORE
+
+
+func is_adjacent_to_walkable(cell: Vector2i) -> bool:
+	for dir in CARDINALS:
+		if is_walkable(cell + dir):
+			return true
+	return false
 
 
 # --- Signal callbacks ---

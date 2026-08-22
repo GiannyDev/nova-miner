@@ -1,6 +1,6 @@
 extends Node2D
 class_name DrillWeapon
-## Pega al ore en contacto. El player no se frena a mano: el StaticBody del ore lo para.
+## Contacto = Area2D del tip. One-shot no frena; multi-hit pega, espera hit_delay, pega.
 
 signal drilling_started(ore: Ore)
 signal drilling_stopped
@@ -61,15 +61,18 @@ func get_damage(base_attack: float) -> float:
 	return base_attack
 
 
-## Contacto = tip Area2D ∪ body slide. Si hay input, pega al ore mas cercano.
-func tick(base_attack: float, delta: float, has_move_intent: bool, body_push_ores: Array[Ore]) -> void:
+## Pega primero (oneshots al paso). Si queda un bloque vivo, el player se frena.
+func tick(base_attack: float, delta: float, has_move_intent: bool) -> void:
 	hit_timer = maxf(hit_timer - delta, 0.0)
-	sync_contacts(body_push_ores)
+	sync_contacts()
 
 	if GameManager.get_drill_durability() <= 0.0 or not has_move_intent:
 		mining_ore = null
 		update_drilling_state()
 		return
+
+	var damage := get_damage(base_attack)
+	break_oneshots(damage)
 
 	mining_ore = find_closest_ore()
 	update_drilling_state()
@@ -79,19 +82,21 @@ func tick(base_attack: float, delta: float, has_move_intent: bool, body_push_ore
 		return
 
 	hit_timer = get_hit_delay()
-	deal_hit(mining_ore, get_damage(base_attack))
+	deal_hit(mining_ore, damage)
 
 
-func sync_contacts(body_push_ores: Array[Ore]) -> void:
+func sync_contacts() -> void:
 	overlapping_ores.clear()
 	for body in contact_area.get_overlapping_bodies():
 		track_ore(body)
-	for ore in body_push_ores:
-		if ore == null or not is_instance_valid(ore) or not ore.is_alive():
-			continue
-		if overlapping_ores.has(ore):
-			continue
-		overlapping_ores.append(ore)
+
+
+## Rompe en el acto todo contacto que muere de un golpe. Sin delay ni freno.
+func break_oneshots(damage: float) -> void:
+	var contacts := overlapping_ores.duplicate()
+	for ore in contacts:
+		if ore != null and ore.is_alive() and ore.current_hp <= damage:
+			deal_hit(ore, damage)
 
 
 func find_closest_ore() -> Ore:
@@ -114,7 +119,9 @@ func deal_hit(ore: Ore, damage: float) -> void:
 	ore.take_damage(damage)
 	ore_hit.emit(ore, damage)
 	if not ore.is_alive():
-		mining_ore = null
+		overlapping_ores.erase(ore)
+		if mining_ore == ore:
+			mining_ore = null
 
 
 func update_drill_rotation(delta: float) -> void:
@@ -163,3 +170,5 @@ func _on_contact_body_exited(body: Node) -> void:
 	var ore := resolve_ore(body)
 	if ore != null:
 		overlapping_ores.erase(ore)
+		if mining_ore == ore:
+			mining_ore = null

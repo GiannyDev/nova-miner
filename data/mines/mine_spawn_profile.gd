@@ -18,7 +18,18 @@ class_name MineSpawnProfile
 @export_range(0.0, 1.0, 0.01) var cluster_chance: float = 0.2
 ## Cuantos ores forma cada cluster de mapa.
 @export var cluster_size: int = 4
-@export var max_attempts_per_ore: int = 20
+
+@export_group("Walkable Paths")
+## Huecos sueltos al revelar (0 = cueva maciza, ~0.15 = rutas tipo Lague).
+@export_range(0.0, 1.0, 0.01) var walkable_chance: float = 0.15
+## Gusanos de tunel que parten de celdas ya vacias (spawn / tuneles previos).
+@export var path_worms: int = 2
+## Celdas que recorre cada gusano.
+@export var path_worm_length: int = 10
+## Radio extra del tunel (0 = 1 celda).
+@export var path_width: int = 0
+## Probabilidad de doblar en cada paso del gusano.
+@export_range(0.0, 1.0, 0.01) var path_turn_chance: float = 0.35
 
 @export_group("Content")
 @export var ore_weights: Array[OreSpawnEntry] = []
