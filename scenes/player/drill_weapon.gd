@@ -14,6 +14,8 @@ signal ore_hit(ore: Ore, damage: float)
 @export var hit_delay: float = 0.3
 ## Offset local del tip del drill (along +X del pivot).
 @export var tip_local_offset: Vector2 = Vector2(80.0, 0.0)
+## False en helpers: no gastan ni dependen de la durabilidad del player.
+@export var requires_durability: bool = true
 
 var weapon_data: WeaponData
 var pivot: Node2D
@@ -66,7 +68,7 @@ func tick(base_attack: float, delta: float, has_move_intent: bool) -> void:
 	hit_timer = maxf(hit_timer - delta, 0.0)
 	sync_contacts()
 
-	if GameManager.get_drill_durability() <= 0.0 or not has_move_intent:
+	if not has_move_intent or (requires_durability and GameManager.get_drill_durability() <= 0.0):
 		mining_ore = null
 		update_drilling_state()
 		return

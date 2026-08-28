@@ -19,6 +19,10 @@
 [ext_resource type="Resource" uid="uid://n1h27e03if8m" path="res://data/perks/perk_speed_boost.tres" id="16_perk_speed"]
 [ext_resource type="Resource" uid="uid://bmqavw2l3rg2f" path="res://data/perks/perk_cluster_bonus.tres" id="17_perk_cluster"]
 [ext_resource type="PackedScene" uid="uid://dcuuf1m1b62jv" path="res://scenes/ore/ore.tscn" id="18_ore"]
+[ext_resource type="Script" path="res://scenes/helpers/helper_manager.gd" id="19_helpers"]
+[ext_resource type="Resource" path="res://data/helpers/helper_miner.tres" id="20_helper_data"]
+[ext_resource type="Script" path="res://scenes/perks/perk_world_spawner.gd" id="21_perk_world"]
+[ext_resource type="PackedScene" path="res://scenes/ui/offscreen_marker/offscreen_marker_layer.tscn" id="22_markers"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
 shader = ExtResource("9_1xuby")
@@ -76,15 +80,25 @@ script = ExtResource("5_spwn")
 profile = ExtResource("3_k6t54")
 block_layout = ExtResource("8_layout")
 
+[node name="HelperManager" type="Node" parent="."]
+script = ExtResource("19_helpers")
+helper_data = ExtResource("20_helper_data")
+
+[node name="PerkWorldSpawner" type="Node" parent="."]
+script = ExtResource("21_perk_world")
+
 [node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
 script = ExtResource("4_grid")
 block_layout = ExtResource("8_layout")
+show_grid = false
 
 [node name="MineChunk" type="Node2D" parent="." unique_id=1154914423 node_paths=PackedStringArray("grid")]
 script = ExtResource("11_2crg8")
 grid = NodePath("../MineGrid")
 chunk_size_cells = Vector2i(20, 20)
 lookahead_cells = Vector2(0, 0)
+show_window = false
+show_camera_view = false
 
 [node name="YSort" type="Node2D" parent="." unique_id=844471242]
 y_sort_enabled = true
@@ -243,10 +257,24 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="OffscreenMarkerLayer" parent="GUI" unique_id=1847204401 instance=ExtResource("22_markers")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
 [node name="OrePool" type="Node" parent="." unique_id=890285604]
 script = ExtResource("12_0fijc")
 ore_scene = ExtResource("18_ore")
-prewarm_count = 480
+prewarm_count = 580
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=174832406]
 environment = SubResource("Environment_0fijc")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1424531671]
+visible = false
+color = Color(0.4396999, 0.49734855, 0.71200204, 1)

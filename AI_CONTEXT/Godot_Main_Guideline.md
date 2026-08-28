@@ -113,7 +113,7 @@ Never dump code without explanation.
 
 ### Readable gameplay (SOLID, no spaghetti)
 
-Simple and named beats clever. A function name should tell you the design: `drill_weapon.is_drilling()`, `ore.is_dirt()`, `spawner.is_unknown(cell)`.
+Simple and named beats clever. A function name should tell you the design: `drill_weapon.is_drilling()`, `ore.is_dirt()`, `ore.is_bomb()`, `ore.is_mineral()`, `spawner.is_unknown(cell)`.
 
 * **S — one owner.** Player moves and asks. Drill owns contact, hits, and “am I still against a block?”. Spawner owns cell kinds. Ore owns HP. Camera listens to signals; it does not reach into the Area2D.
 * **Queries, not copies.** If class B needs a fact from class A, A exposes `is_*` / `can_*`. Do not re-derive overlap, HP, or grid state in the caller.

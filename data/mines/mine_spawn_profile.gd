@@ -13,6 +13,10 @@ class_name MineSpawnProfile
 ## HP de la tierra. 1 = un golpe.
 @export var dirt_hp: float = 1.0
 
+@export_group("Bombs")
+## Bloque bomba (misma escena Ore). Chance/HP/radio salen de Stats.
+@export var bomb_data: OreData
+
 @export_group("Clusters")
 ## Probabilidad de sellar un blob de ores juntos (sin tierra adentro) al revelar celdas.
 @export_range(0.0, 1.0, 0.01) var cluster_chance: float = 0.2
@@ -39,6 +43,13 @@ class_name MineSpawnProfile
 @export_group("Feel")
 ## Solo intro de la run. Mid-run los bloques aparecen sin pop-in.
 @export var spawn_animation_time: float = 0.3
+
+@export_group("World Perks")
+## Cuantos pickups se colocan por run (0 = ninguno).
+@export var perk_count: int = 2
+## Distancia minima al spawn del player, en celdas.
+@export var perk_min_distance_cells: int = 14
+@export var perk_pool: Array[PerkData] = []
 
 
 func get_safe_zone_rect(player_cell: Vector2i) -> Rect2i:

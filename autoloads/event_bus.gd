@@ -12,6 +12,8 @@ signal on_level_floor_selected(floor: LevelData)
 signal on_run_started
 signal on_run_ended
 signal run_ore_destroyed(ore: Ore)
+## Minado logico (ayudante fuera de ventana). ore_data puede ser dirt/bomb/mineral.
+signal cell_mined(ore_data: OreData)
 
 ## Durabilidad de la perforadora (HUD + fin de run).
 signal drill_durability_changed(current: float, max_value: float)

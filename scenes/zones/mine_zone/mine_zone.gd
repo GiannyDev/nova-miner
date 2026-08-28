@@ -22,8 +22,11 @@ const PERK_DISPLAY_SCENE := preload("res://scenes/ui/perks/perk_mine_display.tsc
 @onready var chunk: MineChunk = $MineChunk
 @onready var ore_pool: OrePool = $OrePool
 @onready var ore_spawner: OreSpawner = $OreSpawner
+@onready var helper_manager: HelperManager = $HelperManager
+@onready var perk_world_spawner: PerkWorldSpawner = $PerkWorldSpawner
 @onready var ysort: Node2D = $YSort
 @onready var player: Player = $YSort/Player
+@onready var offscreen_markers: OffscreenMarkerLayer = %OffscreenMarkerLayer
 
 ## GUI
 @onready var inventory: Inventory = %Inventory
@@ -61,6 +64,8 @@ func _ready() -> void:
 	Refs.inventory = inventory
 	Refs.mine_zone = self
 	ore_spawner.setup(grid, chunk, ysort, ore_pool)
+	helper_manager.setup(ore_spawner, ysort, offscreen_markers)
+	perk_world_spawner.setup(ore_spawner, ysort, offscreen_markers)
 	GameManager.repair_drill_full()
 	spawn_player()
 	connect_run_tracking()
@@ -96,6 +101,7 @@ func _process(delta: float) -> void:
 func connect_run_tracking() -> void:
 	if not EventBus.ore_amount_changed.is_connected(_on_ore_amount_changed): EventBus.ore_amount_changed.connect(_on_ore_amount_changed)
 	if not EventBus.run_ore_destroyed.is_connected(_on_run_ore_destroyed): EventBus.run_ore_destroyed.connect(_on_run_ore_destroyed)
+	if not EventBus.cell_mined.is_connected(_on_cell_mined): EventBus.cell_mined.connect(_on_cell_mined)
 	if not EventBus.drill_durability_depleted.is_connected(_on_drill_durability_depleted): EventBus.drill_durability_depleted.connect(_on_drill_durability_depleted)
 	if not EventBus.drill_durability_changed.is_connected(_on_drill_durability_changed): EventBus.drill_durability_changed.connect(_on_drill_durability_changed)
 	if player != null and not player.dealt_damage.is_connected(_on_dealt_damage): player.dealt_damage.connect(_on_dealt_damage)
@@ -132,6 +138,7 @@ func play_intro_sequence() -> void:
 	start_mine_generation()
 	ore_spawner.flush_spawn_queue()
 	ore_spawner.intro_spawn_mode = false
+	perk_world_spawner.stamp_run_perks()
 
 	await get_tree().create_timer(delay_before_ores_rise).timeout
 	await ore_spawner.play_intro_rise_all(ores_rise_duration)
@@ -140,6 +147,7 @@ func play_intro_sequence() -> void:
 func begin_run() -> void:
 	GameManager.curr_state = GameManager.GameStates.PLAYING
 	refresh_durability_hud()
+	helper_manager.spawn_run_helpers(grid.world_to_cell(player.global_position))
 	EventBus.on_run_started.emit()
 
 
@@ -266,6 +274,9 @@ func refresh_durability_hud() -> void:
 
 func end_run() -> void:
 	run_ended = true
+	helper_manager.clear_helpers()
+	perk_world_spawner.clear_pickups()
+	offscreen_markers.clear_targets()
 	EventBus.on_run_ended.emit()
 	GameManager.curr_state = GameManager.GameStates.PAUSED
 	SaveData.save_progress()
@@ -288,7 +299,16 @@ func _on_ore_amount_changed(ore_data: OreData, _new_amount: int, delta: int) -> 
 func _on_run_ore_destroyed(ore: Ore) -> void:
 	if GameManager.curr_state != GameManager.GameStates.PLAYING:
 		return
-	if ore != null and ore.is_dirt():
+	if ore != null and not ore.is_mineral():
+		return
+	blocks_mined += 1
+
+
+## Minado logico (ayudante / blast culled). Solo mineral cuenta en recap.
+func _on_cell_mined(ore_data: OreData) -> void:
+	if GameManager.curr_state != GameManager.GameStates.PLAYING:
+		return
+	if ore_data == null or ore_data.is_dirt or ore_data.is_bomb:
 		return
 	blocks_mined += 1
 

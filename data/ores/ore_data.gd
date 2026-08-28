@@ -11,3 +11,7 @@ class_name OreData
 @export var is_refined: bool = false
 ## Tierra de la cueva: se perfora, no dropea mineral ni cuenta en recap.
 @export var is_dirt: bool = false
+## Bloque bomba: mismo Ore, explota al morir. No es moneda ni entra al bag.
+@export var is_bomb: bool = false
+## Multiplica el sprite. Placeholder de especiales (bomba) hasta tener textura propia.
+@export var tint: Color = Color.WHITE

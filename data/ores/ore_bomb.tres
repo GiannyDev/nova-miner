@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="OreData" format=3 uid="uid://bqbombblock01"]
+
+[ext_resource type="Script" uid="uid://bll20q5jf1f83" path="res://data/ores/ore_definition.gd" id="1_def"]
+[ext_resource type="Script" uid="uid://b252iw7cblwlw" path="res://data/ores/ore_data.gd" id="1_ore"]
+
+[resource]
+script = ExtResource("1_ore")
+id = "bomb"
+is_bomb = true
+tint = Color(0.95, 0.32, 0.1, 1)
+metadata/_custom_type_script = "uid://b252iw7cblwlw"

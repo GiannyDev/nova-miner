@@ -100,7 +100,7 @@ func destroy() -> void:
 		grid.remove_stack_occupation(grid_cell)
 
 	EventBus.run_ore_destroyed.emit(self)
-	if not is_dirt():
+	if is_mineral():
 		spawn_ore_drops()
 	destroyed.emit(self)
 
@@ -255,11 +255,24 @@ func is_dirt() -> bool:
 	return ore_data != null and ore_data.is_dirt
 
 
-## Tierra mas oscura; mineral queda blanco.
+## Bomba: mismo collider/HP; al morir el spawner dispara el blast.
+func is_bomb() -> bool:
+	return ore_data != null and ore_data.is_bomb
+
+
+## Mineral de bag: ni tierra ni bomba.
+func is_mineral() -> bool:
+	return not is_dirt() and not is_bomb()
+
+
+## Tierra mas oscura; bomba usa tint del OreData; mineral queda blanco.
 func apply_block_look() -> void:
 	if sprite == null:
 		return
-	sprite.modulate = Color(0.48, 0.42, 0.38) if is_dirt() else Color.WHITE
+	if is_dirt():
+		sprite.modulate = Color(0.48, 0.42, 0.38)
+		return
+	sprite.modulate = ore_data.tint if ore_data != null else Color.WHITE
 
 
 # --- Signal callbacks ---

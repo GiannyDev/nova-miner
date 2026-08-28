@@ -10,4 +10,5 @@ El juego es muy simple, el player entra a minas, mina ores por X segundos y regr
 - El User puede transformar ores para obtener otros recursos necesarios del juego
 - Cada mapa tiene sus propios ores a spawnear segun un % a definir (Configurable en sus Resources)
 - La cueva se genera al revelar celdas (`MineSpawnProfile`). Tierra + mineral + **rutas caminables** (huecos / gusanos tipo Lague). Densidad de mineral suelto = `Stats.STARTING_ORE_AMOUNT` (%). Lo minado queda hueco.
-- El UpgradeTree permitira comprar mejoras como PlayerSpeed, UnlockPlayerDash, PlayerDashSpeed, OreCount, SpawnXOresWhenOneDestroyed, etc. Todo para progreso del juego.
+- El UpgradeTree permitira comprar mejoras como PlayerSpeed, OreCount, SpawnXOresWhenOneDestroyed, **bomb blocks** (chance / damage / radius / HP), **helpers** (count / speed / damage; sin unlock — unlock es solo para locaciones), etc.
+- Ayudantes: N mineros persistentes por run (`Stats.HELPERS_UNLOCKED`). Mismo loop que el player (`MinerBody` + `DrillWeapon` + `MovementComponent`): vagan y perforan al contacto (oneshot o chip). Fuera de ventana, `mine_cell` en la celda del tip. `ensure_generated` abre túnel. Loot al bag. Iconos de borde (`OffscreenMarkerLayer`) para helpers y perks del mundo.

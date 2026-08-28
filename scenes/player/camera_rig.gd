@@ -78,7 +78,7 @@ func update_zoom(delta: float) -> void:
 	zoom = zoom.lerp(target_zoom, clampf(profile.zoom_smoothing * delta, 0.0, 1.0))
 
 
-## Shake omnidireccional. intensity en px de offset, duration en segundos.
+## Shake omnidireccional. Valores < 0 usan el CameraFeelProfile. Uso: Refs.camera.shake(18, 0.2).
 func shake(intensity: float = -1.0, duration: float = -1.0, frequency: float = -1.0) -> void:
 	if intensity < 0.0:
 		intensity = profile.default_shake_intensity if profile != null else 8.0
@@ -90,6 +90,14 @@ func shake(intensity: float = -1.0, duration: float = -1.0, frequency: float = -
 	shake_duration = maxf(duration, 0.01)
 	shake_time_left = shake_duration
 	shake_frequency = frequency
+
+
+## Shake de explosion. Lee bomb_shake_* del profile.
+func shake_bomb() -> void:
+	if profile == null:
+		shake(18.0, 0.24, 34.0)
+		return
+	shake(profile.bomb_shake_intensity, profile.bomb_shake_duration, profile.bomb_shake_frequency)
 
 
 ## Empuje direccional (drill / impacto). direction se normaliza.

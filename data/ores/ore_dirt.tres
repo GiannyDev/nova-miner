@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="OreData" format=3 uid="uid://bqdirtblock01"]
 
+[ext_resource type="Script" uid="uid://bll20q5jf1f83" path="res://data/ores/ore_definition.gd" id="1_7x61q"]
 [ext_resource type="Script" uid="uid://b252iw7cblwlw" path="res://data/ores/ore_data.gd" id="1_8o62o"]
 
 [resource]

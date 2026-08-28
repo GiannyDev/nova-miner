@@ -33,8 +33,8 @@ Transition="*uid://ws1o8hxgjvso"
 Feedbacks="*uid://bprgufiyc2d0o"
 SaveData="*res://autoloads/save_data.gd"
 SFX="*uid://blpgryosiqe7p"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 Effects="*uid://dmuwjpg4doefq"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
@@ -268,4 +268,4 @@ common/physics_interpolation=true
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/defaults/default_clear_color=Color(0.30323282, 0.30323285, 0.30323276, 1)
+environment/defaults/default_clear_color=Color(0.26293278, 0.2629323, 0.26293254, 1)

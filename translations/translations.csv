@@ -40,10 +40,22 @@ UPGRADE_DEPOSIT_TIME_DESC,Change deposit time by {value}.,Cambia el tiempo de de
 UPGRADE_REFINEMENT_TIME_TITLE,Refinement Time,Tiempo de refinamiento
 UPGRADE_REFINEMENT_TIME_DESC,Change refinement time by {value}.,Cambia el tiempo de refinamiento en {value}.
 UPGRADE_HELPERS_UNLOCKED_TITLE,Helpers,Ayudantes
-UPGRADE_HELPERS_UNLOCKED_DESC,Unlock {value} helpers.,Desbloquea {value} ayudantes.
+UPGRADE_HELPERS_UNLOCKED_DESC,Spawn {value} extra helper miners.,Spawnea {value} mineros ayudantes extra.
+UPGRADE_HELPER_SPEED_TITLE,Helper Speed,Velocidad de ayudante
+UPGRADE_HELPER_SPEED_DESC,Increase helper move speed by {value}.,Aumenta la velocidad de los ayudantes en {value}.
+UPGRADE_HELPER_DAMAGE_TITLE,Helper Damage,Daño de ayudante
+UPGRADE_HELPER_DAMAGE_DESC,Increase helper mining damage by {value}.,Aumenta el daño de minado de los ayudantes en {value}.
 UPGRADE_UNLOCK_WEAPON_SHOP_TITLE,Weapon Shop,Tienda de armas
 UPGRADE_UNLOCK_WEAPON_SHOP_DESC,Unlock the weapon shop.,Desbloquea la tienda de armas.
 UPGRADE_UNLOCK_REFINEMENT_TITLE,Refinement,Refinamiento
 UPGRADE_UNLOCK_REFINEMENT_DESC,Unlock ore refinement.,Desbloquea el refinamiento de minerales.
 UPGRADE_UNLOCK_WORKSHOP_TITLE,Workshop,Taller
 UPGRADE_UNLOCK_WORKSHOP_DESC,Unlock the companion workshop.,Desbloquea el taller de compañeros.
+UPGRADE_BOMB_CHANCE_TITLE,Bomb Blocks,Bloques bomba
+UPGRADE_BOMB_CHANCE_DESC,Chance for bomb blocks to appear: {value}.,Probabilidad de bloques bomba: {value}.
+UPGRADE_BOMB_DAMAGE_TITLE,Bomb Damage,Daño de bomba
+UPGRADE_BOMB_DAMAGE_DESC,Increase bomb blast damage by {value}.,Aumenta el daño de la explosión en {value}.
+UPGRADE_BOMB_RADIUS_TITLE,Bomb Radius,Radio de bomba
+UPGRADE_BOMB_RADIUS_DESC,Increase bomb blast radius by {value} cells.,Aumenta el radio de explosión en {value} celdas.
+UPGRADE_BOMB_HP_TITLE,Bomb HP,Vida de bomba
+UPGRADE_BOMB_HP_DESC,Increase bomb block HP by {value}.,Aumenta la vida del bloque bomba en {value}.

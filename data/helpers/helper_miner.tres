@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="HelperData" format=3 uid="uid://cyff6ua7ahrn7"]
+
+[ext_resource type="Script" uid="uid://ckgxxpub35g1x" path="res://data/helpers/helper_data.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")

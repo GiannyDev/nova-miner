@@ -14,11 +14,22 @@ const DAMAGE_TEXT_SCENE = preload("res://scenes/ui/damage_text/damage_text.tscn"
 const PERK_MINE_DISPLAY_SCENE = preload("res://scenes/ui/perks/perk_mine_display.tscn")
 
 
-## Shake omnidireccional. Atajo de Refs.camera.shake(...).
-func shake_camera(intensity: float, duration: float = 0.18, frequency: float = 28.0) -> void:
+## Shake omnidireccional. Atajo de Refs.camera.shake(...). No-op si no hay camara de zona.
+func shake_camera(intensity: float = -1.0, duration: float = -1.0, frequency: float = -1.0) -> void:
+	if camera == null:
+		return
 	camera.shake(intensity, duration, frequency)
 
 
 ## Empuje direccional (impacto / drill).
 func punch_camera(direction: Vector2, strength: float) -> void:
+	if camera == null:
+		return
 	camera.punch(direction, strength)
+
+
+## Shake de bomba. Atajo de Refs.camera.shake_bomb().
+func shake_bomb() -> void:
+	if camera == null:
+		return
+	camera.shake_bomb()

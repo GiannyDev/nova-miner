@@ -20,6 +20,12 @@ enum Type {
 	UNLOCK_WEAPON_SHOP,
 	UNLOCK_REFINEMENT,
 	UNLOCK_WORKSHOP,
+	BOMB_CHANCE,
+	BOMB_DAMAGE,
+	BOMB_RADIUS,
+	BOMB_HP,
+	HELPER_SPEED,
+	HELPER_DAMAGE,
 }
 
 enum OperationMode {
@@ -73,6 +79,18 @@ static func type_name(upgrade_type: Type) -> String:
 			return "unlock_refinement"
 		Type.UNLOCK_WORKSHOP:
 			return "unlock_workshop"
+		Type.BOMB_CHANCE:
+			return "bomb_chance"
+		Type.BOMB_DAMAGE:
+			return "bomb_damage"
+		Type.BOMB_RADIUS:
+			return "bomb_radius"
+		Type.BOMB_HP:
+			return "bomb_hp"
+		Type.HELPER_SPEED:
+			return "helper_speed"
+		Type.HELPER_DAMAGE:
+			return "helper_damage"
 		_:
 			return "unknown_%d" % int(upgrade_type)
 
@@ -114,6 +132,18 @@ static func from_name(type_name: String) -> int:
 			return Type.UNLOCK_REFINEMENT
 		"unlock_workshop":
 			return Type.UNLOCK_WORKSHOP
+		"bomb_chance":
+			return Type.BOMB_CHANCE
+		"bomb_damage":
+			return Type.BOMB_DAMAGE
+		"bomb_radius":
+			return Type.BOMB_RADIUS
+		"bomb_hp":
+			return Type.BOMB_HP
+		"helper_speed":
+			return Type.HELPER_SPEED
+		"helper_damage":
+			return Type.HELPER_DAMAGE
 		_:
 			return -1
 
@@ -154,6 +184,18 @@ static func get_stat_id(upgrade_type: int) -> int:
 			return Stats.UNLOCK_REFINEMENT
 		Type.UNLOCK_WORKSHOP:
 			return Stats.UNLOCK_WORKSHOP
+		Type.BOMB_CHANCE:
+			return Stats.BOMB_SPAWN_CHANCE
+		Type.BOMB_DAMAGE:
+			return Stats.BOMB_DAMAGE
+		Type.BOMB_RADIUS:
+			return Stats.BOMB_RADIUS_CELLS
+		Type.BOMB_HP:
+			return Stats.BOMB_HP
+		Type.HELPER_SPEED:
+			return Stats.HELPER_SPEED
+		Type.HELPER_DAMAGE:
+			return Stats.HELPER_DMG
 		_:
 			return Stats.PLAYER_DMG
 
@@ -180,7 +222,7 @@ static func get_operation_mode(_upgrade_type: int) -> OperationMode:
 
 static func get_display_type(upgrade_type: int) -> OperationMode:
 	match int(upgrade_type):
-		Type.SPAWN_CHANCE, Type.CLUSTER_CHANCE:
+		Type.SPAWN_CHANCE, Type.CLUSTER_CHANCE, Type.BOMB_CHANCE:
 			return OperationMode.PERCENT
 		_:
 			return OperationMode.FLAT

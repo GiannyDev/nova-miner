@@ -26,3 +26,7 @@ class_name CameraFeelProfile
 @export var default_shake_intensity: float = 8.0
 @export var default_shake_duration: float = 0.18
 @export var default_shake_frequency: float = 28.0
+## Shake al explotar una bomba. Desde cualquier lado: Refs.camera.shake(...) o shake_bomb().
+@export var bomb_shake_intensity: float = 18.0
+@export var bomb_shake_duration: float = 0.24
+@export var bomb_shake_frequency: float = 34.0

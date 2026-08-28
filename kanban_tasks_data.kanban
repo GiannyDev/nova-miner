@@ -26,9 +26,7 @@
 				"3b3b0bc7-43e5-427b-b4fe-3de61d924eaf",
 				"159e05c2-98a8-486a-8c24-94a911083de6",
 				"3473517d-78fb-4fea-a266-77ff81a7ea1e",
-				"d508cf91-a12e-4ccc-8c09-a5daa62e2892",
-				"6cc19602-2860-4707-a332-2c6668e08210",
-				"9bb14ea9-ebcd-45a4-86c3-4d3373aff8aa"
+				"0389f395-acff-4f21-88e5-57447935a508"
 			]
 		},
 		{
@@ -42,7 +40,9 @@
 				"8e620b42-c806-4906-a584-dfe8500b4982",
 				"49f5ad05-f41a-43a7-aa19-eaa01185d495",
 				"763b820c-3ecb-4bfe-925c-57d7914973b7",
-				"21d85722-85d5-4d51-a139-b65bed879dd0"
+				"21d85722-85d5-4d51-a139-b65bed879dd0",
+				"6cc19602-2860-4707-a332-2c6668e08210",
+				"9bb14ea9-ebcd-45a4-86c3-4d3373aff8aa"
 			]
 		},
 		{
@@ -198,15 +198,15 @@
 			"steps": []
 		},
 		{
-			"uuid": "d508cf91-a12e-4ccc-8c09-a5daa62e2892",
-			"title": "Limpiar UpgradeNode con enums y category",
+			"uuid": "763b820c-3ecb-4bfe-925c-57d7914973b7",
+			"title": "Limpiar UpgradeTree",
 			"description": "",
 			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
 			"steps": []
 		},
 		{
-			"uuid": "763b820c-3ecb-4bfe-925c-57d7914973b7",
-			"title": "Limpiar UpgradeTree",
+			"uuid": "0389f395-acff-4f21-88e5-57447935a508",
+			"title": "Colaboradores",
 			"description": "",
 			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
 			"steps": []

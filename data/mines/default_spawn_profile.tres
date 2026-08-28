@@ -4,6 +4,10 @@
 [ext_resource type="Resource" uid="uid://bqdirtblock01" path="res://data/ores/ore_dirt.tres" id="2_dirt"]
 [ext_resource type="Resource" uid="uid://esh58raccg7l" path="res://data/ores/ore_gold.tres" id="3_gold"]
 [ext_resource type="Script" uid="uid://c7piehx0h7t6d" path="res://data/mines/ore_spawn_entry.gd" id="4_entry"]
+[ext_resource type="Resource" uid="uid://bqbombblock01" path="res://data/ores/ore_bomb.tres" id="5_bomb"]
+[ext_resource type="Resource" uid="uid://n1h27e03if8m" path="res://data/perks/perk_speed_boost.tres" id="6_perk_speed"]
+[ext_resource type="Resource" uid="uid://bmqavw2l3rg2f" path="res://data/perks/perk_cluster_bonus.tres" id="7_perk_cluster"]
+[ext_resource type="Script" uid="uid://xhadfk6c5chj" path="res://data/perks/perk_data.gd" id="8_perk_script"]
 
 [sub_resource type="Resource" id="OreSpawnEntry_gold"]
 script = ExtResource("4_entry")
@@ -13,4 +17,7 @@ ore_data = ExtResource("3_gold")
 script = ExtResource("1_profile")
 start_clearance_cells = 2
 dirt_data = ExtResource("2_dirt")
+bomb_data = ExtResource("5_bomb")
+path_worms = 3
 ore_weights = Array[ExtResource("4_entry")]([SubResource("OreSpawnEntry_gold")])
+perk_pool = Array[ExtResource("8_perk_script")]([ExtResource("6_perk_speed"), ExtResource("7_perk_cluster")])

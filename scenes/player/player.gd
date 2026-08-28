@@ -1,4 +1,4 @@
-extends CharacterBody2D
+extends MinerBody
 class_name Player
 
 signal dealt_damage(amount: float)
@@ -18,15 +18,11 @@ signal dealt_damage(amount: float)
 @export var lightning_hops: int = 8
 @export var lightning_range_cells: int = 3
 
-@onready var movement_component: MovementComponent = $MovementComponent
 @onready var spine_sprite: SpineSprite = $SpineSprite
 @onready var weapon_mount: Node2D = $Weapon
-@onready var drill_weapon: DrillWeapon = %DrillBase
 @onready var dust_vfx: GPUParticles2D = $DustVFX
 
 var input_direction: Vector2 = Vector2.ZERO
-var facing_direction: Vector2 = Vector2.RIGHT
-var aim_direction: Vector2 = Vector2.RIGHT
 var current_animation: String = ""
 var idle_uses_run_fallback: bool = false
 var equipped_weapon: WeaponData
@@ -46,11 +42,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if can_move():
 		get_input_direction()
-		update_facing()
+		move_intent = input_direction
 	else:
 		input_direction = Vector2.ZERO
-	update_drill_weapon(delta)
-	move_player(delta)
+		move_intent = Vector2.ZERO
+	tick_miner(delta, get_move_speed(), get_attack_damage())
+	apply_facing_flip()
 	update_dust_vfx()
 	update_animation()
 
@@ -101,15 +98,6 @@ func get_input_direction() -> void:
 		input_direction = input_direction.normalized()
 
 
-func move_player(delta: float) -> void:
-	# El body no choca ores: si el drill sigue contra un bloque vivo, frenamos aca.
-	if drill_weapon.is_drilling():
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	movement_component.move(self, input_direction, delta, get_move_speed())
-
-
 ## Polvo detras del player mientras hay velocity.
 func update_dust_vfx() -> void:
 	var moving := velocity.length() > dust_move_threshold
@@ -124,34 +112,6 @@ func update_dust_vfx() -> void:
 	dust_vfx.position = Vector2(dust_trail_offset, 0.0).rotated(trail_dir.angle())
 	dust_vfx.position.y += trail_dir.y * dust_y_bias
 	dust_vfx.show_behind_parent = trail_dir.y < 0.3
-
-
-func update_facing() -> void:
-	if input_direction.length_squared() > 0.01:
-		facing_direction = input_direction.normalized()
-	elif velocity.length_squared() > run_speed_threshold * run_speed_threshold:
-		facing_direction = velocity.normalized()
-
-	apply_facing_flip()
-
-
-func update_drill_weapon(delta: float) -> void:
-	var has_move_intent := input_direction.length_squared() > 0.01
-	var attack := get_attack_damage()
-	aim_direction = get_drill_aim_direction()
-	drill_weapon.set_aim_direction(aim_direction)
-	drill_weapon.tick(attack, delta, has_move_intent)
-
-
-## Solo movimiento / ultimo facing. Nunca apunta al ore (evita flick al destruir).
-func get_drill_aim_direction() -> Vector2:
-	if input_direction.length_squared() > 0.01:
-		return input_direction.normalized()
-
-	if facing_direction.length_squared() > 0.01:
-		return facing_direction.normalized()
-
-	return Vector2.RIGHT
 
 
 func apply_equipped_weapon() -> void:

@@ -21,6 +21,12 @@ enum {
 	UNLOCK_WEAPON_SHOP,
 	UNLOCK_REFINEMENT,
 	UNLOCK_WORKSHOP,
+	BOMB_SPAWN_CHANCE,
+	BOMB_DAMAGE,
+	BOMB_RADIUS_CELLS,
+	BOMB_HP,
+	HELPER_SPEED,
+	HELPER_DMG,
 }
 
 const DEFAULTS: Dictionary[int, float] = {
@@ -42,6 +48,15 @@ const DEFAULTS: Dictionary[int, float] = {
 	UNLOCK_WEAPON_SHOP: 0.0,
 	UNLOCK_REFINEMENT: 0.0,
 	UNLOCK_WORKSHOP: 0.0,
+	## 0 hasta la primera compra. Luego % de tierra que nace bomba (0.03 = 3%).
+	BOMB_SPAWN_CHANCE: 0.0,
+	## Daño del blast vs HP del vecino. 32 oneshotea gold (24) y tierra (1).
+	BOMB_DAMAGE: 32.0,
+	## Chebyshev: 1 = anillo de 8, 2 = 5x5, 3 = 7x7.
+	BOMB_RADIUS_CELLS: 1.0,
+	BOMB_HP: 1.0,
+	HELPER_SPEED: 220.0,
+	HELPER_DMG: 8.0,
 }
 
 var values: Dictionary[int, float] = {}
@@ -143,6 +158,12 @@ func stat_name(stat_id: int) -> String:
 		UNLOCK_WEAPON_SHOP: return "unlock_weapon_shop"
 		UNLOCK_REFINEMENT: return "unlock_refinement"
 		UNLOCK_WORKSHOP: return "unlock_workshop"
+		BOMB_SPAWN_CHANCE: return "bomb_spawn_chance"
+		BOMB_DAMAGE: return "bomb_damage"
+		BOMB_RADIUS_CELLS: return "bomb_radius_cells"
+		BOMB_HP: return "bomb_hp"
+		HELPER_SPEED: return "helper_speed"
+		HELPER_DMG: return "helper_dmg"
 		_:
 			return "unknown_%d" % int(stat_id)
 

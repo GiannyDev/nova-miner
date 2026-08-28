@@ -127,7 +127,7 @@ unique_name_in_owner = true
 upgrade_id = "attack_right"
 costs = Array[int]([5, 10, 15])
 values = Array[float]([2.0, 3.0, 5.0])
-node_connections = [NodePath("../Attack2"), NodePath("../Attack3"), NodePath("../SpawnOnDestroy"), NodePath("../StartingOreAmount")]
+node_connections = [NodePath("../Attack2"), NodePath("../Attack3"), NodePath("../SpawnOnDestroy"), NodePath("../StartingOreAmount"), NodePath("../BombChance"), NodePath("../HelperCount")]
 
 [node name="Attack2" parent="World/Nodes" unique_id=404939488 instance=ExtResource("6")]
 position = Vector2(75, 0)
@@ -169,6 +169,57 @@ upgrade_id = "speed"
 upgrade_type = 1
 costs = Array[int]([10, 18, 30, 50])
 values = Array[float]([40.0, 50.0, 60.0, 80.0])
+
+[node name="BombChance" parent="World/Nodes" unique_id=1847203301 node_paths=PackedStringArray("node_connections") instance=ExtResource("6")]
+position = Vector2(75, -75)
+upgrade_id = "bomb_chance"
+upgrade_type = 17
+costs = Array[int]([8, 16, 28])
+values = Array[float]([0.03, 0.03, 0.04])
+node_connections = [NodePath("../BombDamage"), NodePath("../BombRadius"), NodePath("../BombHp")]
+
+[node name="BombDamage" parent="World/Nodes" unique_id=1847203302 instance=ExtResource("6")]
+position = Vector2(150, -75)
+upgrade_id = "bomb_damage"
+upgrade_type = 18
+costs = Array[int]([12, 22, 36])
+values = Array[float]([8.0, 12.0, 16.0])
+
+[node name="BombRadius" parent="World/Nodes" unique_id=1847203303 instance=ExtResource("6")]
+position = Vector2(75, -150)
+upgrade_id = "bomb_radius"
+upgrade_type = 19
+costs = Array[int]([20, 40])
+values = Array[float]([1.0, 1.0])
+
+[node name="BombHp" parent="World/Nodes" unique_id=1847203304 instance=ExtResource("6")]
+position = Vector2(150, -150)
+upgrade_id = "bomb_hp"
+upgrade_type = 20
+costs = Array[int]([10, 18, 30])
+values = Array[float]([1.0, 2.0, 3.0])
+
+[node name="HelperCount" parent="World/Nodes" unique_id=1847204501 node_paths=PackedStringArray("node_connections") instance=ExtResource("6")]
+position = Vector2(-75, -75)
+upgrade_id = "helper_count"
+upgrade_type = 13
+costs = Array[int]([8, 16, 28])
+values = Array[float]([1.0, 1.0, 1.0])
+node_connections = [NodePath("../HelperSpeed"), NodePath("../HelperDamage")]
+
+[node name="HelperSpeed" parent="World/Nodes" unique_id=1847204502 instance=ExtResource("6")]
+position = Vector2(-150, -75)
+upgrade_id = "helper_speed"
+upgrade_type = 21
+costs = Array[int]([10, 18, 30])
+values = Array[float]([40.0, 50.0, 60.0])
+
+[node name="HelperDamage" parent="World/Nodes" unique_id=1847204503 instance=ExtResource("6")]
+position = Vector2(-75, -150)
+upgrade_id = "helper_damage"
+upgrade_type = 22
+costs = Array[int]([12, 22, 36])
+values = Array[float]([4.0, 6.0, 8.0])
 
 [node name="HUD" type="Control" parent="." unique_id=804636700]
 layout_mode = 1
