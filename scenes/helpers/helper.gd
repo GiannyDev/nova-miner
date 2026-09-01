@@ -73,7 +73,7 @@ func chip_logical_contact(delta: float) -> void:
 		return
 	var cell := get_logical_contact_cell()
 	var damage := get_attack_damage()
-	if spawner.get_cell_hp(cell) <= damage:
+	if spawner.is_cell_oneshot_for(cell, damage):
 		spawner.mine_cell(cell, damage)
 		return
 	if logical_hit_timer > 0.0:
@@ -110,13 +110,13 @@ func get_logical_contact_cell() -> Vector2i:
 	return current_cell()
 
 
-## Frena tambien si el bloque culled delante no muere de un golpe.
+## Frena tambien si el bloque culled delante no es oneshot de HP lleno.
 func should_stop_for_drill() -> bool:
 	if super.should_stop_for_drill():
 		return true
 	if not has_logical_contact():
 		return false
-	return spawner.get_cell_hp(get_logical_contact_cell()) > get_attack_damage()
+	return not spawner.is_cell_oneshot_for(get_logical_contact_cell(), get_attack_damage())
 
 
 func has_logical_contact() -> bool:

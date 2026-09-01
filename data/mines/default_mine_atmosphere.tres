@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MineAtmosphere" format=3 uid="uid://b8mineatmo001"]
+
+[ext_resource type="Script" uid="uid://cj7ssptp2ja1v" path="res://data/mines/mine_atmosphere.gd" id="1_atmo"]
+
+[resource]
+script = ExtResource("1_atmo")
+torch_energy = 1.0

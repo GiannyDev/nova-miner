@@ -1,12 +1,11 @@
 [gd_scene format=3 uid="uid://n5gmi3qq1g4k"]
 
 [ext_resource type="Script" uid="uid://ctebvuyqxdb4o" path="res://scenes/ui/main_menu/main_menu.gd" id="1_1ch07"]
+[ext_resource type="PackedScene" uid="uid://c3cv87vswpk7l" path="res://scenes/ui/settings_menu/settings_menu.tscn" id="2_e8t4i"]
+[ext_resource type="PackedScene" uid="uid://ndgha6qjvm4f" path="res://scenes/ui/collection_menu/collection_menu.tscn" id="3_qt1dd"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_m156b"]
 font_size = 80
-
-[sub_resource type="LabelSettings" id="LabelSettings_ad6r8"]
-font_size = 64
 
 [node name="MainMenu" type="Control" unique_id=1414841993 node_paths=PackedStringArray("buttons")]
 layout_mode = 3
@@ -40,8 +39,8 @@ offset_right = 250.0
 offset_bottom = -316.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "NOVA
-MINER"
+text = "Tiny
+Drillers"
 label_settings = SubResource("LabelSettings_m156b")
 horizontal_alignment = 1
 
@@ -99,41 +98,24 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "	QUIT"
 
-[node name="GameVersion" type="Label" parent="." unique_id=471905414]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = -100.0
-offset_right = 330.0
-offset_bottom = -21.333008
-grow_vertical = 0
-text = "v0.1"
-label_settings = SubResource("LabelSettings_ad6r8")
-vertical_alignment = 1
-
 [node name="DiscordButton" type="Button" parent="." unique_id=887376601]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 30.0
-offset_top = -260.0
+offset_top = -200.0
 offset_right = 160.0
-offset_bottom = -130.0
+offset_bottom = -70.0
 grow_vertical = 0
 
-[node name="UpdatesButton" type="Button" parent="." unique_id=796095102]
+[node name="SettingsMenu" parent="." unique_id=1541801447 instance=ExtResource("2_e8t4i")]
+visible = false
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = -427.0
-offset_right = 160.0
-offset_bottom = -297.0
-grow_vertical = 0
+
+[node name="CollectionMenu" parent="." unique_id=786427935 instance=ExtResource("3_qt1dd")]
+visible = false
+layout_mode = 1
 
 [connection signal="pressed" from="Buttons/WishlistButton" to="." method="_on_wishlist_button_pressed"]
 [connection signal="pressed" from="Buttons/PlayButton" to="." method="_on_play_button_pressed"]

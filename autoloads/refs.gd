@@ -6,6 +6,8 @@ var mine_zone: MineZone
 var inventory: Inventory
 var camera: CameraRig
 
+const SETTINGS_MENU = preload("uid://c3cv87vswpk7l")
+
 const ORE_SCENE = preload("res://scenes/ore/ore.tscn")
 const ORE_DROP_SCENE = preload("res://scenes/ore/ore_drop.tscn")
 const REFINED_ORE_SCENE = preload("res://scenes/ore/refined_ore.tscn")

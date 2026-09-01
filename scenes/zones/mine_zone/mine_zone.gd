@@ -17,6 +17,7 @@ const PERK_DISPLAY_SCENE := preload("res://scenes/ui/perks/perk_mine_display.tsc
 
 @export_category("Debug")
 @export var debug_fast_forward: float = 1.0
+@export var atmosphere: MineAtmosphere
 
 @onready var grid: MineGrid = $MineGrid
 @onready var chunk: MineChunk = $MineChunk
@@ -26,6 +27,7 @@ const PERK_DISPLAY_SCENE := preload("res://scenes/ui/perks/perk_mine_display.tsc
 @onready var perk_world_spawner: PerkWorldSpawner = $PerkWorldSpawner
 @onready var ysort: Node2D = $YSort
 @onready var player: Player = $YSort/Player
+@onready var canvas_modulate: CanvasModulate = $CanvasModulate
 @onready var offscreen_markers: OffscreenMarkerLayer = %OffscreenMarkerLayer
 
 ## GUI
@@ -68,6 +70,7 @@ func _ready() -> void:
 	perk_world_spawner.setup(ore_spawner, ysort, offscreen_markers)
 	GameManager.repair_drill_full()
 	spawn_player()
+	apply_atmosphere()
 	connect_run_tracking()
 	connect_perk_tooltip()
 	setup_durability_hud()
@@ -127,6 +130,12 @@ func spawn_player() -> void:
 	player.global_position = Vector2.ZERO
 	last_player_cell = grid.world_to_cell(player.global_position)
 	Refs.player = player
+
+
+## Oscuridad + linterna + piso de tunel. La UI vive en CanvasLayer y no se tine.
+func apply_atmosphere() -> void:
+	canvas_modulate.color = atmosphere.canvas_modulate
+	player.torch_light.apply_atmosphere(atmosphere)
 
 
 ## Intro: player (placeholder) → ores crecen todos juntos → recien ahi empieza la run.

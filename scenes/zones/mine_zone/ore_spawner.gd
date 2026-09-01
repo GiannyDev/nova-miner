@@ -9,9 +9,9 @@ class_name OreSpawner
 ## Pipeline al revelar:
 ##   1. Huecos de spawn / safe zone
 ##   2. Rutas caminables (huecos sueltos + gusanos tipo Lague)
-##   3. Vetas de mineral
+##   3. Vetas de mineral (Perlin umbralizado, estilo Rock Bottom)
 ##   4. Extras de perks (capados, nunca rellenan el tunel)
-##   5. El resto: densidad % tierra vs mineral
+##   5. El resto: tierra
 ##   6. Bombas: convierten tierra del lote (chance de Stats, 0 = ninguna)
 ##   7. Huecos de perk reservados (1x1 MINED)
 ##
@@ -57,6 +57,10 @@ var window_connected: bool = false
 var intro_spawn_mode: bool = false
 ## Ores extra de perks/upgrades, aplicados al revelar — nunca pisan el tunel.
 var pending_bonus_ores: int = 0
+## Semilla de run: el noise es determinista para que las vetas cruzan ventanas.
+var ore_noise_seed: int = 0
+var ore_noise: FastNoiseLite
+var ore_type_noise: FastNoiseLite
 
 signal perk_cell_carved(cell: Vector2i, perk_data: PerkData)
 
@@ -75,6 +79,7 @@ func setup(mine_grid: MineGrid, mine_chunk: MineChunk, ore_parent: Node2D, ore_p
 	apply_block_layout_to_grid()
 	connect_chunk_signals()
 	randomize()
+	rebuild_ore_noise()
 	set_process(true)
 
 
@@ -128,6 +133,7 @@ func clear_ores() -> void:
 func reset() -> void:
 	clear_ores()
 	randomize()
+	rebuild_ore_noise()
 	if grid != null:
 		grid.reset()
 	if chunk != null:
@@ -201,7 +207,7 @@ func generate_available_batch(available: Dictionary, include_player_holes: bool)
 	else:
 		carve_reserved_cells(available)
 	carve_walkable_paths(available)
-	stamp_map_clusters(available)
+	stamp_ore_veins(available)
 	stamp_bonus_ores(available)
 	var dirt_batch := fill_remaining_cells(available)
 	stamp_bombs(dirt_batch)
@@ -397,21 +403,17 @@ func carve_cell(cell: Vector2i, available: Dictionary) -> void:
 	available.erase(cell)
 
 
-## Vetas 4-conectadas. Budget ~ lote * chance / (size * 4): no fuerza 1 cluster por tira chica.
-func stamp_map_clusters(available: Dictionary) -> void:
-	var size := maxi(profile.cluster_size, 2)
-	if size <= 0 or profile.cluster_chance <= 0.0 or available.is_empty():
+## Vetas Rock Bottom: Perlin FBM umbralizado. Picos contiguos = clusters; lobulos chicos = sueltos agrupados.
+func stamp_ore_veins(available: Dictionary) -> void:
+	if available.is_empty() or ore_noise == null:
 		return
-	var expected := float(available.size()) * profile.cluster_chance / float(size * 4)
-	var budget := int(expected)
-	# El resto decimal es un roll extra (ej. expected 2.3 → 2 seguro, 30% de un tercero).
-	if randf() < expected - float(budget):
-		budget += 1
-	for i in budget:
-		var blob := grow_ore_blob(available, size)
-		for cell in blob:
-			mark_as_ore(cell)
-			available.erase(cell)
+	var cells: Array = available.keys()
+	for cell in cells:
+		var typed_cell: Vector2i = cell
+		if not is_ore_vein_cell(typed_cell):
+			continue
+		mark_as_ore(typed_cell, pick_vein_ore_data(typed_cell))
+		available.erase(typed_cell)
 
 
 ## Gasta pending_bonus_ores en este lote, tope BONUS_ORE_CAP_FRACTION. El resto espera al siguiente.
@@ -429,19 +431,14 @@ func stamp_bonus_ores(available: Dictionary) -> void:
 		available.erase(cell)
 
 
-## Lo que queda: STARTING_ORE_AMOUNT% mineral suelto, el resto tierra.
-## Devuelve las tierras de este lote para que stamp_bombs no pise vetas ni celdas viejas.
+## Lo que queda despues de vetas y extras es tierra. Devuelve el lote para stamp_bombs.
 func fill_remaining_cells(available: Dictionary) -> Array[Vector2i]:
 	var dirt_batch: Array[Vector2i] = []
-	var density := clampf(Stats.get_stat(Stats.STARTING_ORE_AMOUNT) * 0.01, 0.0, 1.0)
 	var cells: Array = available.keys()
 	for cell in cells:
 		var typed_cell: Vector2i = cell
-		if randf() < density:
-			mark_as_ore(typed_cell)
-		else:
-			mark_as_dirt(typed_cell)
-			dirt_batch.append(typed_cell)
+		mark_as_dirt(typed_cell)
+		dirt_batch.append(typed_cell)
 		available.erase(typed_cell)
 	return dirt_batch
 
@@ -458,61 +455,6 @@ func stamp_bombs(dirt_batch: Array[Vector2i]) -> void:
 		if randf() >= chance:
 			continue
 		mark_as_bomb(cell, bomb_data)
-
-
-## Blob 4-conectado de `size` ores, sin tierra adentro. Si no llega, fallback a cuadrado.
-func grow_ore_blob(available: Dictionary, size: int) -> Array[Vector2i]:
-	var empty: Array[Vector2i] = []
-	if available.is_empty() or size <= 0:
-		return empty
-	var seed_cell: Vector2i = available.keys().pick_random()
-	var blob: Array[Vector2i] = []
-	var in_blob := {}
-	var frontier: Array[Vector2i] = [seed_cell]
-	while blob.size() < size and not frontier.is_empty():
-		var idx := randi() % frontier.size()
-		var cell: Vector2i = frontier[idx]
-		frontier.remove_at(idx)
-		if in_blob.has(cell) or not available.has(cell):
-			continue
-		blob.append(cell)
-		in_blob[cell] = true
-		for dir in CARDINALS:
-			var neighbor: Vector2i = cell + dir
-			if available.has(neighbor) and not in_blob.has(neighbor):
-				frontier.append(neighbor)
-	if blob.size() >= size:
-		blob.resize(size)
-		return blob
-	var square := try_square_blob(available, seed_cell, size)
-	if not square.is_empty():
-		return square
-	return blob
-
-
-## Cuadrado ceil(sqrt(n)) anclado cerca de la semilla. Todo el cuadrado tiene que estar en el lote.
-func try_square_blob(available: Dictionary, seed_cell: Vector2i, size: int) -> Array[Vector2i]:
-	var empty: Array[Vector2i] = []
-	var side := maxi(ceili(sqrt(float(size))), 1)
-	for oy in side:
-		for ox in side:
-			var origin := seed_cell - Vector2i(ox, oy)
-			if not square_fits(origin, side, available):
-				continue
-			var cells: Array[Vector2i] = []
-			for y in side:
-				for x in side:
-					cells.append(origin + Vector2i(x, y))
-			return cells
-	return empty
-
-
-func square_fits(origin: Vector2i, side: int, available: Dictionary) -> bool:
-	for y in side:
-		for x in side:
-			if not available.has(origin + Vector2i(x, y)):
-				return false
-	return true
 
 
 # --- Visuals ---
@@ -600,6 +542,44 @@ func ensure_profile() -> void:
 		push_warning("OreSpawner: sin MineSpawnProfile asignado, usando valores por defecto.")
 
 
+## Nueva semilla de run + FastNoiseLite Perlin FBM (mismo contrato que Rock Bottom).
+func rebuild_ore_noise() -> void:
+	ensure_profile()
+	ore_noise_seed = randi()
+	ore_noise = FastNoiseLite.new()
+	ore_noise.noise_type = FastNoiseLite.TYPE_PERLIN
+	ore_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	ore_noise.fractal_octaves = profile.ore_vein_octaves
+	ore_noise.fractal_lacunarity = 2.0
+	ore_noise.fractal_gain = 0.5
+	ore_noise.frequency = profile.ore_vein_frequency
+	ore_noise.seed = ore_noise_seed
+	ore_type_noise = FastNoiseLite.new()
+	ore_type_noise.noise_type = FastNoiseLite.TYPE_PERLIN
+	ore_type_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	ore_type_noise.fractal_octaves = 3
+	ore_type_noise.frequency = maxf(profile.ore_vein_frequency * 0.35, 0.01)
+	ore_type_noise.seed = ore_noise_seed + 1
+
+
+## True si el campo de vetas pinta mineral en esta celda (determinista por seed de run).
+func is_ore_vein_cell(cell: Vector2i) -> bool:
+	var scale: float = profile.ore_vein_sample_scale
+	var sample := ore_noise.get_noise_2d(float(cell.x) * scale, float(cell.y) * scale + profile.ore_vein_y_offset)
+	return sample > profile.get_ore_vein_threshold(get_vein_density_bonus())
+
+
+## STARTING_ORE_AMOUNT 12 = densidad del profile. El upgrade suma 0.01 density por punto.
+func get_vein_density_bonus() -> float:
+	return (Stats.get_stat(Stats.STARTING_ORE_AMOUNT) - 12.0) * 0.01
+
+
+## Tipo de mineral estable en la veta: ruido lento 0..1, no un roll por celda.
+func pick_vein_ore_data(cell: Vector2i) -> OreData:
+	var roll := (ore_type_noise.get_noise_2d(float(cell.x), float(cell.y)) + 1.0) * 0.5
+	return profile.pick_ore_data_with_roll(roll)
+
+
 func apply_block_layout_to_grid() -> void:
 	if grid == null:
 		return
@@ -620,10 +600,10 @@ func handle_destroy_extras(_source_cell: Vector2i) -> void:
 	pending_bonus_ores += bonus
 
 
-func mark_as_ore(cell: Vector2i) -> void:
+func mark_as_ore(cell: Vector2i, data: OreData = null) -> void:
 	set_kind(cell, CellKind.ORE)
 	if not cell_ore_data.has(cell):
-		cell_ore_data[cell] = profile.pick_ore_data()
+		cell_ore_data[cell] = data if data != null else profile.pick_ore_data()
 
 
 func mark_as_dirt(cell: Vector2i) -> void:
@@ -685,6 +665,16 @@ func get_cell_hp(cell: Vector2i) -> float:
 	if cell_hp.has(cell):
 		return float(cell_hp[cell])
 	return resolve_block_hp(get_block_data(cell))
+
+
+## True si la celda esta a HP lleno y muere de este golpe (tierra al paso).
+func is_cell_oneshot_for(cell: Vector2i, damage: float) -> bool:
+	var live: Ore = live_blocks.get(cell) as Ore
+	if owns_live_block(cell, live):
+		return live.is_oneshot_for(damage)
+	if cell_hp.has(cell):
+		return false
+	return get_cell_hp(cell) <= damage
 
 
 ## Consume el HP guardado al respawnear visual (el nodo pasa a ser la fuente).
@@ -837,6 +827,16 @@ func is_adjacent_to_walkable(cell: Vector2i) -> bool:
 	return false
 
 
+## Polvo al romper. Count/color del atmosphere; mineral usa el tint del bloque.
+func spawn_break_dust(ore: Ore, world_pos: Vector2) -> void:
+	var atmosphere: MineAtmosphere = Refs.mine_zone.atmosphere
+	var count := atmosphere.dust_bits_mineral if ore.is_mineral() else atmosphere.dust_bits_dirt
+	var color := ore.get_break_dust_color()
+	if not ore.is_mineral():
+		color = atmosphere.dust_color_dirt
+	Effects.break_dust(world_pos, color, count)
+
+
 # --- Signal callbacks ---
 ## El visual se fue: kind = MINED, extras pendientes, nodo al pool. Bombas disparan el blast.
 func _on_ore_destroyed(ore: Ore) -> void:
@@ -847,6 +847,7 @@ func _on_ore_destroyed(ore: Ore) -> void:
 		live_blocks.erase(cell)
 		mark_as_mined(cell)
 		if not was_bomb:
+			spawn_break_dust(ore, world_pos)
 			handle_destroy_extras(cell)
 	release_ore(ore)
 	if was_bomb:

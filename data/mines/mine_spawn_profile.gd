@@ -1,6 +1,6 @@
 extends Resource
 class_name MineSpawnProfile
-## Cueva generate-once: celdas nuevas son tierra u ore. Minado = hueco permanente.
+## Cueva generate-once: tierra de relleno + vetas de mineral por ruido. Minado = hueco permanente.
 
 @export_group("Safe Zone")
 ## Celdas vacias al entrar (spawn del player).
@@ -17,11 +17,17 @@ class_name MineSpawnProfile
 ## Bloque bomba (misma escena Ore). Chance/HP/radio salen de Stats.
 @export var bomb_data: OreData
 
-@export_group("Clusters")
-## Probabilidad de sellar un blob de ores juntos (sin tierra adentro) al revelar celdas.
-@export_range(0.0, 1.0, 0.01) var cluster_chance: float = 0.2
-## Cuantos ores forma cada cluster de mapa.
-@export var cluster_size: int = 4
+@export_group("Ore Veins")
+## Densidad estilo Rock Bottom. Threshold = 0.7 - density. Mas densidad = vetas mas grandes.
+@export_range(0.05, 0.65, 0.01) var ore_vein_density: float = 0.35
+## Frecuencia del Perlin en celdas. 0.09 + scale 2 ≈ blobs de 5-7 celdas (ventana 20x20).
+@export var ore_vein_frequency: float = 0.09
+## Escala extra al samplear (Rock Bottom usa 2x el noise de cueva).
+@export var ore_vein_sample_scale: float = 2.0
+## Offset Y para que las vetas no coincidan con los tuneles.
+@export var ore_vein_y_offset: float = 1000.0
+## Octavas FBM (Rock Bottom: 4).
+@export_range(1, 8, 1) var ore_vein_octaves: int = 4
 
 @export_group("Walkable Paths")
 ## Huecos sueltos al revelar (0 = cueva maciza, ~0.15 = rutas tipo Lague).
@@ -63,19 +69,30 @@ func is_inside_safe_zone(cell: Vector2i, player_cell: Vector2i) -> bool:
 
 
 func pick_ore_data() -> OreData:
+	return pick_ore_data_with_roll(randf())
+
+
+## `roll` en 0..1 (ruido determinista por celda para que una veta sea un solo tipo).
+func pick_ore_data_with_roll(roll: float) -> OreData:
 	var total_weight := get_total_weight()
 	if total_weight <= 0.0:
 		return CurrencyManager.get_ore_data(fallback_ore_id)
 
-	var roll := randf() * total_weight
+	var remaining := clampf(roll, 0.0, 1.0) * total_weight
 	for entry in ore_weights:
 		if entry == null or entry.ore_data == null or entry.weight <= 0.0:
 			continue
-		roll -= entry.weight
-		if roll <= 0.0:
+		remaining -= entry.weight
+		if remaining <= 0.0:
 			return entry.ore_data
 
 	return CurrencyManager.get_ore_data(fallback_ore_id)
+
+
+## Threshold Rock Bottom: ruido crudo [-1,1] por encima de (0.7 - density). `density_bonus` suma el upgrade de ore amount.
+func get_ore_vein_threshold(density_bonus: float = 0.0) -> float:
+	var density := clampf(ore_vein_density + density_bonus, 0.08, 0.62)
+	return 0.7 - density
 
 
 func get_ore_hp(ore_data: OreData, ore_size: OreDefinition.OreSize) -> float:

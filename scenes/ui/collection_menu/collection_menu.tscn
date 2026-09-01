@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://ndgha6qjvm4f"]
+
+[ext_resource type="Script" uid="uid://wp4vjgplm6sd" path="res://scenes/ui/collection_menu/collection_menu.gd" id="1_y6lbe"]
+
+[node name="CollectionMenu" type="Control" unique_id=786427935]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_y6lbe")

@@ -40,6 +40,7 @@ texture = ExtResource("6")
 
 [node name="DrillBase" parent="Weapon" unique_id=269515836 instance=ExtResource("4")]
 unique_name_in_owner = true
+z_index = 1
 
 [node name="Brain" type="Node" parent="." unique_id=1616995716]
 script = ExtResource("2")

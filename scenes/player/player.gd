@@ -21,6 +21,8 @@ signal dealt_damage(amount: float)
 @onready var spine_sprite: SpineSprite = $SpineSprite
 @onready var weapon_mount: Node2D = $Weapon
 @onready var dust_vfx: GPUParticles2D = $DustVFX
+@onready var mining_audio: MiningAudio = $MiningAudio
+@onready var torch_light: TorchLight = $Light
 
 var input_direction: Vector2 = Vector2.ZERO
 var current_animation: String = ""
@@ -74,8 +76,8 @@ func play_test_lightning() -> void:
 
 	for i in lightning_hops:
 		var ore := spawner.get_chain_ore(from_cell, lightning_range_cells, exclude)
-		if ore == null:
-			break
+		if ore == null: break
+		
 		var hop_cell := ore.grid_cell
 		exclude[hop_cell] = true
 		await chainer.chain(prev_pos, ore)
@@ -83,6 +85,8 @@ func play_test_lightning() -> void:
 			from_cell = hop_cell
 			continue
 		ore.take_damage(damage)
+		Feedbacks.spawn_damage_text(damage, ore.damage_marker.global_position, aim_direction)
+		dealt_damage.emit(damage)
 		prev_pos = ore.global_position
 		from_cell = hop_cell
 		await get_tree().create_timer(chainer.time_between_chains()).timeout
@@ -201,3 +205,4 @@ func _on_drill_ore_hit(ore: Ore, damage: float) -> void:
 	dealt_damage.emit(damage)
 	# Sale del marker del ore y flota en direccion opuesta a donde miramos.
 	Feedbacks.spawn_damage_text(damage, ore.damage_marker.global_position, aim_direction)
+	mining_audio.notify_hit(ore)

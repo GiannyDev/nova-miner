@@ -73,6 +73,8 @@ When implementing a feature:
 
 Never dump code without explanation.
 
+**Art last.** Until final art, ship logic, feel (SFX, hit delay, lights, juice) and placeholders. Do not draw floor tiles, block overlays, or decorative mockups unless the user asks for a visual mockup.
+
 ### Code quality checklist
 
 * Clean architecture — logic lives in the class that owns it
@@ -117,7 +119,7 @@ Simple and named beats clever. A function name should tell you the design: `dril
 
 * **S — one owner.** Player moves and asks. Drill owns contact, hits, and “am I still against a block?”. Spawner owns cell kinds. Ore owns HP. Camera listens to signals; it does not reach into the Area2D.
 * **Queries, not copies.** If class B needs a fact from class A, A exposes `is_*` / `can_*`. Do not re-derive overlap, HP, or grid state in the caller.
-* **Pipelines over nests.** A generate/tick function should read as steps: `carve_walkable_paths()` → `stamp_map_clusters()` → `fill_remaining_cells()`. If you need a comment that says “now do X”, it should be a function named X.
+* **Pipelines over nests.** A generate/tick function should read as steps: `carve_walkable_paths()` → `stamp_ore_veins()` → `fill_remaining_cells()`. If you need a comment that says “now do X”, it should be a function named X.
 * **O — tunables in Resources / `@export`.** No magic numbers that a designer would want to change.
 * **D — signals / EventBus** for cross-cutting feel (hit, destroyed, run ended). Call methods on children you own; emit for everyone else.
 * **Keep it small.** Latch, grace, bias, and extra dictionaries are complexity. Add them only when the simple loop is visibly wrong in play.

@@ -250,6 +250,11 @@ func is_alive() -> bool:
 	return not is_destroyed
 
 
+## Tierra al paso: HP lleno que muere de este golpe. Un bloque ya picado nunca es oneshot.
+func is_oneshot_for(damage: float) -> bool:
+	return is_alive() and current_hp <= damage and current_hp >= max_hp - 0.001
+
+
 ## Tierra de cueva: se perfora, no dropea mineral.
 func is_dirt() -> bool:
 	return ore_data != null and ore_data.is_dirt
@@ -263,6 +268,15 @@ func is_bomb() -> bool:
 ## Mineral de bag: ni tierra ni bomba.
 func is_mineral() -> bool:
 	return not is_dirt() and not is_bomb()
+
+
+## Color del polvo al romper: tint del mineral o el modulate de tierra.
+func get_break_dust_color() -> Color:
+	if sprite != null:
+		return sprite.modulate
+	if ore_data != null:
+		return ore_data.tint
+	return Color(0.48, 0.42, 0.38, 1.0)
 
 
 ## Tierra mas oscura; bomba usa tint del OreData; mineral queda blanco.

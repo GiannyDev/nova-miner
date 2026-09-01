@@ -9,6 +9,9 @@ class_name MainMenu
 @export_category("References")
 @export var buttons: Array[Button]
 
+@onready var settings_menu: SettingsMenu = $SettingsMenu
+@onready var collection_menu: CollectionMenu = $CollectionMenu
+
 func _ready() -> void:
 	for btn: Button in buttons:
 		btn.mouse_entered.connect(_on_btn_mouse_entered.bind(btn))
@@ -29,7 +32,7 @@ func _on_collection_button_pressed() -> void:
 
 
 func _on_settings_option_pressed() -> void:
-	pass # Replace with function body.
+	settings_menu.show()
 
 
 func _on_wishlist_button_pressed() -> void:

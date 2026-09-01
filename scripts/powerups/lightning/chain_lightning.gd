@@ -15,16 +15,20 @@ class_name ChainLightning
 
 
 const BOLT_COLOR := Color("7cd4f8")
-const BOLT_WIDTH := 16.0
-const BOLT_DURATION := 0.2
-const HOP_DELAY := 0.06
+const BOLT_WIDTH := 28.0
+const BOLT_DURATION := 0.28
+const HOP_DELAY := 0.08
+const HOP_PUNCH := 7.0
 
 
 ## Pinta un rayo from → ore y espera a que el trazo exista un frame.
 func chain(from: Vector2, ore: Ore) -> void:
 	if ore == null or not is_instance_valid(ore):
 		return
-	Effects.electricity(from, ore.global_position, BOLT_COLOR, BOLT_WIDTH, BOLT_DURATION)
+	var target := ore.global_position
+	Effects.electricity(from, target, BOLT_COLOR, BOLT_WIDTH, BOLT_DURATION)
+	if Refs.camera != null:
+		Refs.camera.punch(target - from, HOP_PUNCH)
 	await get_tree().process_frame
 
 

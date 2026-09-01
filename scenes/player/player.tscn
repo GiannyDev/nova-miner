@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://4bc3c6sankrf" path="res://sprites/cloud_2x2_hard_softshadow.png" id="4_qek5x"]
 [ext_resource type="PackedScene" uid="uid://dru37w53vj3w7" path="res://scenes/drills/drill_base.tscn" id="7_0owmy"]
 [ext_resource type="Texture2D" uid="uid://caunw8y7wm4dg" path="res://sprites/light_point_shadow.webp" id="7_qek5x"]
+[ext_resource type="Script" uid="uid://bcrre5ik6sto6" path="res://scenes/player/mining_audio.gd" id="8_mining"]
+[ext_resource type="Script" uid="uid://pkvaggxipbus" path="res://scenes/player/torch_light.gd" id="9_torch"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_0owmy"]
 particles_animation = true
@@ -95,13 +97,17 @@ position = Vector2(0, -80)
 
 [node name="DrillBase" parent="Weapon" unique_id=1538618923 instance=ExtResource("7_0owmy")]
 unique_name_in_owner = true
+z_index = 5
 position = Vector2(33, 0)
+
+[node name="MiningAudio" type="Node" parent="." unique_id=1292939196]
+script = ExtResource("8_mining")
 
 [node name="Light" type="PointLight2D" parent="." unique_id=1985472502]
 visible = false
 position = Vector2(0, -80)
-scale = Vector2(3, 3)
-color = Color(0.85490197, 0.5137255, 0.12156863, 1)
-energy = 1.07
+color = Color(1, 0.82, 0.52, 1)
+energy = 2.35
 texture = ExtResource("7_qek5x")
-texture_scale = 1.23
+texture_scale = 5.4
+script = ExtResource("9_torch")

@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://dsi6084ubvah" path="res://sprites/Gound.png" id="9_r5241"]
 [ext_resource type="PackedScene" uid="uid://dtxutr3tlt43j" path="res://scenes/ui/inventory/inventory.tscn" id="12_dpy17"]
 [ext_resource type="Material" uid="uid://cbpjar43wpa2" path="res://resources/crt_01.tres" id="12_o6jf1"]
+[ext_resource type="PackedScene" uid="uid://fy18lpdre21b" path="res://scenes/ui/artefacts/artefacts.tscn" id="16_r5241"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_asai8"]
 size = Vector2(2140, 154)
@@ -38,6 +39,9 @@ size = Vector2(951, 280)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n4fd8"]
 size = Vector2(192, 628)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r5241"]
+size = Vector2(251, 695)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mngwo"]
 size = Vector2(950, 180)
 
@@ -54,15 +58,6 @@ size = Vector2(302, 189)
 shader = ExtResource("9_4vgyc")
 shader_parameter/outerRadius = 5.0
 shader_parameter/MainAlpha = 1.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mngwo"]
-bg_color = Color(0.18039216, 0.18039216, 0.18039216, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="Environment" id="Environment_ad6r8"]
 
 [node name="BaseZone" type="Node2D" unique_id=1296669802 node_paths=PackedStringArray("player")]
 script = ExtResource("1_wrtbe")
@@ -178,22 +173,32 @@ collision_layer = 0
 position = Vector2(-0.5, -49)
 shape = SubResource("RectangleShape2D_fqte1")
 
-[node name="RobotBench" type="Node2D" parent="YSort" unique_id=452727901]
+[node name="ArtefactsBench" type="Node2D" parent="YSort" unique_id=452727901 node_paths=PackedStringArray("player_area", "panel_to_open")]
 position = Vector2(73, 304)
 script = ExtResource("3_mngwo")
+player_area = NodePath("PlayerDetector")
+panel_to_open = NodePath("../../GUI/Artefacts")
 
-[node name="Sprite2D4" type="Sprite2D" parent="YSort/RobotBench" unique_id=1172763750]
+[node name="Sprite2D4" type="Sprite2D" parent="YSort/ArtefactsBench" unique_id=1172763750]
 position = Vector2(24.74997, 11.500017)
 scale = Vector2(1.4882817, 4.914063)
 texture = ExtResource("2_2e3ff")
 
-[node name="StaticBody2D" type="StaticBody2D" parent="YSort/RobotBench" unique_id=1058681054]
+[node name="StaticBody2D" type="StaticBody2D" parent="YSort/ArtefactsBench" unique_id=1058681054]
+visible = false
 position = Vector2(24, 29)
 collision_layer = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/RobotBench/StaticBody2D" unique_id=1634218109]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/ArtefactsBench/StaticBody2D" unique_id=1634218109]
 position = Vector2(0, -18)
 shape = SubResource("RectangleShape2D_n4fd8")
+
+[node name="PlayerDetector" type="Area2D" parent="YSort/ArtefactsBench" unique_id=1800829307]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YSort/ArtefactsBench/PlayerDetector" unique_id=161425724]
+position = Vector2(54.5, 20.5)
+shape = SubResource("RectangleShape2D_r5241")
+debug_color = Color(0, 0.6, 0.7019608, 0.11764706)
 
 [node name="RefineryBench" type="Node2D" parent="YSort" unique_id=1231799727]
 position = Vector2(-6, 972)
@@ -296,205 +301,17 @@ visible = false
 [node name="WeaponShop" parent="GUI" unique_id=432418539 instance=ExtResource("3_2e3ff")]
 visible = false
 
-[node name="CompMenu" type="Control" parent="GUI" unique_id=1975018279]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="BG" type="ColorRect" parent="GUI/CompMenu" unique_id=548546201]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.27450982)
-
-[node name="Panel" type="Panel" parent="GUI/CompMenu" unique_id=805034582]
-custom_minimum_size = Vector2(1600, 900)
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -798.0
-offset_top = -425.0
-offset_right = 802.0
-offset_bottom = 425.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_mngwo")
-
-[node name="MarginContainer" type="MarginContainer" parent="GUI/CompMenu/Panel" unique_id=1514989817]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
-
-[node name="HBoxContainer" type="HBoxContainer" parent="GUI/CompMenu/Panel/MarginContainer" unique_id=674822278]
-layout_mode = 2
-
-[node name="Control" type="Control" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer" unique_id=417912821]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Inventory" type="Control" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer" unique_id=1351743442]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Margin" type="MarginContainer" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory" unique_id=672247740]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="GridContainer" type="GridContainer" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin" unique_id=745050530]
-layout_mode = 2
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 8
-columns = 6
-
-[node name="Button" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1621441970]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button2" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1043785442]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button3" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1605595695]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button4" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=51885654]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button5" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1185722836]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button6" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=116282172]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button7" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1146075496]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button8" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1958930380]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button9" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1339139727]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button10" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=154796454]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button11" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1664922656]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button12" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=109932361]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button13" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1410000474]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button14" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=444287675]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button15" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=2108391032]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button16" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1275791058]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button17" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=620593772]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button18" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=302831731]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button19" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=2021552229]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button20" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1409441291]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button21" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1259719706]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button22" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1760224510]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button23" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1872074325]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button24" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1576414289]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button25" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=772188264]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button26" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=421547845]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button27" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=2055287737]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button28" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=496192282]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button29" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=787435710]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
-[node name="Button30" type="Button" parent="GUI/CompMenu/Panel/MarginContainer/HBoxContainer/Inventory/Margin/GridContainer" unique_id=1084675]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-
 [node name="LevelsMenu" parent="GUI" unique_id=1902323767 instance=ExtResource("9_o6jf1")]
 visible = false
 
 [node name="SettingsMenu" parent="GUI" unique_id=1541801447 instance=ExtResource("5_2dcdp")]
 visible = false
 
+[node name="Artefacts" parent="GUI" unique_id=1256638290 instance=ExtResource("16_r5241")]
+visible = false
+
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1077753099]
+visible = false
 material = ExtResource("12_o6jf1")
 anchors_preset = 15
 anchor_right = 1.0
@@ -502,9 +319,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1994372675]
-environment = SubResource("Environment_ad6r8")
 
 [connection signal="body_entered" from="YSort/RefineryBench/PlayerDetector" to="YSort/RefineryBench" method="_on_player_detector_body_entered"]
 [connection signal="body_exited" from="YSort/RefineryBench/PlayerDetector" to="YSort/RefineryBench" method="_on_player_detector_body_exited"]

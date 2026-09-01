@@ -26,6 +26,7 @@ Current docs:
 - Prefer small contracts (`take_damage`, poolable, target helpers) over fat base classes.
 - Cross-cutting feedback via Autoload EventBus + node signals; UI must not be hardwired into gameplay logic.
 - Briefly explain architecture and why before implementing a feature.
+- Logic and game feel first; final art later. Do not invent floor/block/decorative mockups unless the user asks for a visual mockup.
 - Ask when requirements are unclear.
 - Ship `@tool` / EditorPlugin helpers when wiring is multi-step.
 - Comment new work on functions, signals, and non-obvious lines inside functions — never on `@export` or private/runtime vars (`Godot_Main_Guideline.md`).

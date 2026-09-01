@@ -54,7 +54,8 @@
 			"uuid": "964e1dcd-d889-4717-b0ff-8ad0bd36fb3e",
 			"title": "Ideas",
 			"tasks": [
-				"7370d978-aca6-42ca-af72-3a91ae441d9f"
+				"7370d978-aca6-42ca-af72-3a91ae441d9f",
+				"1c421104-b670-4a53-bf71-6e5737efd268"
 			]
 		}
 	],
@@ -207,6 +208,13 @@
 		{
 			"uuid": "0389f395-acff-4f21-88e5-57447935a508",
 			"title": "Colaboradores",
+			"description": "",
+			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
+			"steps": []
+		},
+		{
+			"uuid": "1c421104-b670-4a53-bf71-6e5737efd268",
+			"title": "Skill de velocidad extra",
 			"description": "",
 			"category": "d81d02e3-335d-4d61-95ea-c2798e229a1e",
 			"steps": []

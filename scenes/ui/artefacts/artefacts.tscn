@@ -1,0 +1,302 @@
+[gd_scene format=3 uid="uid://fy18lpdre21b"]
+
+[ext_resource type="Texture2D" uid="uid://ee7m822lw68f" path="res://icon.svg" id="1_3wgsd"]
+[ext_resource type="Script" uid="uid://24hgnoo50ra8" path="res://scenes/ui/artefacts/artefacts.gd" id="1_llluj"]
+[ext_resource type="Texture2D" uid="uid://b2s2xahq7w4r8" path="res://sprites/coin.png" id="2_llluj"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r5241"]
+bg_color = Color(0.75979066, 0.26631293, 0.17092058, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+shadow_color = Color(0.5045892, 0.1583575, 0.09255264, 1)
+shadow_size = 2
+shadow_offset = Vector2(0, 4)
+
+[node name="Artefacts" type="Control" unique_id=1256638290]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_llluj")
+
+[node name="BG" type="ColorRect" parent="." unique_id=1608916583]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2159017, 0.21590173, 0.2159017, 1)
+
+[node name="Buttons" type="HBoxContainer" parent="." unique_id=277292710]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 412.0
+offset_bottom = 115.0
+theme_override_constants/separation = 12
+
+[node name="CloseButton" type="Button" parent="Buttons" unique_id=1757035541]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 75)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_r5241")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_r5241")
+theme_override_styles/hover = SubResource("StyleBoxFlat_r5241")
+text = "Close"
+
+[node name="MinersButton" type="Button" parent="Buttons" unique_id=1436541385]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(200, 75)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_r5241")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_r5241")
+theme_override_styles/hover = SubResource("StyleBoxFlat_r5241")
+text = "Miners"
+
+[node name="Artefacts" type="Control" parent="." unique_id=309151442]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 131.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Artefacts" unique_id=50138749]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -700.0
+offset_top = -333.5
+offset_right = 700.0
+offset_bottom = -33.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 200
+alignment = 1
+
+[node name="Recipiente1" type="TextureRect" parent="Artefacts/HBoxContainer" unique_id=1623906388]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer/Recipiente1" unique_id=1942890391]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente2" type="TextureRect" parent="Artefacts/HBoxContainer" unique_id=1918793988]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer/Recipiente2" unique_id=645314433]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente3" type="TextureRect" parent="Artefacts/HBoxContainer" unique_id=1271400094]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer/Recipiente3" unique_id=1098269443]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente4" type="TextureRect" parent="Artefacts/HBoxContainer" unique_id=1722986452]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer/Recipiente4" unique_id=1733796411]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente5" type="TextureRect" parent="Artefacts/HBoxContainer" unique_id=1596330063]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer/Recipiente5" unique_id=1289448663]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Artefacts" unique_id=1617446524]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -700.0
+offset_top = 122.5
+offset_right = 700.0
+offset_bottom = 422.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 200
+alignment = 1
+
+[node name="Recipiente1" type="TextureRect" parent="Artefacts/HBoxContainer2" unique_id=720155759]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer2/Recipiente1" unique_id=1830062769]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente2" type="TextureRect" parent="Artefacts/HBoxContainer2" unique_id=228386675]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer2/Recipiente2" unique_id=539734712]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente3" type="TextureRect" parent="Artefacts/HBoxContainer2" unique_id=1633581484]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer2/Recipiente3" unique_id=423414757]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Recipiente4" type="TextureRect" parent="Artefacts/HBoxContainer2" unique_id=1312229646]
+custom_minimum_size = Vector2(120, 300)
+layout_mode = 2
+texture = ExtResource("1_3wgsd")
+expand_mode = 1
+
+[node name="TextureRect" type="TextureRect" parent="Artefacts/HBoxContainer2/Recipiente4" unique_id=1231967428]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = -102.5
+offset_right = 48.0
+offset_bottom = -6.5
+grow_horizontal = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+texture = ExtResource("2_llluj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Miners" type="Control" parent="." unique_id=889548784]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 131.0
+grow_horizontal = 2
+grow_vertical = 2

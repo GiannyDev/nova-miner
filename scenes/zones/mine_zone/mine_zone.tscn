@@ -19,10 +19,11 @@
 [ext_resource type="Resource" uid="uid://n1h27e03if8m" path="res://data/perks/perk_speed_boost.tres" id="16_perk_speed"]
 [ext_resource type="Resource" uid="uid://bmqavw2l3rg2f" path="res://data/perks/perk_cluster_bonus.tres" id="17_perk_cluster"]
 [ext_resource type="PackedScene" uid="uid://dcuuf1m1b62jv" path="res://scenes/ore/ore.tscn" id="18_ore"]
-[ext_resource type="Script" path="res://scenes/helpers/helper_manager.gd" id="19_helpers"]
-[ext_resource type="Resource" path="res://data/helpers/helper_miner.tres" id="20_helper_data"]
-[ext_resource type="Script" path="res://scenes/perks/perk_world_spawner.gd" id="21_perk_world"]
-[ext_resource type="PackedScene" path="res://scenes/ui/offscreen_marker/offscreen_marker_layer.tscn" id="22_markers"]
+[ext_resource type="Script" uid="uid://iibexf4afith" path="res://scenes/helpers/helper_manager.gd" id="19_helpers"]
+[ext_resource type="Resource" uid="uid://cyff6ua7ahrn7" path="res://data/helpers/helper_miner.tres" id="20_helper_data"]
+[ext_resource type="Script" uid="uid://l2bhxh4tl0kh" path="res://scenes/perks/perk_world_spawner.gd" id="21_perk_world"]
+[ext_resource type="PackedScene" uid="uid://bjogk6pdxx7ce" path="res://scenes/ui/offscreen_marker/offscreen_marker_layer.tscn" id="22_markers"]
+[ext_resource type="Resource" uid="uid://b8mineatmo001" path="res://data/mines/default_mine_atmosphere.tres" id="24_atmo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ad6r8"]
 shader = ExtResource("9_1xuby")
@@ -67,24 +68,22 @@ shadow_offset = Vector2(6, 6)
 font_size = 28
 font_color = Color(1.317, 0.877, 0.317, 1)
 
-[sub_resource type="Environment" id="Environment_0fijc"]
-glow_enabled = true
-
 [node name="MineZone" type="Node2D" unique_id=1113268112]
 script = ExtResource("1_r8hjc")
 debug_start_perks = Array[ExtResource("2_agnlg")]([ExtResource("16_perk_speed"), ExtResource("17_perk_cluster")])
 debug_fast_forward = 2.5
+atmosphere = ExtResource("24_atmo")
 
 [node name="OreSpawner" type="Node" parent="." unique_id=1113268201]
 script = ExtResource("5_spwn")
 profile = ExtResource("3_k6t54")
 block_layout = ExtResource("8_layout")
 
-[node name="HelperManager" type="Node" parent="."]
+[node name="HelperManager" type="Node" parent="." unique_id=224165074]
 script = ExtResource("19_helpers")
 helper_data = ExtResource("20_helper_data")
 
-[node name="PerkWorldSpawner" type="Node" parent="."]
+[node name="PerkWorldSpawner" type="Node" parent="." unique_id=64388466]
 script = ExtResource("21_perk_world")
 
 [node name="MineGrid" type="Node2D" parent="." unique_id=1113268200]
@@ -106,7 +105,7 @@ y_sort_enabled = true
 [node name="Player" parent="YSort" unique_id=1596606917 instance=ExtResource("1_mdgi6")]
 
 [node name="Camera2D" type="Camera2D" parent="YSort/Player" unique_id=324192786]
-zoom = Vector2(0.55, 0.55)
+zoom = Vector2(0.45, 0.45)
 script = ExtResource("8_0fijc")
 
 [node name="GUI" type="CanvasLayer" parent="." unique_id=1755441572]
@@ -249,6 +248,7 @@ label_settings = SubResource("LabelSettings_ln1sk")
 horizontal_alignment = 1
 
 [node name="CRT" type="ColorRect" parent="GUI" unique_id=1463877075]
+visible = false
 material = ExtResource("14_riejj")
 anchors_preset = 15
 anchor_right = 1.0
@@ -259,22 +259,12 @@ mouse_filter = 2
 
 [node name="OffscreenMarkerLayer" parent="GUI" unique_id=1847204401 instance=ExtResource("22_markers")]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+layout_mode = 3
 
 [node name="OrePool" type="Node" parent="." unique_id=890285604]
 script = ExtResource("12_0fijc")
 ore_scene = ExtResource("18_ore")
 prewarm_count = 580
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=174832406]
-environment = SubResource("Environment_0fijc")
-
-[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1424531671]
-visible = false
-color = Color(0.4396999, 0.49734855, 0.71200204, 1)
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1142769000]
+color = Color(0.22, 0.24, 0.32, 1)

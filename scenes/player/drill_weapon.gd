@@ -1,6 +1,7 @@
 extends Node2D
 class_name DrillWeapon
-## Contacto = Area2D del tip. One-shot no frena; multi-hit pega, espera hit_delay, pega.
+## Contacto = Area2D del tip. Oneshot (HP lleno que muere de un golpe) al paso.
+## Multi-hit: un pulso cada hit_delay a TODOS los bloques en contacto.
 
 signal drilling_started(ore: Ore)
 signal drilling_stopped
@@ -51,8 +52,9 @@ func set_aim_direction(direction: Vector2) -> void:
 		aim_direction = direction.normalized()
 
 
+## True si queda algun bloque que hay que picar (no oneshot). Frena al miner.
 func is_drilling() -> bool:
-	return mining_ore != null and is_instance_valid(mining_ore) and mining_ore.is_alive()
+	return has_chip_targets()
 
 
 func get_hit_delay() -> float:
@@ -63,7 +65,7 @@ func get_damage(base_attack: float) -> float:
 	return base_attack
 
 
-## Pega primero (oneshots al paso). Si queda un bloque vivo, el player se frena.
+## Oneshots al paso. El resto comparte un pulso de hit_delay, todos a la vez.
 func tick(base_attack: float, delta: float, has_move_intent: bool) -> void:
 	hit_timer = maxf(hit_timer - delta, 0.0)
 	sync_contacts()
@@ -74,17 +76,17 @@ func tick(base_attack: float, delta: float, has_move_intent: bool) -> void:
 		return
 
 	var damage := get_damage(base_attack)
-	break_oneshots(damage)
+	smash_fresh_oneshots(damage)
 
 	mining_ore = find_closest_ore()
 	update_drilling_state()
-	if mining_ore == null:
+	if not has_chip_targets():
 		return
 	if hit_timer > 0.0:
 		return
 
 	hit_timer = get_hit_delay()
-	deal_hit(mining_ore, damage)
+	chip_all_contacts(damage)
 
 
 func sync_contacts() -> void:
@@ -93,12 +95,27 @@ func sync_contacts() -> void:
 		track_ore(body)
 
 
-## Rompe en el acto todo contacto que muere de un golpe. Sin delay ni freno.
-func break_oneshots(damage: float) -> void:
+## Solo HP lleno que muere de este golpe. Un bloque ya picado espera hit_delay.
+func smash_fresh_oneshots(damage: float) -> void:
 	var contacts := overlapping_ores.duplicate()
 	for ore in contacts:
-		if ore != null and ore.is_alive() and ore.current_hp <= damage:
+		if ore != null and ore.is_oneshot_for(damage):
 			deal_hit(ore, damage)
+
+
+## Un pulso a cada bloque vivo en el tip. El timer ya se consumio en tick.
+func chip_all_contacts(damage: float) -> void:
+	var contacts := overlapping_ores.duplicate()
+	for ore in contacts:
+		if ore != null and ore.is_alive():
+			deal_hit(ore, damage)
+
+
+func has_chip_targets() -> bool:
+	for ore in overlapping_ores:
+		if ore != null and is_instance_valid(ore) and ore.is_alive():
+			return true
+	return false
 
 
 func find_closest_ore() -> Ore:
@@ -164,13 +181,22 @@ func track_ore(body: Node) -> void:
 	overlapping_ores.append(ore)
 
 
+## True si el Area todavia toca este ore (tiene 2 StaticBody: Ore + OreTop).
+func is_ore_still_overlapping(ore: Ore) -> bool:
+	for body in contact_area.get_overlapping_bodies():
+		if resolve_ore(body) == ore:
+			return true
+	return false
+
+
 func _on_contact_body_entered(body: Node) -> void:
 	track_ore(body)
 
 
 func _on_contact_body_exited(body: Node) -> void:
 	var ore := resolve_ore(body)
-	if ore != null:
-		overlapping_ores.erase(ore)
-		if mining_ore == ore:
-			mining_ore = null
+	if ore == null or is_ore_still_overlapping(ore):
+		return
+	overlapping_ores.erase(ore)
+	if mining_ore == ore:
+		mining_ore = null
